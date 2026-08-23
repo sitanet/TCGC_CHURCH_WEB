@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Teachings &amp; Sermons Archive — {{ SITE_CONFIG.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Teachings Header -->
+<section style="padding: var(--space-16) 0 var(--space-10); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; border-bottom: 1px solid rgba(197, 160, 89, 0.2);">
+  <div class="container" style="text-align: center; max-width: 800px;">
+    <span class="hero-eyebrow-pill">✦ Sound Biblical Revelation</span>
+    <h1 style="font-family: var(--font-serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 700; color: #FFFFFF; margin-bottom: var(--space-3);">
+      Teachings &amp; Sermon Library
+    </h1>
+    <p style="font-size: var(--text-base); color: var(--color-slate-300); line-height: 1.6;">
+      Listen, watch, and study apostolic messages, systematic biblical expositions, and prophetic declarations.
+    </p>
+  </div>
+</section>
+
+<!-- Filter Toolbar -->
+<section style="padding: var(--space-6) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200); position: sticky; top: var(--header-height); z-index: 100;">
+  <div class="container">
+    <form method="get" style="display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; justify-content: space-between;">
+      <div style="display: flex; gap: var(--space-3); flex-wrap: wrap; flex: 1;">
+        <input type="text" name="q" value="{{ current_q }}" class="form-input" placeholder="Search by title, scripture, speaker..." style="width: 260px; height: 38px;">
+        
+        <select name="series" class="form-select" style="height: 38px; width: 170px;">
+          <option value="">All Series</option>
+          {% for s in series_list %}
+            <option value="{{ s.slug }}" {% if current_series == s.slug %}selected{% endif %}>{{ s.title }}</option>
+          {% endfor %}
+        </select>
+
+        <select name="speaker" class="form-select" style="height: 38px; width: 170px;">
+          <option value="">All Speakers</option>
+          {% for sp in speakers %}
+            <option value="{{ sp.pk }}" {% if current_speaker == sp.pk|stringformat:"s" %}selected{% endif %}>{{ sp.name }}</option>
+          {% endfor %}
+        </select>
+
+        <select name="media" class="form-select" style="height: 38px; width: 140px;">
+          <option value="">All Formats</option>
+          <option value="audio" {% if current_media == 'audio' %}selected{% endif %}>🎧 Audio Only</option>
+          <option value="video" {% if current_media == 'video' %}selected{% endif %}>▶ Video Only</option>
+        </select>
+
+        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+        {% if current_q or current_series or current_speaker or current_media %}
+          <a href="{% url 'website:teachings_list' %}" class="btn btn-sm btn-ghost" style="color: var(--color-danger);">Reset</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- Sermons Grid -->
+<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+  <div class="container">
+    {% if sermons %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-8);">
+        {% for sermon in sermons %}
+          <div class="sermon-card">
+            <div class="sermon-cover-wrapper">
+              {% if sermon.cover_image %}
+                <img src="{{ sermon.cover_image.url }}" alt="{{ sermon.title }}" class="sermon-cover-img">
+              {% else %}
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: var(--color-gold-400);">🎙</div>
+              {% endif %}
+              {% if sermon.series %}
+                <div style="position: absolute; top: 12px; left: 12px;">
+                  <span class="badge badge-gold" style="font-size: 0.65rem; font-weight: 700;">{{ sermon.series.title }}</span>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="sermon-card-body">
+              <div>
+                <div class="sermon-meta-row">
+                  <span>🗓 {{ sermon.preached_date|date:"M d, Y" }}</span>
+                  <span>•</span>
+                  <span class="sermon-speaker">{{ sermon.get_speaker_display }}</span>
+                </div>
+
+                <h3 class="sermon-title">
+                  <a href="{% url 'website:teaching_detail' sermon.slug %}">
+                    {{ sermon.title }}
+                  </a>
+                </h3>
+
+                {% if sermon.scripture_reference %}
+                  <div style="font-family: var(--font-serif); font-size: 0.78rem; color: var(--color-gold-700); font-weight: 600; margin-bottom: var(--space-2);">
+                    📖 {{ sermon.scripture_reference }}
+                  </div>
+                {% endif %}
+
+                {% if sermon.summary %}
+                  <p style="font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--space-4);">
+                    {{ sermon.summary|truncatechars:100 }}
+                  </p>
+                {% endif %}
+              </div>
+
+              <div>
+                <div class="sermon-badges-row">
+                  {% if sermon.audio_file %}<span class="media-pill active-media">🎧 Audio</span>{% endif %}
+                  {% if sermon.video_url or sermon.video_file %}<span class="media-pill active-media">▶ Video</span>{% endif %}
+                  {% if sermon.transcript_text or sermon.transcript_file %}<span class="media-pill">📄 Transcript</span>{% endif %}
+                </div>
+
+                <div style="margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--color-slate-100); display: flex; justify-content: space-between; align-items: center;">
+                  <a href="{% url 'website:teaching_detail' sermon.slug %}" class="btn btn-xs btn-primary">Listen &amp; Study</a>
+                  <span style="font-size: 0.7rem; color: var(--color-text-muted);">{{ sermon.play_count }} listens</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <div style="margin-top: var(--space-12); display: flex; justify-content: center; gap: var(--space-2);">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_series %}&series={{ current_series }}{% endif %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-200);">&larr; Previous</a>
+          {% endif %}
+          <span class="btn btn-sm btn-secondary" style="pointer-events: none;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_series %}&series={{ current_series }}{% endif %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-200);">Next &rarr;</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="card" style="padding: var(--space-16); text-align: center;">
+        <h3 style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--color-slate-900);">No Teachings Found</h3>
+        <p style="color: var(--color-text-secondary); margin: var(--space-2) auto var(--space-6);">Try adjusting your search query or filters.</p>
+        <a href="{% url 'website:teachings_list' %}" class="btn btn-sm btn-primary">Clear Filters</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

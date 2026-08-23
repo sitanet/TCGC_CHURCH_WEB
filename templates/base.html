@@ -4,18 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}{{ CHURCH_NAME }}{% if CHURCH_TAGLINE %} — {{ CHURCH_TAGLINE }}{% endif %}{% endblock %}</title>
+  <title>{% block title %}{{ SITE_CONFIG.site_name }}{% if SITE_CONFIG.tagline %} — {{ SITE_CONFIG.tagline }}{% endif %}{% endblock %}</title>
   
   <!-- Meta & OpenGraph -->
-  <meta name="description" content="{% block meta_description %}{{ meta_description|default:CHURCH_TAGLINE }}{% endblock %}">
-  <meta property="og:title" content="{% block og_title %}{{ CHURCH_NAME }}{% endblock %}">
-  <meta property="og:description" content="{% block og_description %}{{ meta_description|default:CHURCH_TAGLINE }}{% endblock %}">
+  <meta name="description" content="{% block meta_description %}{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline }}{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ SITE_CONFIG.site_name }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline }}{% endblock %}">
   <meta property="og:type" content="website">
+  {% if SITE_CONFIG.favicon %}
+    <link rel="icon" type="image/png" href="{{ SITE_CONFIG.favicon.url }}">
+  {% endif %}
 
-  <!-- Google Fonts: Editorial Serif & Clean Sans -->
+  <!-- Google Fonts: Editorial Serif & Clean Sans & Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="{% static 'css/variables.css' %}">
@@ -39,12 +42,15 @@
   <!-- Public Navigation Header -->
   {% include 'components/header.html' %}
 
+  <!-- Global Search Overlay Modal -->
+  {% include 'components/search_modal.html' %}
+
   <!-- Main Content Viewport -->
   <main id="main-content">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Public Footer -->
+  <!-- Editorial Public Footer -->
   {% include 'components/footer.html' %}
 
   <!-- Core JavaScript Architecture -->

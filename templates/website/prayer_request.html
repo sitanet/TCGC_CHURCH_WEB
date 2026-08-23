@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confidential Prayer Request — {{ SITE_CONFIG.site_name }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-20) 0 var(--space-12); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; text-align: center; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
+  <div class="container" style="max-width: 800px;">
+    <span class="hero-eyebrow-pill">✦ Pastoral Intercession</span>
+    <h1 style="font-family: var(--font-serif); font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 700; color: #FFFFFF; margin-bottom: var(--space-3);">
+      How Can We Stand in Faith With You?
+    </h1>
+    <p style="font-size: var(--text-base); color: var(--color-slate-300); line-height: 1.7;">
+      &ldquo;The effective, fervent prayer of a righteous man avails much.&rdquo; — James 5:16
+    </p>
+  </div>
+</section>
+
+<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+  <div class="container" style="max-width: 680px;">
+    <div class="card card-gold-accent" style="padding: var(--space-8); background: #FFFFFF; border: 1px solid var(--color-slate-200); box-shadow: var(--shadow-lg);">
+      <div style="background-color: var(--color-warm-bg); border-left: 3px solid var(--color-gold-500); padding: var(--space-4); border-radius: var(--radius-sm); margin-bottom: var(--space-6); font-size: var(--text-xs); color: var(--color-slate-700); line-height: 1.6;">
+        🔒 <strong>Staff Confidentiality Guarantee:</strong> All prayer requests are received exclusively by consecrated pastoral and intercession leaders. Your privacy is honored with total sanctity.
+      </div>
+
+      <form method="post" action="{% url 'website:prayer_request' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Full Name <span class="required">*</span></label>
+          <input type="text" name="full_name" class="form-input" placeholder="Your Name" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+          <div class="form-group">
+            <label class="form-label">Email Address (Optional)</label>
+            <input type="email" name="email" class="form-input" placeholder="For pastoral follow-up">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number (Optional)</label>
+            <input type="tel" name="phone" class="form-input" placeholder="+234...">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your Prayer Point &amp; Petitions <span class="required">*</span></label>
+          <textarea name="prayer_point" class="form-textarea" rows="6" placeholder="Share your prayer point, healing petition, deliverance or thanksgiving in detail..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-gold btn-full" style="font-size: var(--text-base); padding: var(--space-4);">
+          Submit Confidential Prayer Request
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

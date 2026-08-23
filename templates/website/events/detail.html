@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ event.title }} — Events — {{ SITE_CONFIG.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Event Header -->
+<section style="padding: var(--space-16) 0 var(--space-12); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
+  <div class="container">
+    <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4); align-items: center;">
+      <a href="{% url 'website:events_list' %}" style="color: var(--color-gold-400); font-size: 0.8rem; font-weight: 700; text-decoration: none;">
+        &larr; Events Calendar
+      </a>
+      {% if event.category %}
+        <span style="color: var(--color-slate-500);">/</span>
+        <span class="badge badge-gold" style="font-size: 0.7rem;">{{ event.category.name }}</span>
+      {% endif %}
+    </div>
+
+    <div style="max-width: 800px;">
+      <span class="badge badge-gold" style="font-size: 0.75rem; font-weight: 700; margin-bottom: var(--space-3);">
+        {{ event.start_datetime|date:"l, F d, Y" }}
+      </span>
+      <h1 style="font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; color: #FFFFFF; line-height: 1.2; margin-bottom: var(--space-3);">
+        {{ event.title }}
+      </h1>
+      {% if event.tagline %}
+        <p style="font-size: var(--text-lg); color: var(--color-gold-300); font-weight: 500;">
+          {{ event.tagline }}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Event Details & Registration -->
+<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: var(--space-10); align-items: start;">
+      <!-- Left Column: Banner, Details & Map -->
+      <div>
+        {% if event.banner_image %}
+          <div style="height: 380px; border-radius: var(--radius-lg); overflow: hidden; background-color: var(--color-slate-900); margin-bottom: var(--space-8); box-shadow: var(--shadow-lg);">
+            <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        {% endif %}
+
+        <div class="card" style="padding: var(--space-8); background: #FFFFFF; border: 1px solid var(--color-slate-200); margin-bottom: var(--space-8);">
+          <h2 style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--color-slate-900); margin-bottom: var(--space-4);">
+            About this Event
+          </h2>
+          <div style="font-size: var(--text-base); line-height: 1.8; color: var(--color-slate-800); white-space: pre-wrap;">
+            {{ event.description|default:"Detailed overview for this gathering will be available shortly." }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Meta & Registration Form -->
+      <div>
+        <!-- Date, Venue & Speaker Card -->
+        <div class="card card-gold-accent" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200); margin-bottom: var(--space-6);">
+          <h3 style="font-family: var(--font-serif); font-size: var(--text-base); color: var(--color-slate-900); margin-bottom: var(--space-4);">
+            Event Logistics
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: var(--space-4); font-size: var(--text-sm);">
+            <div>
+              <span style="color: var(--color-text-muted); display: block; font-size: 0.72rem; text-transform: uppercase;">Date &amp; Time</span>
+              <strong style="color: var(--color-slate-900);">{{ event.start_datetime|date:"F d, Y @ H:i" }}</strong>
+              {% if event.end_datetime %} to {{ event.end_datetime|date:"H:i" }}{% endif %}
+            </div>
+
+            <div>
+              <span style="color: var(--color-text-muted); display: block; font-size: 0.72rem; text-transform: uppercase;">Venue Location</span>
+              <strong style="color: var(--color-slate-900);">{{ event.venue_name }}</strong>
+              {% if event.venue_address %}
+                <div style="color: var(--color-slate-600); font-size: var(--text-xs); margin-top: 2px;">{{ event.venue_address }}</div>
+              {% endif %}
+            </div>
+
+            {% if event.speaker or event.speaker_name %}
+              <div>
+                <span style="color: var(--color-text-muted); display: block; font-size: 0.72rem; text-transform: uppercase;">Keynote Speaker</span>
+                <strong style="color: var(--color-gold-700);">{{ event.get_speaker_display }}</strong>
+              </div>
+            {% endif %}
+
+            {% if event.is_online and event.stream_link %}
+              <div>
+                <a href="{{ event.stream_link }}" target="_blank" class="btn btn-sm btn-primary btn-full" style="justify-content: center;">
+                  🔴 Join Online Live Stream
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Attendee Registration Form -->
+        {% if event.requires_registration %}
+          <div class="card" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
+            <h3 style="font-family: var(--font-serif); font-size: var(--text-base); color: var(--color-slate-900); margin-bottom: var(--space-4);">
+              Register for this Event
+            </h3>
+
+            <form method="post" action="{% url 'website:event_register' event.slug %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <label class="form-label">Full Name <span class="required">*</span></label>
+                <input type="text" name="full_name" class="form-input" placeholder="Your full name" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email Address <span class="required">*</span></label>
+                <input type="email" name="email" class="form-input" placeholder="name@domain.com" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" name="phone" class="form-input" placeholder="+234...">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Special Notes / Dietary Requirements</label>
+                <textarea name="notes" class="form-textarea" rows="2" placeholder="Optional notes..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-full">
+                Confirm Event Registration
+              </button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

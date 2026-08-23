@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ ministry.name }} — Ministries — {{ SITE_CONFIG.site_name }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-16) 0 var(--space-12); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
+  <div class="container">
+    <a href="{% url 'website:ministries_list' %}" style="color: var(--color-gold-400); font-size: 0.8rem; font-weight: 700; text-decoration: none; display: inline-block; margin-bottom: var(--space-4);">
+      &larr; All Ministries
+    </a>
+    <h1 style="font-family: var(--font-serif); font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 700; color: #FFFFFF; margin-bottom: var(--space-2);">
+      {{ ministry.name }}
+    </h1>
+    {% if ministry.tagline %}
+      <p style="font-size: var(--text-lg); color: var(--color-gold-300); font-weight: 600;">
+        {{ ministry.tagline }}
+      </p>
+    {% endif %}
+  </div>
+</section>
+
+<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-10); align-items: start;">
+      <div>
+        {% if ministry.cover_image %}
+          <div style="height: 340px; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-slate-900); margin-bottom: var(--space-8); box-shadow: var(--shadow-lg);">
+            <img src="{{ ministry.cover_image.url }}" alt="{{ ministry.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        {% endif %}
+
+        <div class="card" style="padding: var(--space-8); background: #FFFFFF; border: 1px solid var(--color-slate-200); margin-bottom: var(--space-8);">
+          <h2 style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--color-slate-900); margin-bottom: var(--space-4);">
+            About this Ministry
+          </h2>
+          <div style="font-size: var(--text-base); line-height: 1.8; color: var(--color-slate-800); white-space: pre-wrap;">
+            {{ ministry.description|default:"Detailed ministry overview will be available shortly." }}
+          </div>
+        </div>
+
+        <!-- Weekly Meetings Schedule -->
+        {% if ministry.meetings.all %}
+          <div class="card" style="padding: var(--space-8); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
+            <h3 style="font-family: var(--font-serif); font-size: var(--text-xl); color: var(--color-slate-900); margin-bottom: var(--space-6);">
+              🗓 Service Times &amp; Fellowship Gatherings
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              {% for m in ministry.meetings.all %}
+                <div style="padding: var(--space-4); background-color: var(--color-warm-bg); border-left: 4px solid var(--color-gold-500); border-radius: var(--radius-sm);">
+                  <strong style="font-family: var(--font-serif); font-size: var(--text-base); color: var(--color-slate-900); display: block;">{{ m.name }}</strong>
+                  <div style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top: 4px;">
+                    🕒 {{ m.get_day_of_week_display }}s @ {{ m.start_time|time:"H:i" }}{% if m.end_time %} - {{ m.end_time|time:"H:i" }}{% endif %}<br>
+                    📍 Hall: {{ m.location_hall }}{% if m.location %} ({{ m.location.name }}){% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Right Column: Leadership & Contact -->
+      <div>
+        <div class="card card-gold-accent" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200); margin-bottom: var(--space-8);">
+          <h3 style="font-family: var(--font-serif); font-size: var(--text-base); color: var(--color-slate-900); margin-bottom: var(--space-4);">
+            Ministry Leadership &amp; Contact
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: var(--space-4); font-size: var(--text-sm);">
+            {% if ministry.leader %}
+              <div>
+                <span style="color: var(--color-text-muted); display: block; font-size: 0.72rem; text-transform: uppercase;">Ministry Leader</span>
+                <strong style="color: var(--color-slate-900);">{{ ministry.leader.name }}</strong>
+              </div>
+            {% endif %}
+
+            {% if ministry.meeting_schedule %}
+              <div>
+                <span style="color: var(--color-text-muted); display: block; font-size: 0.72rem; text-transform: uppercase;">Meeting Schedule</span>
+                <strong style="color: var(--color-slate-900);">{{ ministry.meeting_schedule }}</strong>
+              </div>
+            {% endif %}
+
+            {% if ministry.contact_email %}
+              <div>
+                <span style="color: var(--color-text-muted); display: block; font-size: 0.72rem; text-transform: uppercase;">Email Contact</span>
+                <a href="mailto:{{ ministry.contact_email }}" style="color: var(--color-gold-600);">{{ ministry.contact_email }}</a>
+              </div>
+            {% endif %}
+          </div>
+
+          <div style="margin-top: var(--space-6);">
+            <a href="{% url 'website:contact' %}" class="btn btn-primary btn-full" style="justify-content: center;">
+              Connect with this Ministry
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

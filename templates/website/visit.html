@@ -1,53 +1,196 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Plan Your Visit — {{ CHURCH_NAME }}{% endblock %}
+{% block title %}Plan Your Visit — {{ SITE_CONFIG.site_name }}{% endblock %}
 
 {% block content %}
-<section style="padding: var(--space-16) 0 var(--space-12); background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
-  <div class="container" style="max-width: 840px; text-align: center;">
-    <span class="section-eyebrow">Experience Fellowship</span>
-    <h1 class="section-title" style="margin-bottom: var(--space-4);">We Can’t Wait to Welcome You</h1>
-    <p class="lead-text">
-      Visiting a church for the first time should be seamless, inspiring, and uplifting. Here is everything you need to know.
+<!-- Visit Header -->
+<section style="padding: var(--space-20) 0 var(--space-12); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; text-align: center; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
+  <div class="container" style="max-width: 820px;">
+    <span class="hero-eyebrow-pill">✦ Welcome Home</span>
+    <h1 style="font-family: var(--font-serif); font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 700; color: #FFFFFF; margin-bottom: var(--space-4); line-height: 1.15;">
+      We Can&rsquo;t Wait to Welcome You
+    </h1>
+    <p style="font-size: var(--text-lg); line-height: 1.7; color: var(--color-slate-300); margin-bottom: var(--space-6);">
+      Everything you need to know before visiting The CityGate Church this Sunday. Friendly ushers, parking assistance, and children&rsquo;s church ready for you.
     </p>
   </div>
 </section>
 
-<section style="padding: var(--space-16) 0;">
-  <div class="container" style="max-width: 900px;">
-    <!-- Service Schedules -->
-    <div class="service-times-banner">
-      <div>
-        <div class="service-time-title">Sunday Celebration</div>
-        <div class="service-time-val">8:00 AM &amp; 10:30 AM</div>
-      </div>
-      <div>
-        <div class="service-time-title">Midweek Encounter</div>
-        <div class="service-time-val">Wednesdays 6:00 PM</div>
-      </div>
-      <div>
-        <div class="service-time-title">Intercessory Gathering</div>
-        <div class="service-time-val">Fridays 6:00 PM</div>
-      </div>
+<!-- 1. Service Times Schedule (from ChurchMeeting CMS) -->
+<section id="service-times" style="padding: var(--space-16) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
+  <div class="container">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto var(--space-10);">
+      <span class="section-eyebrow">When We Gather</span>
+      <h2 class="section-title">Weekly Service Schedules</h2>
     </div>
 
-    <!-- What to Expect Grid -->
-    <div class="features-grid" style="margin-top: var(--space-12);">
-      <div class="card">
-        <h4 class="card-title">What to Wear</h4>
-        <p class="card-body">Come as you are! From smart casual to traditional attire, you will feel right at home in our family.</p>
+    {% if meetings %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-6);">
+        {% for m in meetings %}
+          <div class="card card-gold-accent" style="padding: var(--space-6); background: var(--color-warm-bg); border: 1px solid var(--color-slate-200);">
+            <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--color-gold-600); margin-bottom: var(--space-2);">
+              {{ m.get_day_of_week_display }}
+            </div>
+            <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: var(--space-2);">
+              {{ m.name }}
+            </h3>
+            <div style="font-size: var(--text-base); font-weight: 700; color: var(--color-slate-900); margin-bottom: var(--space-2);">
+              🕒 {{ m.start_time|time:"H:i" }}{% if m.end_time %} – {{ m.end_time|time:"H:i" }}{% endif %}
+            </div>
+            <div style="font-size: var(--text-xs); color: var(--color-slate-600);">
+              📍 {{ m.location_hall }}{% if m.location %} • {{ m.location.name }}{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="service-times-banner">
+        <div>
+          <div class="service-time-title">Sunday 1st Encounter</div>
+          <div class="service-time-val">8:00 AM</div>
+        </div>
+        <div>
+          <div class="service-time-title">Sunday 2nd Encounter</div>
+          <div class="service-time-val">10:30 AM</div>
+        </div>
+        <div>
+          <div class="service-time-title">Midweek Communion</div>
+          <div class="service-time-val">Wednesday 6:00 PM</div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- 2. What to Expect FAQ -->
+<section style="padding: var(--space-20) 0; background-color: var(--color-warm-bg); border-bottom: 1px solid var(--color-slate-200);">
+  <div class="container" style="max-width: 900px;">
+    <div style="text-align: center; margin-bottom: var(--space-12);">
+      <span class="section-eyebrow">Visitor Experience</span>
+      <h2 class="section-title">What to Expect at The CityGate</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: var(--space-6);">
+      <div class="card" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
+        <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: var(--space-2);">
+          What is the service experience like?
+        </h3>
+        <p style="font-size: var(--text-sm); line-height: 1.7; color: var(--color-slate-700); margin: 0;">
+          Our gatherings are dynamic, spirit-filled, and word-centered. You will experience vibrant praise and worship, uncompromised biblical exposition, prophetic insight, and warm fellowship.
+        </p>
       </div>
 
-      <div class="card">
-        <h4 class="card-title">Children’s Ministry</h4>
-        <p class="card-body">Our CityKids ministry provides age-appropriate, secure, and engaging Bible lessons for toddlers and young children.</p>
+      <div class="card" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
+        <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: var(--space-2);">
+          What should I wear?
+        </h3>
+        <p style="font-size: var(--text-sm); line-height: 1.7; color: var(--color-slate-700); margin: 0;">
+          Come as you are! You will see people in traditional attire, formal suits, business casual, and relaxed clothing. We care about your presence, not your wardrobe.
+        </p>
       </div>
 
-      <div class="card">
-        <h4 class="card-title">First-Time Guests</h4>
-        <p class="card-body">Our hospitality team is eager to assist you with parking, seating, and a warm welcome gift after the service.</p>
+      <div class="card" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
+        <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: var(--space-2);">
+          Is there Children&rsquo;s Church available?
+        </h3>
+        <p style="font-size: var(--text-sm); line-height: 1.7; color: var(--color-slate-700); margin: 0;">
+          Yes! Our dedicated CityGate Kids Church offers safe, engaging, and age-appropriate Bible classes, praise, and activities for infants through teenagers.
+        </p>
       </div>
+
+      <div class="card" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
+        <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: var(--space-2);">
+          Where do I park?
+        </h3>
+        <p style="font-size: var(--text-sm); line-height: 1.7; color: var(--color-slate-700); margin: 0;">
+          Our traffic stewards and protocol team will guide you into the secured church parking grounds upon arrival at our main gates.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Campuses & Locations (from ChurchLocation CMS) -->
+{% if campuses %}
+<section id="campuses" style="padding: var(--space-20) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
+  <div class="container">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto var(--space-10);">
+      <span class="section-eyebrow">Campus Locations</span>
+      <h2 class="section-title">Where We Meet</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-8);">
+      {% for camp in campuses %}
+        <div class="card" style="padding: var(--space-6); background: var(--color-warm-bg); border: 1px solid var(--color-slate-200);">
+          <h3 style="font-family: var(--font-serif); font-size: var(--text-xl); color: var(--color-slate-900); margin-bottom: var(--space-3);">
+            {{ camp.name }}
+            {% if camp.is_main_campus %}<span class="badge badge-gold" style="font-size: 0.65rem; margin-left: var(--space-2);">Main Campus</span>{% endif %}
+          </h3>
+          <div style="font-size: var(--text-sm); color: var(--color-slate-700); line-height: 1.7; margin-bottom: var(--space-4);">
+            📍 {{ camp.address }}<br>
+            {{ camp.city }}, {{ camp.country }}
+          </div>
+          {% if camp.phone %}
+            <div style="font-size: var(--text-xs); color: var(--color-slate-800); margin-bottom: var(--space-4);">
+              📞 {{ camp.phone }}
+            </div>
+          {% endif %}
+          {% if camp.google_maps_url %}
+            <a href="{{ camp.google_maps_url }}" target="_blank" rel="noopener" class="btn btn-xs btn-primary">
+              🗺 Get Google Maps Directions &rarr;
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- 4. Let Us Know You're Coming (VIP Visitor Form) -->
+<section style="padding: var(--space-20) 0; background-color: var(--color-warm-bg);">
+  <div class="container" style="max-width: 680px;">
+    <div class="card card-gold-accent" style="padding: var(--space-8); background: #FFFFFF;">
+      <div style="text-align: center; margin-bottom: var(--space-6);">
+        <span class="section-eyebrow">VIP Hospitality</span>
+        <h2 style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--color-slate-900); margin-bottom: var(--space-2);">
+          Let Us Know You&rsquo;re Coming
+        </h2>
+        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+          Tell us about your upcoming visit and our hospitality team will meet you at the door, reserve a seat, and show you around!
+        </p>
+      </div>
+
+      <form method="post" action="{% url 'website:contact' %}">
+        {% csrf_token %}
+        <input type="hidden" name="subject" value="VIP Visitor Notification">
+        
+        <div class="form-group">
+          <label class="form-label">Your Name <span class="required">*</span></label>
+          <input type="text" name="full_name" class="form-input" placeholder="Full Name" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+          <div class="form-group">
+            <label class="form-label">Email Address <span class="required">*</span></label>
+            <input type="email" name="email" class="form-input" placeholder="name@domain.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" name="phone" class="form-input" placeholder="+234...">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">When are you planning to visit? / Bringing children?</label>
+          <textarea name="message" class="form-textarea" rows="3" placeholder="e.g. Visiting this Sunday for the 10:30 AM service with 2 children." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">
+          Confirm VIP Welcome
+        </button>
+      </form>
     </div>
   </div>
 </section>
