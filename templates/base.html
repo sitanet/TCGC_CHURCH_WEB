@@ -20,6 +20,8 @@
 
   {% if SITE_CONFIG.favicon %}
     <link rel="icon" type="image/png" href="{{ SITE_CONFIG.favicon.url }}">
+  {% else %}
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
   {% endif %}
 
   <!-- Google Fonts: Cinzel Serif & Plus Jakarta Sans & JetBrains Mono -->

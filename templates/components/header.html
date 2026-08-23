@@ -18,12 +18,8 @@
   <div class="container">
     <div class="nav-wrapper">
       <!-- 1. Brand Identity -->
-      <a href="{% url 'website:home' %}" class="brand-logo">
-        <div class="brand-logo-mark">CG</div>
-        <div class="brand-logo-text">
-          <span class="brand-title">{{ SITE_CONFIG.site_name|default:"THE CITYGATE" }}</span>
-          <span class="brand-subtitle">CHURCH OF ALL NATIONS</span>
-        </div>
+      <a href="{% url 'website:home' %}" class="brand-logo" aria-label="The CityGate Church Home">
+        <img src="{% static 'img/tcgc_logo.svg' %}" alt="The CityGate Church" style="height: 48px; width: auto; max-width: 230px; object-fit: contain; display: block;" onerror="this.onerror=null; this.src='{% static 'img/logo_original_crop.png' %}';">
       </a>
 
       <!-- 2. Desktop Navigation Menu -->
