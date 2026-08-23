@@ -24,8 +24,8 @@
           <div class="card" style="padding: var(--space-8); text-align: center; background-color: #FFFFFF; border: 1px solid var(--color-slate-200); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <div style="width: 140px; height: 140px; border-radius: 50%; overflow: hidden; margin: 0 auto var(--space-5); border: 3px solid var(--color-gold-500); background-color: var(--color-slate-900); box-shadow: var(--shadow-md);">
-                {% if leader.photo %}
-                  <img src="{{ leader.photo.url }}" alt="{{ leader.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% if leader.photo_display_url %}
+                  <img src="{{ leader.photo_display_url }}" alt="{{ leader.name }}" style="width: 100%; height: 100%; object-fit: cover;">
                 {% else %}
                   <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #FFF;">👤</div>
                 {% endif %}

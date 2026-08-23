@@ -73,11 +73,15 @@ class Publication(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
         blank=True,
         null=True,
     )
+    cover_image_url = models.URLField(_("external cover image URL"), blank=True)
     pdf_file = models.FileField(
         _("PDF document file"),
         upload_to=publication_pdf_upload_path,
         validators=[validate_pdf_file],
+        blank=True,
+        null=True,
     )
+    pdf_url = models.URLField(_("external PDF document URL"), blank=True)
     file_size_bytes = models.BigIntegerField(_("file size bytes"), default=0)
     is_downloadable = models.BooleanField(_("allow public download"), default=True)
     download_count = models.PositiveIntegerField(_("total downloads"), default=0)
@@ -92,6 +96,24 @@ class Publication(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
         if self.edition_volume:
             return f"[{type_lbl}] {self.title} ({self.edition_volume})"
         return f"[{type_lbl}] {self.title}"
+
+    @property
+    def pdf_download_url(self) -> str:
+        if self.pdf_file:
+            try:
+                return self.pdf_file.url
+            except Exception:
+                pass
+        return self.pdf_url or ""
+
+    @property
+    def cover_image_display_url(self) -> str:
+        if self.cover_image:
+            try:
+                return self.cover_image.url
+            except Exception:
+                pass
+        return self.cover_image_url or ""
 
     def save(self, *args, **kwargs):
         if not self.slug:

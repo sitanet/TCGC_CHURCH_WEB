@@ -61,8 +61,8 @@
         {% for sermon in sermons %}
           <div class="sermon-card">
             <div class="sermon-cover-wrapper">
-              {% if sermon.cover_image %}
-                <img src="{{ sermon.cover_image.url }}" alt="{{ sermon.title }}" class="sermon-cover-img">
+              {% if sermon.cover_image_display_url %}
+                <img src="{{ sermon.cover_image_display_url }}" alt="{{ sermon.title }}" class="sermon-cover-img" loading="lazy">
               {% else %}
                 <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: var(--color-gold-400);">🎙</div>
               {% endif %}
@@ -102,7 +102,7 @@
 
               <div>
                 <div class="sermon-badges-row">
-                  {% if sermon.audio_file %}<span class="media-pill active-media">🎧 Audio</span>{% endif %}
+                  {% if sermon.has_audio %}<span class="media-pill active-media">🎧 Audio</span>{% endif %}
                   {% if sermon.video_url or sermon.video_file %}<span class="media-pill active-media">▶ Video</span>{% endif %}
                   {% if sermon.transcript_text or sermon.transcript_file %}<span class="media-pill">📄 Transcript</span>{% endif %}
                 </div>

@@ -64,6 +64,7 @@ class Event(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
         blank=True,
         null=True,
     )
+    banner_image_url = models.URLField(_("external banner image URL"), blank=True)
     
     # Timing & Location
     start_datetime = models.DateTimeField(_("start date and time"), db_index=True)
@@ -88,16 +89,25 @@ class Event(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     registration_url = models.URLField(_("external registration URL (if any)"), blank=True)
     max_attendees = models.PositiveIntegerField(_("max attendee capacity"), blank=True, null=True)
     is_free = models.BooleanField(_("is free event"), default=True)
-    contact_email = models.EmailField(_("event coordinator email"), blank=True)
-    contact_phone = models.CharField(_("event coordinator phone"), max_length=50, blank=True)
+    contact_email = models.EmailField(_("inquiry email"), blank=True)
+    contact_phone = models.CharField(_("inquiry phone"), max_length=50, blank=True)
 
     class Meta:
-        verbose_name = _("Event")
-        verbose_name_plural = _("Events & Calendar")
+        verbose_name = _("Church Event")
+        verbose_name_plural = _("Church Events")
         ordering = ["start_datetime"]
 
     def __str__(self):
-        return f"{self.title} ({self.start_datetime:%Y-%m-%d})"
+        return f"{self.title} ({self.start_datetime.strftime('%b %d, %Y')})"
+
+    @property
+    def banner_image_display_url(self) -> str:
+        if self.banner_image:
+            try:
+                return self.banner_image.url
+            except Exception:
+                pass
+        return self.banner_image_url or ""
 
     def save(self, *args, **kwargs):
         if not self.slug:

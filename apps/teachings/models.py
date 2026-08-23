@@ -112,6 +112,7 @@ class Sermon(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
         blank=True,
         null=True,
     )
+    cover_image_url = models.URLField(_("external cover image URL"), blank=True)
     audio_file = models.FileField(
         _("audio recording (MP3)"),
         upload_to=sermon_audio_upload_path,
@@ -119,6 +120,7 @@ class Sermon(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
         blank=True,
         null=True,
     )
+    audio_url = models.URLField(_("external audio stream / download URL"), blank=True)
     video_file = models.FileField(
         _("uploaded video file (MP4)"),
         upload_to="teachings/videos/",
@@ -154,8 +156,26 @@ class Sermon(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
         return self.speaker_name or "Pastor"
 
     @property
+    def audio_playback_url(self) -> str:
+        if self.audio_file:
+            try:
+                return self.audio_file.url
+            except Exception:
+                pass
+        return self.audio_url or ""
+
+    @property
+    def cover_image_display_url(self) -> str:
+        if self.cover_image:
+            try:
+                return self.cover_image.url
+            except Exception:
+                pass
+        return self.cover_image_url or ""
+
+    @property
     def has_audio(self) -> bool:
-        return bool(self.audio_file)
+        return bool(self.audio_file or self.audio_url)
 
     @property
     def has_video(self) -> bool:

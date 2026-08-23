@@ -63,9 +63,9 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-10); align-items: start;">
       <!-- Left Column: Banner, Details & Map -->
       <div style="grid-column: span 2;">
-        {% if event.banner_image %}
+        {% if event.banner_image_display_url %}
           <div style="aspect-ratio: 16 / 9; max-height: 420px; border-radius: var(--radius-lg); overflow: hidden; background-color: var(--color-slate-900); margin-bottom: var(--space-8); box-shadow: var(--shadow-lg);">
-            <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="{{ event.banner_image_display_url }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
         {% endif %}
 

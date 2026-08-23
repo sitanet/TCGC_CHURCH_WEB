@@ -35,8 +35,8 @@
         {% for pub in publications %}
           <div class="card" style="overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: transform var(--transition-base);">
             <div style="height: 320px; background-color: var(--color-slate-900); position: relative; overflow: hidden;">
-              {% if pub.cover_image %}
-                <img src="{{ pub.cover_image.url }}" alt="{{ pub.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+              {% if pub.cover_image_display_url %}
+                <img src="{{ pub.cover_image_display_url }}" alt="{{ pub.title }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
               {% else %}
                 <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--color-gold-400);">📄</div>
               {% endif %}

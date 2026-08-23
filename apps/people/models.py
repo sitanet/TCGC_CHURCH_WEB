@@ -32,6 +32,7 @@ class Person(TimeStampedModel, SluggedModel, PublishableModel, SEOModel, Ordered
     title = models.CharField(_("ministry title"), max_length=150, help_text="e.g. Senior Pastor, Resident Pastor")
     category = models.ForeignKey(LeadershipCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="members")
     photo = models.ImageField(_("portrait photo"), upload_to="people/portraits/", blank=True, null=True)
+    photo_url = models.URLField(_("external photo URL"), blank=True)
     biography = models.TextField(_("full biography"), blank=True)
     email = models.EmailField(_("public ministry email"), blank=True)
     phone = models.CharField(_("contact phone"), max_length=50, blank=True)
@@ -49,6 +50,15 @@ class Person(TimeStampedModel, SluggedModel, PublishableModel, SEOModel, Ordered
 
     def __str__(self):
         return f"{self.name} ({self.title})"
+
+    @property
+    def photo_display_url(self) -> str:
+        if self.photo:
+            try:
+                return self.photo.url
+            except Exception:
+                pass
+        return self.photo_url or ""
 
     def save(self, *args, **kwargs):
         if not self.slug:

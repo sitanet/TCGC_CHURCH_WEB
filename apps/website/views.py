@@ -330,15 +330,19 @@ class TeachingDetailView(DetailView):
 
 class TeachingDownloadAudioView(View):
     """
-    Audio download tracking endpoint.
+    Audio download tracking endpoint supporting both local files and remote audio streams.
     """
     def get(self, request, slug):
         sermon = get_object_or_404(Sermon, slug=slug, status=PublishableStatus.PUBLISHED)
-        if not sermon.audio_file:
+        if not sermon.has_audio:
             raise Http404("Audio file not available.")
         
         Sermon.objects.filter(pk=sermon.pk).update(download_count=F("download_count") + 1)
-        return FileResponse(sermon.audio_file.open("rb"), as_attachment=True, filename=f"{sermon.slug}.mp3")
+        if sermon.audio_file:
+            return FileResponse(sermon.audio_file.open("rb"), as_attachment=True, filename=f"{sermon.slug}.mp3")
+        elif sermon.audio_url:
+            return redirect(sermon.audio_url)
+        raise Http404("Audio file not available.")
 
 
 # ==============================================================================
@@ -511,11 +515,11 @@ class PublicationPublicDetailView(DetailView):
 
 class PublicationDownloadView(View):
     """
-    Download endpoint tracking download telemetry before streaming.
+    Download endpoint tracking download telemetry before streaming or redirecting.
     """
     def get(self, request, slug):
         pub = get_object_or_404(Publication, slug=slug, status=PublishableStatus.PUBLISHED)
-        if not pub.pdf_file or not pub.is_downloadable:
+        if not (pub.pdf_file or pub.pdf_url) or not pub.is_downloadable:
             raise Http404("Document is not available for download.")
 
         Publication.objects.filter(pk=pub.pk).update(download_count=F("download_count") + 1)
@@ -531,7 +535,11 @@ class PublicationDownloadView(View):
         except Exception:
             pass
 
-        return FileResponse(pub.pdf_file.open("rb"), as_attachment=True, filename=f"{pub.slug}.pdf")
+        if pub.pdf_file:
+            return FileResponse(pub.pdf_file.open("rb"), as_attachment=True, filename=f"{pub.slug}.pdf")
+        elif pub.pdf_url:
+            return redirect(pub.pdf_url)
+        raise Http404("Document is not available.")
 
 
 # ==============================================================================
