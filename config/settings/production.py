@@ -52,19 +52,23 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "The CityGate Church <noreply@thecitygatechurch.org>")
 
-# Storage (Pluggable Cloud Storage like AWS S3 / Cloudflare R2 if enabled)
+# Storage (Pluggable Cloud Storage like DigitalOcean Spaces / AWS S3 / Cloudflare R2)
 USE_S3_STORAGE = os.getenv("USE_S3_STORAGE", "False").lower() in ("true", "1", "t")
 if USE_S3_STORAGE:
+    s3_options = {
+        "access_key": os.getenv("AWS_ACCESS_KEY_ID"),
+        "secret_key": os.getenv("AWS_SECRET_ACCESS_KEY"),
+        "bucket_name": os.getenv("AWS_STORAGE_BUCKET_NAME"),
+        "region_name": os.getenv("AWS_S3_REGION_NAME", "nyc3"),
+        "custom_domain": os.getenv("AWS_S3_CUSTOM_DOMAIN"),
+    }
+    if os.getenv("AWS_S3_ENDPOINT_URL"):
+        s3_options["endpoint_url"] = os.getenv("AWS_S3_ENDPOINT_URL")
+
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-            "OPTIONS": {
-                "access_key": os.getenv("AWS_ACCESS_KEY_ID"),
-                "secret_key": os.getenv("AWS_SECRET_ACCESS_KEY"),
-                "bucket_name": os.getenv("AWS_STORAGE_BUCKET_NAME"),
-                "region_name": os.getenv("AWS_S3_REGION_NAME", "us-east-1"),
-                "custom_domain": os.getenv("AWS_S3_CUSTOM_DOMAIN"),
-            },
+            "OPTIONS": s3_options,
         },
         "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
