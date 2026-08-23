@@ -120,7 +120,7 @@ class PlanVisitView(TemplateView):
 
 class ContactView(View):
     """
-    Public Contact page with contact inquiry form handler.
+    Public Contact page with contact inquiry form handler and honeypot spam protection.
     """
     template_name = "website/contact.html"
 
@@ -129,6 +129,12 @@ class ContactView(View):
         return render(request, self.template_name, {"campuses": campuses})
 
     def post(self, request):
+        # Honeypot Anti-Spam Check
+        if request.POST.get("hp_website", "").strip():
+            # Silently reject bot submission
+            messages.success(request, "Thank you for contacting The CityGate Church! Our team will reach out to you shortly.")
+            return redirect("website:contact")
+
         form_type = request.POST.get("form_type", "contact")
 
         if form_type == "prayer" or "prayer_point" in request.POST:
@@ -173,7 +179,7 @@ class ContactView(View):
 
 class PrayerRequestView(View):
     """
-    Dedicated, confidential pastoral prayer portal.
+    Dedicated, confidential pastoral prayer portal with honeypot spam protection.
     """
     template_name = "website/prayer_request.html"
 
@@ -181,6 +187,12 @@ class PrayerRequestView(View):
         return render(request, self.template_name)
 
     def post(self, request):
+        # Honeypot Anti-Spam Check
+        if request.POST.get("hp_website", "").strip():
+            # Silently reject bot submission
+            messages.success(request, "Your prayer request has been received with total confidentiality. Our pastoral intercession team is standing in faith with you!")
+            return redirect("website:prayer_request")
+
         name = request.POST.get("full_name", "").strip()
         email = request.POST.get("email", "").strip()
         phone = request.POST.get("phone", "").strip()
@@ -203,9 +215,15 @@ class PrayerRequestView(View):
 
 class NewsletterSubscribeView(View):
     """
-    Public newsletter & devotional subscription handler.
+    Public newsletter & devotional subscription handler with honeypot spam protection.
     """
     def post(self, request):
+        # Honeypot Anti-Spam Check
+        if request.POST.get("hp_website", "").strip():
+            # Silently reject bot submission
+            messages.success(request, "Thank you for subscribing to The CityGate Church updates & devotionals!")
+            return redirect(request.META.get("HTTP_REFERER", "website:home"))
+
         email = request.POST.get("email", "").strip().lower()
         full_name = request.POST.get("full_name", "").strip()
 
@@ -378,10 +396,15 @@ class EventDetailView(DetailView):
 
 class EventRegisterView(View):
     """
-    Public event attendee registration endpoint.
+    Public event attendee registration endpoint with honeypot spam protection.
     """
     def post(self, request, slug):
         event = get_object_or_404(Event, slug=slug, status=PublishableStatus.PUBLISHED)
+        # Honeypot Anti-Spam Check
+        if request.POST.get("hp_website", "").strip():
+            messages.success(request, f"Registration confirmed for {event.title}!")
+            return redirect("website:event_detail", slug=slug)
+
         full_name = request.POST.get("full_name", "").strip()
         email = request.POST.get("email", "").strip()
         phone = request.POST.get("phone", "").strip()

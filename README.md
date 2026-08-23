@@ -44,7 +44,7 @@ church_web/
 │       └── production.py     # Production security & Cloud storage
 ├── apps/                     # Modular Django applications
 │   ├── accounts/             # Custom User model, RBAC, profiles, auth views
-│   ├── core/                 # Abstract models (SEO, Slugged, Publishable), context processors
+│   ├── core/                 # Abstract models, validators, context processors
 │   ├── dashboard/            # Custom Administrative Dashboard portal
 │   ├── teachings/            # Sermons, sermon series, scripture references, media
 │   ├── media_library/        # Central photo galleries, digital assets, document store
@@ -69,7 +69,7 @@ church_web/
 │   │   └── components/       # Buttons, forms, cards, modals, alerts, badges, states
 │   ├── js/
 │   │   ├── core.js           # Toast notifications, modal controller, CSRF fetch client
-│   │   ├── public.js         # Public interactions & sticky navigation
+│   │   ├── public.js         # Audio scrubbing, transcript scaler, search modal, drawer
 │   │   └── dashboard.js      # Dashboard sidebar & action confirmations
 │   └── img/                  # Logos and placeholder graphics
 ├── templates/                # Reusable Django template hierarchy
@@ -97,65 +97,17 @@ cp .env.example .env
 | Variable | Description | Default / Example |
 |---|---|---|
 | `DJANGO_SECRET_KEY` | Unique Django cryptographic secret key | *Change in production* |
-| `DJANGO_DEBUG` | Enable debug mode | `True` |
-| `DJANGO_ALLOWED_HOSTS` | Comma-separated list of valid hosts | `localhost,127.0.0.1` |
+| `DJANGO_DEBUG` | Enable debug mode (`False` in production) | `False` |
+| `DJANGO_ALLOWED_HOSTS` | Comma-separated list of valid domains | `thecitygatechurch.org,www.thecitygatechurch.org` |
+| `DJANGO_SETTINGS_MODULE` | Active settings module | `config.settings.production` |
 | `DB_ENGINE` | Database backend engine | `django.db.backends.postgresql` |
 | `DB_NAME` | PostgreSQL database name | `tcgc_church_db` |
 | `DB_USER` | PostgreSQL user | `postgres` |
-| `DB_PASSWORD` | PostgreSQL password | `postgres` |
+| `DB_PASSWORD` | PostgreSQL password | `[SECURE_DB_PASSWORD]` |
 | `DB_HOST` | PostgreSQL host | `localhost` |
 | `DB_PORT` | PostgreSQL port | `5432` |
-| `USE_SQLITE` | Set to `True` for instant zero-dependency local testing | `False` |
 | `CHURCH_NAME` | Official Church Name | `The CityGate Church` |
 | `USE_S3_STORAGE` | Enable AWS S3 / Cloudflare R2 storage | `False` |
-
----
-
-## 🚀 Quickstart & Development Setup
-
-### 1. Create and Activate Virtual Environment
-
-```bash
-# Windows
-python -m venv .venv
-.\.venv\Scripts\activate
-
-# macOS / Linux
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 2. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Run Database Migrations
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-### 4. Create an Administrator Account
-
-```bash
-python manage.py createsuperuser
-```
-
-### 5. Launch the Development Server
-
-```bash
-python manage.py runserver
-```
-
-Open your browser and navigate to:
-- **Public Website:** `http://127.0.0.1:8000/`
-- **Staff Administration Portal:** `http://127.0.0.1:8000/dashboard/`
-- **Staff Login:** `http://127.0.0.1:8000/accounts/login/`
-- **REST API Root (v1):** `http://127.0.0.1:8000/api/v1/`
-- **API Health Check:** `http://127.0.0.1:8000/api/v1/health/`
 
 ---
 
@@ -165,7 +117,7 @@ The custom `accounts.User` model provides 7 distinct roles:
 
 1. **`super_admin`**: Full platform oversight, configuration, and security settings.
 2. **`admin`**: Platform operations, staff account provisioning, and general management.
-3. **`pastor_staff`**: Sermon teachings, sermon series, scripture references, and devotional publication.
+3. **`pastor_staff`**: Sermon teachings, sermon series, confidential prayer requests, and pastoral contact inboxes.
 4. **`content_manager`**: Editorial articles, announcements, news, and public page copy.
 5. **`media_lead`**: Media asset bank, photo galleries, and live stream broadcast switches.
 6. **`event_coordinator`**: Calendar management, conference setups, and attendee registrations.
@@ -173,50 +125,140 @@ The custom `accounts.User` model provides 7 distinct roles:
 
 ---
 
-## 📡 REST API (v1) Endpoints Overview
+## 🔒 Security & Hardening Architecture
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/v1/` | `GET` | API Root and documentation index |
-| `/api/v1/health/` | `GET` | Service health status and version info |
-| `/api/v1/auth/user/` | `GET` | Current authenticated user profile |
-| `/api/v1/teachings/api/sermons/` | `GET` | Paginated list of published sermons |
-| `/api/v1/teachings/api/series/` | `GET` | Sermon series index |
-| `/api/v1/media/api/galleries/` | `GET` | Photo galleries and albums |
-| `/api/v1/people/api/people/` | `GET` | Pastoral staff and leadership directory |
-| `/api/v1/ministries/api/ministries/` | `GET` | Ministries and community groups |
-| `/api/v1/events/api/events/` | `GET` | Church calendar and special services |
-| `/api/v1/conferences/api/conferences/` | `GET` | Major annual conferences and summits |
-| `/api/v1/publications/api/publications/` | `GET` | Downloadable study materials and PDFs |
-| `/api/v1/articles/api/articles/` | `GET` | Editorial articles and blog posts |
-| `/api/v1/announcements/api/announcements/`| `GET` | Active church announcements and alerts |
-| `/api/v1/streaming/api/status/` | `GET` | Real-time live stream broadcast status |
-| `/api/v1/search/api/query/?q=` | `GET` | Universal search across all content models |
-| `/api/v1/analytics/api/record/play/` | `POST` | Telemetry endpoint for sermon audio plays |
-| `/api/v1/analytics/api/record/download/` | `POST` | Telemetry endpoint for resource downloads |
+1. **Confidentiality Isolation**: Pastoral prayer requests and contact messages are strictly restricted to `super_admin`, `admin`, and `pastor_staff` roles.
+2. **File Upload Safety**: Strict whitelists for extensions (`.jpg`, `.png`, `.webp`, `.pdf`, `.docx`, `.mp3`, `.m4a`, `.mp4`), hard size limits ($5\text{MB}$ images, $30\text{MB}$ PDFs, $100\text{MB}$ audio, $500\text{MB}$ video), forbidden executable blocking (`.exe`, `.php`, `.sh`, `.py`, `.js`), and path traversal sanitization.
+3. **Anti-Spam & Honeypot Defense**: Public contact, prayer request, newsletter, and event registration forms use hidden honeypots (`hp_website`) to silently drop automated spam bots.
+4. **HTTPS & Cookie Security**: `SESSION_COOKIE_SECURE = True`, `SESSION_COOKIE_HTTPONLY = True`, `CSRF_COOKIE_SECURE = True`, `SameSite = "Lax"`, `SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"`, and `HSTS` enabled.
+5. **Atomic Telemetry Operations**: Resource download and sermon play counters use atomic `F("field") + 1` expressions to eliminate race conditions.
+6. **Draft Content Isolation**: Public searches, teachings, events, articles, and XML sitemaps strictly filter on `PublishableStatus.PUBLISHED`.
 
 ---
 
-## 🎨 UI/UX Design System Tokens
+## 🚀 Production Deployment Manual
 
-The custom CSS architecture is built around CSS custom properties defined in `static/css/variables.css`:
+### 1. System Requirements
+- Ubuntu 22.04 LTS or Debian 12
+- Python 3.11+
+- PostgreSQL 15+
+- Nginx
+- Gunicorn
 
-- **Slate Obsidian (`--color-slate-900: #0B131F`)**: Depth, reverence, and grounding.
-- **Divine Gold (`--color-gold-500: #C5A059`)**: Heavenly light, royalty, and warm accents.
-- **Warm Ivory (`--color-warm-bg: #FAF8F5`)**: Organic paper-like feel, comfortable reading contrast.
-- **Typography**: `Cinzel` / `Playfair Display` serif headings paired with clean, accessible `Plus Jakarta Sans` body copy.
+### 2. Nginx Reverse Proxy Configuration Template (`/etc/nginx/sites-available/citygate`)
+
+```nginx
+upstream citygate_app {
+    server 127.0.0.1:8000 fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name thecitygatechurch.org www.thecitygatechurch.org;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name thecitygatechurch.org www.thecitygatechurch.org;
+
+    ssl_certificate /etc/letsencrypt/live/thecitygatechurch.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/thecitygatechurch.org/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    client_max_body_size 100M;
+
+    # Static Assets
+    location /static/ {
+        alias /var/www/citygate/staticfiles/;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Media Uploads
+    location /media/ {
+        alias /var/www/citygate/media/;
+        expires 7d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Application Gateway
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_pass http://citygate_app;
+    }
+}
+```
+
+### 3. Gunicorn Systemd Service Unit (`/etc/systemd/system/citygate.service`)
+
+```ini
+[Unit]
+Description=Gunicorn instance to serve The CityGate Church Platform
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/citygate
+Environment="DJANGO_SETTINGS_MODULE=config.settings.production"
+ExecStart=/var/www/citygate/.venv/bin/gunicorn \
+          --workers 4 \
+          --bind 127.0.0.1:8000 \
+          --timeout 60 \
+          --access-logfile /var/log/citygate/gunicorn_access.log \
+          --error-logfile /var/log/citygate/gunicorn_error.log \
+          config.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ---
 
-## 🔄 Git Repository
+## 🗄️ Database Backup & Disaster Recovery
 
-- **GitHub Remote:** `https://github.com/sitanet/TCGC_CHURCH_WEB.git`
+### Automated PostgreSQL Daily Backup Script (`/usr/local/bin/citygate_backup.sh`)
 
 ```bash
-git remote add origin https://github.com/sitanet/TCGC_CHURCH_WEB.git
-git branch -M main
-git add .
-git commit -m "feat: initial foundation for The CityGate Church digital platform"
+#!/bin/bash
+BACKUP_DIR="/var/backups/citygate"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+mkdir -p $BACKUP_DIR
+
+# PostgreSQL Dump
+pg_dump -U postgres -h localhost -d tcgc_church_db -F c -b -v -f "$BACKUP_DIR/tcgc_db_$TIMESTAMP.dump"
+
+# Retain backups for 30 days
+find $BACKUP_DIR -type f -name "*.dump" -mtime +30 -exec rm {} \;
+```
+
+### Database Restore Procedure
+
+```bash
+# 1. Terminate existing connections
+psql -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'tcgc_church_db';"
+
+# 2. Re-create clean database
+dropdb -U postgres tcgc_church_db
+createdb -U postgres -O postgres tcgc_church_db
+
+# 3. Restore from binary dump
+pg_restore -U postgres -h localhost -d tcgc_church_db -v /var/backups/citygate/tcgc_db_2026XXXX_XXXXXX.dump
+```
+
+---
+
+## 🧪 Automated Testing Suite
+
+Run the full automated test suite (59 test cases covering web routes, CMS modules, RBAC, file safety, and anti-spam):
+
+```powershell
+python manage.py test apps.website.tests apps.dashboard.tests apps.accounts.tests apps.core.tests apps.core.tests_security
 ```
 
 ---

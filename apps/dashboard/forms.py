@@ -15,9 +15,12 @@ from apps.people.models import Person, LeadershipCategory
 from apps.ministries.models import Ministry, ChurchMeeting, ChurchLocation
 from apps.events.models import Event, EventCategory
 from apps.conferences.models import Conference, ConferenceSpeaker, ConferenceSession
-from apps.media_library.models import MediaAsset, PhotoGallery, MediaCategory
+from apps.media_library.models import MediaAsset, PhotoGallery, MediaCategory, MediaType
 from apps.streaming.models import LiveStreamChannel
 from apps.website.models import ContactMessage, PrayerRequest
+from apps.core.validators import (
+    validate_image_file, validate_document_file, validate_audio_file, validate_video_file
+)
 
 User = get_user_model()
 
@@ -99,6 +102,30 @@ class TeachingForm(StyledFormMixin, forms.ModelForm):
             "tags": forms.TextInput(attrs={"placeholder": "faith, grace, prayer, breakthrough"}),
         }
 
+    def clean_cover_image(self):
+        img = self.cleaned_data.get("cover_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
+    def clean_audio_file(self):
+        aud = self.cleaned_data.get("audio_file")
+        if aud and hasattr(aud, "size"):
+            validate_audio_file(aud)
+        return aud
+
+    def clean_video_file(self):
+        vid = self.cleaned_data.get("video_file")
+        if vid and hasattr(vid, "size"):
+            validate_video_file(vid)
+        return vid
+
+    def clean_transcript_file(self):
+        doc = self.cleaned_data.get("transcript_file")
+        if doc and hasattr(doc, "size"):
+            validate_document_file(doc)
+        return doc
+
 
 class SermonSeriesForm(StyledFormMixin, forms.ModelForm):
     class Meta:
@@ -152,6 +179,12 @@ class ArticleForm(StyledFormMixin, forms.ModelForm):
             "body": forms.Textarea(attrs={"rows": 12, "placeholder": "Compose article content..."}),
         }
 
+    def clean_featured_image(self):
+        img = self.cleaned_data.get("featured_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
 
 class AnnouncementForm(StyledFormMixin, forms.ModelForm):
     class Meta:
@@ -174,6 +207,12 @@ class AnnouncementForm(StyledFormMixin, forms.ModelForm):
             "start_date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "expires_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
+
+    def clean_image(self):
+        img = self.cleaned_data.get("image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
 
 
 # ==============================================================================
@@ -206,6 +245,18 @@ class PublicationForm(StyledFormMixin, forms.ModelForm):
             "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Overview and synopsis of this publication..."}),
         }
 
+    def clean_cover_image(self):
+        img = self.cleaned_data.get("cover_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
+    def clean_pdf_file(self):
+        doc = self.cleaned_data.get("pdf_file")
+        if doc and hasattr(doc, "size"):
+            validate_document_file(doc)
+        return doc
+
 
 # ==============================================================================
 # PEOPLE & MINISTRIES FORMS
@@ -236,6 +287,12 @@ class PersonForm(StyledFormMixin, forms.ModelForm):
             "title": forms.TextInput(attrs={"placeholder": "e.g. Senior Pastor, Minister of Music, Guest Speaker"}),
         }
 
+    def clean_photo(self):
+        img = self.cleaned_data.get("photo")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
 
 class MinistryForm(StyledFormMixin, forms.ModelForm):
     class Meta:
@@ -261,6 +318,12 @@ class MinistryForm(StyledFormMixin, forms.ModelForm):
             "description": forms.Textarea(attrs={"rows": 4}),
             "icon_name": forms.TextInput(attrs={"placeholder": "heart, users, book-open, shield, music"}),
         }
+
+    def clean_cover_image(self):
+        img = self.cleaned_data.get("cover_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
 
 
 class ChurchMeetingForm(StyledFormMixin, forms.ModelForm):
@@ -306,6 +369,12 @@ class ChurchLocationForm(StyledFormMixin, forms.ModelForm):
             "sort_order",
         ]
 
+    def clean_photo(self):
+        img = self.cleaned_data.get("photo")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
 
 # ==============================================================================
 # EVENTS & CONFERENCES FORMS
@@ -348,6 +417,12 @@ class EventForm(StyledFormMixin, forms.ModelForm):
             "description": forms.Textarea(attrs={"rows": 4}),
         }
 
+    def clean_banner_image(self):
+        img = self.cleaned_data.get("banner_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
 
 class ConferenceForm(StyledFormMixin, forms.ModelForm):
     class Meta:
@@ -376,6 +451,18 @@ class ConferenceForm(StyledFormMixin, forms.ModelForm):
             "description": forms.Textarea(attrs={"rows": 5}),
         }
 
+    def clean_banner_image(self):
+        img = self.cleaned_data.get("banner_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
+    def clean_schedule_document(self):
+        doc = self.cleaned_data.get("schedule_document")
+        if doc and hasattr(doc, "size"):
+            validate_document_file(doc)
+        return doc
+
 
 # ==============================================================================
 # MEDIA LIBRARY FORMS
@@ -386,6 +473,20 @@ class MediaAssetForm(StyledFormMixin, forms.ModelForm):
         model = MediaAsset
         fields = ["title", "media_type", "category", "file", "alt_text", "tags", "status"]
 
+    def clean_file(self):
+        f = self.cleaned_data.get("file")
+        if f and hasattr(f, "size"):
+            mtype = self.cleaned_data.get("media_type")
+            if mtype == MediaType.AUDIO:
+                validate_audio_file(f)
+            elif mtype == MediaType.VIDEO:
+                validate_video_file(f)
+            elif mtype == MediaType.DOCUMENT:
+                validate_document_file(f)
+            elif mtype == MediaType.IMAGE:
+                validate_image_file(f)
+        return f
+
 
 class PhotoGalleryForm(StyledFormMixin, forms.ModelForm):
     class Meta:
@@ -395,6 +496,12 @@ class PhotoGalleryForm(StyledFormMixin, forms.ModelForm):
             "event_date": forms.DateInput(attrs={"type": "date"}),
             "description": forms.Textarea(attrs={"rows": 3}),
         }
+
+    def clean_cover_image(self):
+        img = self.cleaned_data.get("cover_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
 
 
 # ==============================================================================
@@ -426,6 +533,12 @@ class LiveStreamControlForm(StyledFormMixin, forms.ModelForm):
             "next_broadcast_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
 
+    def clean_offline_poster_image(self):
+        img = self.cleaned_data.get("offline_poster_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
 
 # ==============================================================================
 # SYSTEM & HOMEPAGE SETTINGS FORMS
@@ -456,6 +569,12 @@ class HomepageConfigForm(StyledFormMixin, forms.ModelForm):
         widgets = {
             "hero_subtitle": forms.Textarea(attrs={"rows": 3}),
         }
+
+    def clean_hero_image(self):
+        img = self.cleaned_data.get("hero_image")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
 
 
 class SiteConfigurationForm(StyledFormMixin, forms.ModelForm):
@@ -499,6 +618,18 @@ class SiteConfigurationForm(StyledFormMixin, forms.ModelForm):
             "footer_text": forms.Textarea(attrs={"rows": 3}),
             "default_meta_description": forms.Textarea(attrs={"rows": 2}),
         }
+
+    def clean_logo(self):
+        img = self.cleaned_data.get("logo")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
+
+    def clean_favicon(self):
+        img = self.cleaned_data.get("favicon")
+        if img and hasattr(img, "size"):
+            validate_image_file(img)
+        return img
 
 
 class StaffUserCreateForm(StyledFormMixin, forms.ModelForm):

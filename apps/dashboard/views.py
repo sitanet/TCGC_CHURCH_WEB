@@ -1031,7 +1031,8 @@ class PublicationDeleteView(StaffRequiredMixin, View):
 # 10. LIVE STREAMING CONTROL CENTER
 # ==============================================================================
 
-class LiveStreamControlView(StaffRequiredMixin, View):
+class LiveStreamControlView(RoleRequiredMixin, View):
+    allowed_roles = [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MEDIA_LEAD]
     template_name = "dashboard/streaming/control_center.html"
 
     def get(self, request):
@@ -1054,7 +1055,8 @@ class LiveStreamControlView(StaffRequiredMixin, View):
 # 11. COMMUNICATION INBOXES (CONTACT, PRAYER REQUESTS, NEWSLETTER)
 # ==============================================================================
 
-class ContactMessagesListView(StaffRequiredMixin, ListView):
+class ContactMessagesListView(RoleRequiredMixin, ListView):
+    allowed_roles = [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PASTOR_STAFF]
     model = ContactMessage
     template_name = "dashboard/communications/contact_messages.html"
     context_object_name = "contact_messages"
@@ -1078,7 +1080,9 @@ class ContactMessagesListView(StaffRequiredMixin, ListView):
         return context
 
 
-class ContactMessageDetailView(StaffRequiredMixin, View):
+class ContactMessageDetailView(RoleRequiredMixin, View):
+    allowed_roles = [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PASTOR_STAFF]
+
     def get(self, request, pk):
         msg = get_object_or_404(ContactMessage, pk=pk)
         if msg.status == ContactMessageStatus.NEW:
@@ -1102,7 +1106,8 @@ class ContactMessageDetailView(StaffRequiredMixin, View):
         return redirect("dashboard:contact_messages")
 
 
-class PrayerRequestsListView(StaffRequiredMixin, ListView):
+class PrayerRequestsListView(RoleRequiredMixin, ListView):
+    allowed_roles = [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PASTOR_STAFF]
     model = PrayerRequest
     template_name = "dashboard/communications/prayer_requests.html"
     context_object_name = "prayers"
@@ -1143,7 +1148,8 @@ class PrayerRequestsListView(StaffRequiredMixin, ListView):
         return redirect("dashboard:prayer_requests")
 
 
-class NewsletterSubscribersListView(StaffRequiredMixin, ListView):
+class NewsletterSubscribersListView(RoleRequiredMixin, ListView):
+    allowed_roles = [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PASTOR_STAFF, UserRole.CONTENT_MANAGER]
     model = NewsletterSubscriber
     template_name = "dashboard/communications/subscribers.html"
     context_object_name = "subscribers"
@@ -1157,7 +1163,9 @@ class NewsletterSubscribersListView(StaffRequiredMixin, ListView):
         return qs.order_by("-subscribed_at")
 
 
-class NewsletterExportCsvView(StaffRequiredMixin, View):
+class NewsletterExportCsvView(RoleRequiredMixin, View):
+    allowed_roles = [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PASTOR_STAFF, UserRole.CONTENT_MANAGER]
+
     def get(self, request):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = f'attachment; filename="citygate_subscribers_{datetime.now():%Y%m%d}.csv"'
@@ -1172,7 +1180,8 @@ class NewsletterExportCsvView(StaffRequiredMixin, View):
 # 12. ANALYTICS & TELEMETRY
 # ==============================================================================
 
-class AnalyticsOverviewView(StaffRequiredMixin, TemplateView):
+class AnalyticsOverviewView(RoleRequiredMixin, TemplateView):
+    allowed_roles = [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PASTOR_STAFF]
     template_name = "dashboard/analytics/overview.html"
 
     def get_context_data(self, **kwargs):
