@@ -1,0 +1,67 @@
+/* Typography Hierarchy & Editorial Helpers */
+.display-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.section-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-gold-600);
+  margin-bottom: var(--space-2);
+  display: block;
+}
+
+.lead-text {
+  font-size: clamp(1.125rem, 1.5vw, 1.35rem);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.scripture-quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-xl);
+  line-height: 1.6;
+  border-left: 3px solid var(--color-gold-400);
+  padding-left: var(--space-6);
+  margin: var(--space-6) 0;
+  color: var(--color-slate-800);
+}
+
+.scripture-citation {
+  display: block;
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-gold-600);
+  margin-top: var(--space-2);
+  letter-spacing: 0.05em;
+}
+
+.text-gold {
+  color: var(--color-gold-500);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-center {
+  text-align: center;
+}

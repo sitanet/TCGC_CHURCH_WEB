@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Access Restricted (403) — {{ CHURCH_NAME }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-20) 0; text-align: center; min-height: calc(100vh - 280px); display: flex; align-items: center;">
+  <div class="container" style="max-width: 580px;">
+    <span class="section-eyebrow" style="color: var(--color-danger);">403 Forbidden</span>
+    <h1 class="display-title" style="margin-bottom: var(--space-4);">Access Restricted</h1>
+    <p class="lead-text" style="margin-bottom: var(--space-8);">
+      You do not have the required staff permissions or clearance to access this area.
+    </p>
+    <div style="display: flex; justify-content: center; gap: var(--space-4);">
+      <a href="{% url 'website:home' %}" class="btn btn-primary">Return Home</a>
+      <a href="{% url 'accounts:login' %}" class="btn btn-outline">Staff Sign In</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

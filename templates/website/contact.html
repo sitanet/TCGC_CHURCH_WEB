@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact &amp; Prayer Requests — {{ CHURCH_NAME }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-16) 0 var(--space-12); background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
+  <div class="container" style="max-width: 840px; text-align: center;">
+    <span class="section-eyebrow">Get in Touch</span>
+    <h1 class="section-title" style="margin-bottom: var(--space-4);">We Are Here for You</h1>
+    <p class="lead-text">
+      Have a question, need counseling, or wish to share a prayer request? Reach out to our pastoral care team.
+    </p>
+  </div>
+</section>
+
+<section style="padding: var(--space-16) 0;">
+  <div class="container" style="max-width: 900px;">
+    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--space-10);">
+      <!-- Info Column -->
+      <div>
+        <h3 class="card-title" style="margin-bottom: var(--space-6);">Connect Directly</h3>
+        
+        <div style="margin-bottom: var(--space-5);">
+          <div style="font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; color: var(--color-gold-600);">Email Address</div>
+          <div style="font-size: var(--text-base); color: var(--color-slate-900); font-weight: 500;">{{ SITE_CONFIG.email|default:"contact@thecitygatechurch.org" }}</div>
+        </div>
+
+        <div style="margin-bottom: var(--space-5);">
+          <div style="font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; color: var(--color-gold-600);">Phone Inquiries</div>
+          <div style="font-size: var(--text-base); color: var(--color-slate-900); font-weight: 500;">{{ SITE_CONFIG.phone_primary|default:"+234 000 000 0000" }}</div>
+        </div>
+
+        <div>
+          <div style="font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; color: var(--color-gold-600);">Auditorium Location</div>
+          <div style="font-size: var(--text-base); color: var(--color-slate-900); font-weight: 500;">
+            The CityGate Church Main Campus<br>
+            {{ SITE_CONFIG.city|default:"Lagos" }}, {{ SITE_CONFIG.country|default:"Nigeria" }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Prayer Request Form -->
+      <div class="card card-gold-accent">
+        <h3 class="card-title" style="margin-bottom: var(--space-4);">Send a Message or Prayer Request</h3>
+        <form onsubmit="event.preventDefault(); window.CityGate.toast.show('Thank you! Your message has been received.', 'success'); this.reset();">
+          <div class="form-group">
+            <label class="form-label">Your Full Name</label>
+            <input type="text" class="form-input" placeholder="e.g. Brother John Doe" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email or Phone Number</label>
+            <input type="text" class="form-input" placeholder="Your contact details" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Prayer Request / Inquiry</label>
+            <textarea class="form-textarea" rows="4" placeholder="Share how we can stand in faith with you..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full">Submit Prayer Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bad Request (400) — {{ CHURCH_NAME }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-20) 0; text-align: center; min-height: calc(100vh - 280px); display: flex; align-items: center;">
+  <div class="container" style="max-width: 580px;">
+    <span class="section-eyebrow" style="color: var(--color-warning);">400 Bad Request</span>
+    <h1 class="display-title" style="margin-bottom: var(--space-4);">Invalid Request</h1>
+    <p class="lead-text" style="margin-bottom: var(--space-8);">
+      The server could not understand the request due to invalid syntax or parameters.
+    </p>
+    <div style="display: flex; justify-content: center; gap: var(--space-4);">
+      <a href="{% url 'website:home' %}" class="btn btn-primary">Return Home</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

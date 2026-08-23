@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Administration Portal{% endblock %} — {{ CHURCH_NAME }}</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+  <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+  <link rel="stylesheet" href="{% static 'css/typography.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/buttons.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/forms.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/cards.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/modals.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/alerts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/badges.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/states.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Flash Alerts Bridge -->
+  {% include 'components/alerts.html' %}
+
+  <div class="dashboard-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo-mark" style="width: 32px; height: 32px; font-size: 0.9rem;">CG</div>
+        <div>
+          <div class="sidebar-brand-name">THE CITYGATE</div>
+          <div class="sidebar-brand-subtitle">Control Center</div>
+        </div>
+      </div>
+
+      <div class="sidebar-menu">
+        <div class="sidebar-section-title">Core Management</div>
+        <a href="{% url 'dashboard:index' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">❖</span>
+          <span>Overview</span>
+        </a>
+
+        <div class="sidebar-section-title">Spiritual Content</div>
+        <a href="{% url 'api_v1:teachings:sermon_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">🎙</span>
+          <span>Teachings &amp; Sermons</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'api_v1:media_library:gallery_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">🖼</span>
+          <span>Media &amp; Photos</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'api_v1:publications:publication_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">📄</span>
+          <span>Publications &amp; PDFs</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'api_v1:articles:article_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">✍</span>
+          <span>Articles &amp; Blog</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+
+        <div class="sidebar-section-title">Community &amp; Gatherings</div>
+        <a href="{% url 'api_v1:events:event_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">📅</span>
+          <span>Events &amp; Services</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'api_v1:conferences:conference_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">🏛</span>
+          <span>Conferences</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'api_v1:ministries:ministry_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">🤝</span>
+          <span>Ministries</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'api_v1:people:people_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">👥</span>
+          <span>Pastoral &amp; Staff</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+
+        <div class="sidebar-section-title">Operations</div>
+        <a href="{% url 'api_v1:streaming:status' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">📡</span>
+          <span>Live Streaming</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'api_v1:announcements:announcement_list' %}" class="sidebar-nav-item" target="_blank">
+          <span class="sidebar-nav-item-icon">📢</span>
+          <span>Announcements</span>
+          <span class="sidebar-badge">API</span>
+        </a>
+        <a href="{% url 'accounts:profile' %}" class="sidebar-nav-item">
+          <span class="sidebar-nav-item-icon">⚙</span>
+          <span>My Profile</span>
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="{% url 'website:home' %}" class="btn btn-sm btn-ghost" style="color: var(--color-slate-400);" target="_blank">
+          🌐 View Website
+        </a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-sm btn-ghost" style="color: var(--color-danger);">
+          Sign Out
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="dashboard-main">
+      <!-- Topbar -->
+      <header class="dashboard-topbar">
+        <div class="topbar-search-wrapper">
+          <span class="topbar-search-icon">🔍</span>
+          <input type="text" class="topbar-search-input" placeholder="Search resources, members, teachings..." id="globalSearchInput">
+        </div>
+
+        <div class="topbar-actions">
+          <a href="{% url 'api_v1:api_root' %}" class="btn btn-sm btn-outline" target="_blank">
+            API v1
+          </a>
+          
+          <a href="{% url 'accounts:profile' %}" class="user-profile-btn">
+            <div class="user-avatar-circle">
+              {{ user.first_name|first|default:user.username|first|upper }}
+            </div>
+            <div style="text-align: left;">
+              <div class="user-meta-name">{{ user.get_full_name|default:user.username }}</div>
+              <div class="user-meta-role">{{ user.get_role_display }}</div>
+            </div>
+          </a>
+        </div>
+      </header>
+
+      <!-- Dashboard Content Injection -->
+      <div class="dashboard-content">
+        {% block dashboard_content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="{% static 'js/core.js' %}"></script>
+  <script src="{% static 'js/dashboard.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

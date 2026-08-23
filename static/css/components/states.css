@@ -1,0 +1,66 @@
+/* Component: Empty States, Loading Skeletons, and Feedback */
+.empty-state {
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+  border: 2px dashed var(--color-slate-200);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  margin: var(--space-6) 0;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-4);
+  border-radius: 50%;
+  background-color: var(--color-gold-50);
+  color: var(--color-gold-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+.empty-state-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  color: var(--color-slate-900);
+  margin-bottom: var(--space-2);
+}
+
+.empty-state-desc {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  max-width: 440px;
+  margin: 0 auto var(--space-5);
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #F0EFEA 25%, #FAF9F5 50%, #F0EFEA 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+  height: 1rem;
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-title {
+  height: 1.75rem;
+  width: 60%;
+  margin-bottom: var(--space-3);
+}
+
+.skeleton-card {
+  height: 220px;
+  width: 100%;
+  border-radius: var(--radius-md);
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

@@ -1,0 +1,48 @@
+{% load static %}
+{% if BANNER_ANNOUNCEMENTS %}
+  {% for banner in BANNER_ANNOUNCEMENTS %}
+    <div class="announcement-banner priority-{{ banner.priority }}">
+      <span><strong>{{ banner.title }}:</strong> {{ banner.message }}</span>
+      {% if banner.link_url %}
+        <a href="{{ banner.link_url }}">{{ banner.link_label|default:"Learn More" }} &rarr;</a>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<header class="site-header">
+  <div class="container">
+    <div class="nav-wrapper">
+      <!-- Logo -->
+      <a href="{% url 'website:home' %}" class="brand-logo">
+        <div class="brand-logo-mark">CG</div>
+        <span>THE CITYGATE</span>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="nav-menu">
+        <a href="{% url 'website:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+        <a href="{% url 'website:about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a>
+        <a href="{% url 'website:visit' %}" class="nav-link {% if request.resolver_match.url_name == 'visit' %}active{% endif %}">Plan a Visit</a>
+        <a href="{% url 'website:contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        {% if user.is_authenticated %}
+          {% if user.is_staff_member %}
+            <a href="{% url 'dashboard:index' %}" class="btn btn-sm btn-outline">Dashboard</a>
+          {% endif %}
+          <a href="{% url 'accounts:logout' %}" class="btn btn-sm btn-ghost">Sign Out</a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-ghost">Staff Portal</a>
+          <a href="{% url 'website:visit' %}" class="btn btn-sm btn-primary">Join Us</a>
+        {% endif %}
+
+        <button class="mobile-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
+          ☰
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

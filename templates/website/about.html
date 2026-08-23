@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us — {{ CHURCH_NAME }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-16) 0 var(--space-12); background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
+  <div class="container" style="max-width: 840px; text-align: center;">
+    <span class="section-eyebrow">Our Story &amp; Heritage</span>
+    <h1 class="section-title" style="margin-bottom: var(--space-4);">Rooted in Faith, Raising Kingdom Champions</h1>
+    <p class="lead-text">
+      The CityGate Church is an apostolic and prophetic ministry commissioned to equip believers, reveal Christ in all dimensions, and manifest Kingdom light to our generation.
+    </p>
+  </div>
+</section>
+
+<section style="padding: var(--space-16) 0;">
+  <div class="container" style="max-width: 900px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); margin-bottom: var(--space-12);">
+      <div class="card card-gold-accent">
+        <h3 class="card-title">Our Vision</h3>
+        <p class="card-body">
+          To raise a generation of spiritually mature, biblically sound, and culturally relevant believers who dominate in their spheres of influence through kingdom principles.
+        </p>
+      </div>
+
+      <div class="card card-gold-accent">
+        <h3 class="card-title">Our Mission</h3>
+        <p class="card-body">
+          To preach the uncompromised gospel of Jesus Christ, establish believers in kingdom authority, build strong families, and impact communities through acts of grace and love.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="padding: var(--space-8);">
+      <h3 class="card-title" style="margin-bottom: var(--space-4);">What We Believe</h3>
+      <ul style="display: flex; flex-direction: column; gap: var(--space-4); color: var(--color-text-secondary); font-size: var(--text-sm); line-height: 1.7;">
+        <li><strong style="color: var(--color-slate-900);">The Scriptures:</strong> The Bible is the inspired and infallible Word of God, our supreme rule of faith and practice.</li>
+        <li><strong style="color: var(--color-slate-900);">The Godhead:</strong> We believe in one God eternally existing in three persons: Father, Son, and Holy Spirit.</li>
+        <li><strong style="color: var(--color-slate-900);">Salvation:</strong> Salvation is by grace through faith in the sacrificial death and resurrection of Jesus Christ.</li>
+        <li><strong style="color: var(--color-slate-900);">The Holy Spirit:</strong> We believe in the baptism and present-day ministry of the Holy Spirit with spiritual gifts and empowerment.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

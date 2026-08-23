@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ CHURCH_NAME }}{% if CHURCH_TAGLINE %} — {{ CHURCH_TAGLINE }}{% endif %}{% endblock %}</title>
+  
+  <!-- Meta & OpenGraph -->
+  <meta name="description" content="{% block meta_description %}{{ meta_description|default:CHURCH_TAGLINE }}{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ CHURCH_NAME }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ meta_description|default:CHURCH_TAGLINE }}{% endblock %}">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Editorial Serif & Clean Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+  <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+  <link rel="stylesheet" href="{% static 'css/typography.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/buttons.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/forms.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/cards.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/modals.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/alerts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/badges.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/states.css' %}">
+  <link rel="stylesheet" href="{% static 'css/public.css' %}">
+  
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Flash Message & Toast Notifications -->
+  {% include 'components/alerts.html' %}
+
+  <!-- Public Navigation Header -->
+  {% include 'components/header.html' %}
+
+  <!-- Main Content Viewport -->
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Public Footer -->
+  {% include 'components/footer.html' %}
+
+  <!-- Core JavaScript Architecture -->
+  <script src="{% static 'js/core.js' %}"></script>
+  <script src="{% static 'js/public.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}The CityGate Church — A Place of Divine Encounter{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-grid">
+      <!-- Left Column: Vision & Action -->
+      <div>
+        <div class="hero-tag">
+          <span>✦ Welcome to The CityGate</span>
+        </div>
+        <h1 class="hero-title">
+          Where Faith Meets <span>Purpose &amp; Kingdom</span> Power.
+        </h1>
+        <p class="lead-text">
+          A vibrant community of believers devoted to word-centered truth, spirit-led worship, and transformative impact in our city and across the nations.
+        </p>
+
+        <div class="hero-actions">
+          <a href="{% url 'website:visit' %}" class="btn btn-lg btn-primary">Plan Your Visit</a>
+          <a href="{% url 'website:about' %}" class="btn btn-lg btn-outline">Our Beliefs &amp; Story</a>
+        </div>
+      </div>
+
+      <!-- Right Column: Visual Feature Box -->
+      <div>
+        <div class="hero-visual-card">
+          <div class="hero-live-badge">
+            <span>●</span> Sunday Service
+          </div>
+          <h3 style="font-family: var(--font-serif); font-size: var(--text-2xl); margin-bottom: var(--space-3); color: var(--color-gold-300);">
+            Join Us This Sunday
+          </h3>
+          <p style="font-size: var(--text-sm); line-height: 1.7; color: var(--color-slate-300); margin-bottom: var(--space-6);">
+            Experience deep worship, prophetic insight, and practical biblical teachings designed to empower your everyday life.
+          </p>
+
+          <div style="background-color: rgba(255,255,255,0.06); padding: var(--space-4); border-radius: var(--radius-sm); margin-bottom: var(--space-6);">
+            <div style="font-size: var(--text-xs); text-transform: uppercase; color: var(--color-gold-400); font-weight: 700; letter-spacing: 0.08em;">Service Times</div>
+            <div style="font-size: var(--text-base); font-weight: 600; margin-top: 4px;">1st Service: 8:00 AM | 2nd Service: 10:30 AM</div>
+          </div>
+
+          <a href="{% url 'website:visit' %}" class="btn btn-full btn-outline" style="border-color: var(--color-gold-400); color: #FFFFFF;">
+            Get Directions &amp; Information &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scripture Quote Section -->
+<section style="padding: var(--space-12) 0; background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
+  <div class="container" style="max-width: 860px; text-align: center;">
+    <blockquote style="font-family: var(--font-serif); font-size: clamp(1.25rem, 2.5vw, 1.75rem); font-style: italic; line-height: 1.6; color: var(--color-slate-900);">
+      &ldquo;Open to me the gates of righteousness: I will go into them, and I will praise the Lord.&rdquo;
+    </blockquote>
+    <cite style="display: block; font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 700; color: var(--color-gold-600); margin-top: var(--space-3); letter-spacing: 0.1em; text-transform: uppercase;">
+      Psalm 118:19
+    </cite>
+  </div>
+</section>
+
+<!-- Core Pillars Section -->
+<section class="features-section">
+  <div class="container">
+    <div class="text-center" style="max-width: 640px; margin: 0 auto;">
+      <span class="section-eyebrow">Discover The CityGate</span>
+      <h2 class="section-title">Built Upon Kingdom Truth &amp; Genuine Community</h2>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="card card-gold-accent">
+        <div class="card-header">
+          <span class="card-subtitle">Foundational Truth</span>
+          <h3 class="card-title">Sound Biblical Teaching</h3>
+        </div>
+        <div class="card-body">
+          In-depth, uncompromised exposition of scripture providing practical revelation for faith, leadership, and godly impact.
+        </div>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="card card-gold-accent">
+        <div class="card-header">
+          <span class="card-subtitle">Spirit-Led Devotion</span>
+          <h3 class="card-title">Atmosphere of Worship</h3>
+        </div>
+        <div class="card-body">
+          Dynamic praise and deep intimate worship that welcomes the tangible presence and transformative power of the Holy Spirit.
+        </div>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="card card-gold-accent">
+        <div class="card-header">
+          <span class="card-subtitle">Discipleship &amp; Care</span>
+          <h3 class="card-title">Vibrant Community</h3>
+        </div>
+        <div class="card-body">
+          A welcoming family of faith where people of all generations connect, serve, grow spiritually, and build lifelong bonds.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

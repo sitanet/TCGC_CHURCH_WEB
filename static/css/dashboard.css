@@ -1,0 +1,265 @@
+/* ==============================================================================
+   THE CITYGATE CHURCH - CUSTOM ADMINISTRATIVE DASHBOARD
+   Professional, Editorial, High-Security Management Portal
+============================================================================== */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-warm-bg);
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--color-slate-950);
+  color: var(--color-slate-300);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-slate-850);
+  transition: width var(--transition-base);
+  z-index: 950;
+}
+
+.sidebar-header {
+  height: var(--header-height);
+  padding: 0 var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-slate-850);
+}
+
+.sidebar-brand-name {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-brand-subtitle {
+  font-size: 0.65rem;
+  color: var(--color-gold-400);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sidebar-menu {
+  padding: var(--space-4) var(--space-3);
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-section-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-slate-500);
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.65rem var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-slate-300);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  margin-bottom: 2px;
+}
+
+.sidebar-nav-item:hover {
+  background-color: var(--color-slate-850);
+  color: #FFFFFF;
+}
+
+.sidebar-nav-item.active {
+  background: linear-gradient(90deg, rgba(197, 160, 89, 0.2), rgba(197, 160, 89, 0.05));
+  color: var(--color-gold-300);
+  border-left: 3px solid var(--color-gold-400);
+}
+
+.sidebar-nav-item-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.sidebar-badge {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-slate-800);
+  color: var(--color-slate-300);
+}
+
+.sidebar-footer {
+  padding: var(--space-4) var(--space-4);
+  border-top: 1px solid var(--color-slate-850);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Dashboard Main Viewport */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Dashboard Topbar */
+.dashboard-topbar {
+  height: var(--header-height);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-slate-200);
+  padding: 0 var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar-search-wrapper {
+  position: relative;
+  width: 320px;
+}
+
+.topbar-search-input {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.25rem;
+  background-color: var(--color-surface-alt);
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+}
+
+.topbar-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.user-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-gold-500), var(--color-gold-700));
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.user-meta-name {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-slate-900);
+  line-height: 1.2;
+}
+
+.user-meta-role {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+/* Dashboard Content Area */
+.dashboard-content {
+  padding: var(--space-8);
+  flex: 1;
+}
+
+.dashboard-page-header {
+  margin-bottom: var(--space-8);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.dashboard-page-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  color: var(--color-slate-900);
+}
+
+.dashboard-page-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* Stats Metrics Grid */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+}
+
+/* Data Table */
+.data-table-wrapper {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: var(--color-surface-alt);
+  padding: 0.85rem var(--space-4);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-slate-700);
+  border-bottom: 1px solid var(--color-slate-200);
+}
+
+.data-table td {
+  padding: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-slate-100);
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover td {
+  background-color: var(--color-warm-bg);
+}

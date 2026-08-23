@@ -1,0 +1,142 @@
+{% extends 'dashboard/base.html' %}
+{% load static humanize %}
+
+{% block title %}Overview Control Center{% endblock %}
+
+{% block dashboard_content %}
+<!-- Page Header -->
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Executive Dashboard</h1>
+    <p class="dashboard-page-subtitle">Welcome back, {{ user.get_full_name|default:user.username }}. Overview of platform operations.</p>
+  </div>
+
+  <div style="display: flex; gap: var(--space-3);">
+    <a href="{% url 'website:home' %}" class="btn btn-sm btn-outline" target="_blank">View Live Site &rarr;</a>
+    <a href="{% url 'api_v1:api_root' %}" class="btn btn-sm btn-primary" target="_blank">Explore API v1</a>
+  </div>
+</div>
+
+<!-- Metrics Cards Grid -->
+<div class="dashboard-stats-grid">
+  <!-- Metric 1: Sermons -->
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">🎙</div>
+    <div>
+      <div class="stat-value">{{ metrics.total_teachings|default:0 }}</div>
+      <div class="stat-label">Teachings &amp; Sermons</div>
+    </div>
+  </div>
+
+  <!-- Metric 2: Events -->
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">📅</div>
+    <div>
+      <div class="stat-value">{{ metrics.total_events|default:0 }}</div>
+      <div class="stat-label">Upcoming Events</div>
+    </div>
+  </div>
+
+  <!-- Metric 3: Articles -->
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">✍</div>
+    <div>
+      <div class="stat-value">{{ metrics.total_articles|default:0 }}</div>
+      <div class="stat-label">Published Articles</div>
+    </div>
+  </div>
+
+  <!-- Metric 4: Media Assets -->
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">🖼</div>
+    <div>
+      <div class="stat-value">{{ metrics.total_media|default:0 }}</div>
+      <div class="stat-label">Media Assets</div>
+    </div>
+  </div>
+
+  <!-- Metric 5: Publications -->
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">📄</div>
+    <div>
+      <div class="stat-value">{{ metrics.total_publications|default:0 }}</div>
+      <div class="stat-label">Downloadable PDFs</div>
+    </div>
+  </div>
+
+  <!-- Metric 6: Staff Members -->
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">👥</div>
+    <div>
+      <div class="stat-value">{{ metrics.total_staff|default:0 }}</div>
+      <div class="stat-label">Active Staff Members</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Action Drawers and System Status Grid -->
+<div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: var(--space-8);">
+  <!-- Left Box: Module Quick Links -->
+  <div class="card card-gold-accent">
+    <h3 class="card-title" style="margin-bottom: var(--space-4);">Quick Navigation &amp; Endpoints</h3>
+    <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-6);">
+      Access the newly prepared REST API v1 endpoints and management modules.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+      <a href="{% url 'api_v1:teachings:sermon_list' %}" class="btn btn-sm btn-ghost" style="justify-content: flex-start; border: 1px solid var(--color-slate-200);" target="_blank">
+        🎙 Sermon API
+      </a>
+      <a href="{% url 'api_v1:events:event_list' %}" class="btn btn-sm btn-ghost" style="justify-content: flex-start; border: 1px solid var(--color-slate-200);" target="_blank">
+        📅 Events API
+      </a>
+      <a href="{% url 'api_v1:articles:article_list' %}" class="btn btn-sm btn-ghost" style="justify-content: flex-start; border: 1px solid var(--color-slate-200);" target="_blank">
+        ✍ Articles API
+      </a>
+      <a href="{% url 'api_v1:publications:publication_list' %}" class="btn btn-sm btn-ghost" style="justify-content: flex-start; border: 1px solid var(--color-slate-200);" target="_blank">
+        📄 Publications API
+      </a>
+      <a href="{% url 'api_v1:streaming:status' %}" class="btn btn-sm btn-ghost" style="justify-content: flex-start; border: 1px solid var(--color-slate-200);" target="_blank">
+        📡 Live Broadcast API
+      </a>
+      <a href="{% url 'api_v1:search:unified_search' %}?q=worship" class="btn btn-sm btn-ghost" style="justify-content: flex-start; border: 1px solid var(--color-slate-200);" target="_blank">
+        🔍 Universal Search API
+      </a>
+    </div>
+  </div>
+
+  <!-- Right Box: System Foundation Status -->
+  <div class="card">
+    <h3 class="card-title" style="margin-bottom: var(--space-4);">Foundation Health</h3>
+    
+    <ul style="display: flex; flex-direction: column; gap: var(--space-3); font-size: var(--text-sm);">
+      <li style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: var(--color-text-secondary);">Framework</span>
+        <span class="badge badge-success">Django 5.2</span>
+      </li>
+      <li style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: var(--color-text-secondary);">REST API</span>
+        <span class="badge badge-info">DRF v1 Ready</span>
+      </li>
+      <li style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: var(--color-text-secondary);">Database Engine</span>
+        <span class="badge badge-gold">PostgreSQL Ready</span>
+      </li>
+      <li style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: var(--color-text-secondary);">Role Permissions</span>
+        <span class="badge badge-primary">7 Granular Roles</span>
+      </li>
+      <li style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: var(--color-text-secondary);">Media Architecture</span>
+        <span class="badge badge-success">Partitioned / S3 Ready</span>
+      </li>
+    </ul>
+
+    <div style="margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-slate-100);">
+      <a href="{% url 'api_v1:api_health' %}" class="btn btn-full btn-sm btn-outline" target="_blank">
+        View Health Diagnostics &rarr;
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

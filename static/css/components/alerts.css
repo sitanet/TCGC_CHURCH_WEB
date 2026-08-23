@@ -1,0 +1,93 @@
+/* Component: Alerts & Toast Notification System */
+.toast-container {
+  position: fixed;
+  top: var(--space-6);
+  right: var(--space-6);
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  pointer-events: none;
+  max-width: 400px;
+  width: calc(100% - 2rem);
+}
+
+.toast {
+  pointer-events: auto;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4) var(--space-5);
+  border-left: 4px solid var(--color-slate-400);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all var(--transition-base);
+}
+
+.toast.toast-success {
+  border-left-color: var(--color-success);
+  background-color: var(--color-success-bg);
+}
+
+.toast.toast-error {
+  border-left-color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+}
+
+.toast.toast-warning {
+  border-left-color: var(--color-warning);
+  background-color: var(--color-warning-bg);
+}
+
+.toast.toast-info {
+  border-left-color: var(--color-gold-500);
+  background-color: var(--color-gold-50);
+}
+
+.toast-message {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.toast-close {
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0 var(--space-1);
+}
+
+/* Announcement Top Banner */
+.announcement-banner {
+  background: linear-gradient(90deg, var(--color-slate-900), var(--color-slate-800));
+  color: #FFFFFF;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-gold-600);
+}
+
+.announcement-banner.priority-urgent {
+  background: linear-gradient(90deg, #7F1D1D, #991B1B);
+}
+
+.announcement-banner a {
+  color: var(--color-gold-300);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

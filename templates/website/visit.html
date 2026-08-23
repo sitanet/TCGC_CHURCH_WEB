@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plan Your Visit — {{ CHURCH_NAME }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-16) 0 var(--space-12); background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
+  <div class="container" style="max-width: 840px; text-align: center;">
+    <span class="section-eyebrow">Experience Fellowship</span>
+    <h1 class="section-title" style="margin-bottom: var(--space-4);">We Can’t Wait to Welcome You</h1>
+    <p class="lead-text">
+      Visiting a church for the first time should be seamless, inspiring, and uplifting. Here is everything you need to know.
+    </p>
+  </div>
+</section>
+
+<section style="padding: var(--space-16) 0;">
+  <div class="container" style="max-width: 900px;">
+    <!-- Service Schedules -->
+    <div class="service-times-banner">
+      <div>
+        <div class="service-time-title">Sunday Celebration</div>
+        <div class="service-time-val">8:00 AM &amp; 10:30 AM</div>
+      </div>
+      <div>
+        <div class="service-time-title">Midweek Encounter</div>
+        <div class="service-time-val">Wednesdays 6:00 PM</div>
+      </div>
+      <div>
+        <div class="service-time-title">Intercessory Gathering</div>
+        <div class="service-time-val">Fridays 6:00 PM</div>
+      </div>
+    </div>
+
+    <!-- What to Expect Grid -->
+    <div class="features-grid" style="margin-top: var(--space-12);">
+      <div class="card">
+        <h4 class="card-title">What to Wear</h4>
+        <p class="card-body">Come as you are! From smart casual to traditional attire, you will feel right at home in our family.</p>
+      </div>
+
+      <div class="card">
+        <h4 class="card-title">Children’s Ministry</h4>
+        <p class="card-body">Our CityKids ministry provides age-appropriate, secure, and engaging Bible lessons for toddlers and young children.</p>
+      </div>
+
+      <div class="card">
+        <h4 class="card-title">First-Time Guests</h4>
+        <p class="card-body">Our hospitality team is eager to assist you with parking, seating, and a warm welcome gift after the service.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
