@@ -1,0 +1,110 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Manage Publication &amp; Journal{% endblock %}
+{% block breadcrumb_title %}Publication Editor{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Publication &amp; Journal Editor</h1>
+    <p class="dashboard-page-subtitle">Upload publication PDF, cover art, edition numbers, and configure download settings.</p>
+  </div>
+  <div>
+    <a href="{% url 'dashboard:publications_list' %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-300);">
+      &larr; Back to Publications
+    </a>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="card" style="padding: var(--space-8); max-width: 860px;">
+  {% csrf_token %}
+
+  {% if form.errors %}
+    <div class="alert alert-danger" style="margin-bottom: var(--space-6);">
+      <strong>Please correct the form errors:</strong>
+      <ul style="margin-top: var(--space-2); margin-left: var(--space-4);">
+        {% for field, errors in form.errors.items %}
+          <li>{{ field|title }}: {{ errors|join:", " }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-5);">
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label class="form-label">Publication Title <span class="required">*</span></label>
+      {{ form.title }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Publication Type <span class="required">*</span></label>
+      {{ form.publication_type }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Edition / Volume / Issue</label>
+      {{ form.edition_volume }}
+      <span class="form-helper">e.g. "Vol. 4 Issue 2" or "2026 Special Edition"</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      {{ form.category }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Author / Contributor Name</label>
+      {{ form.author_name }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Publication Date</label>
+      {{ form.publication_date }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Publication Status <span class="required">*</span></label>
+      {{ form.status }}
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label class="form-label">Summary / Description</label>
+      {{ form.description }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Cover Artwork Image</label>
+      {{ form.cover_image }}
+      <span class="form-helper">Portrait ratio (e.g. 800x1100 JPG/PNG).</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">PDF Document File <span class="required">*</span></label>
+      {{ form.pdf_file }}
+      <span class="form-helper">Clean printable PDF. Max 50MB.</span>
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: var(--space-2);">
+      <div style="display: flex; align-items: center; gap: var(--space-3);">
+        {{ form.is_downloadable }}
+        <label for="id_is_downloadable" class="form-label" style="margin-bottom: 0; cursor: pointer;">
+          Allow Public PDF Downloads
+        </label>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-3);">
+        {{ form.is_featured }}
+        <label for="id_is_featured" class="form-label" style="margin-bottom: 0; cursor: pointer;">
+          ★ Feature on Website Homepage
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--color-slate-200); display: flex; justify-content: space-between; align-items: center;">
+    <a href="{% url 'dashboard:publications_list' %}" class="btn btn-sm btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save &amp; Publish</button>
+  </div>
+</form>
+{% endblock %}

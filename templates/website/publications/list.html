@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Publications &amp; Journals — {{ SITE_CONFIG.site_name }}{% endblock %}
+
+{% block content %}
+<section style="padding: var(--space-16) 0 var(--space-8); background-color: var(--color-obsidian-950); color: #FFF; border-bottom: 1px solid rgba(197, 160, 89, 0.2);">
+  <div class="container" style="max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-6); text-align: center;">
+    <span class="badge badge-gold" style="margin-bottom: var(--space-3);">✦ Publications &amp; Editorial</span>
+    <h1 style="font-family: var(--font-serif); font-size: var(--text-4xl); color: #FFF; margin-bottom: var(--space-4);">
+      Journals, E-Books &amp; Study Materials
+    </h1>
+    <p style="color: var(--color-slate-300); max-width: 620px; margin: 0 auto var(--space-6); font-size: var(--text-base); line-height: 1.6;">
+      Access downloadable apostolic journals, spiritual study outlines, books, and ministry reports published by The CityGate Church.
+    </p>
+
+    <!-- Type Filter Tabs -->
+    <div style="display: flex; justify-content: center; gap: var(--space-2); flex-wrap: wrap;">
+      <a href="{% url 'website:publications_list' %}" class="btn btn-sm {% if not current_type %}btn-primary{% else %}btn-ghost{% endif %}" style="color: #FFF; border: 1px solid var(--color-slate-700);">
+        All Publications
+      </a>
+      {% for val, lbl in publication_types %}
+        <a href="?type={{ val }}" class="btn btn-sm {% if current_type == val %}btn-primary{% else %}btn-ghost{% endif %}" style="color: #FFF; border: 1px solid var(--color-slate-700);">
+          {{ lbl }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+  <div class="container" style="max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-6);">
+    {% if publications %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-8);">
+        {% for pub in publications %}
+          <div class="card" style="overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: transform var(--transition-base);">
+            <div style="height: 320px; background-color: var(--color-slate-900); position: relative; overflow: hidden;">
+              {% if pub.cover_image %}
+                <img src="{{ pub.cover_image.url }}" alt="{{ pub.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+              {% else %}
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--color-gold-400);">📄</div>
+              {% endif %}
+              <div style="position: absolute; top: 12px; left: 12px;">
+                <span class="badge badge-gold" style="font-weight: 700; font-size: 0.7rem;">{{ pub.get_publication_type_display }}</span>
+              </div>
+            </div>
+
+            <div style="padding: var(--space-6); flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: 2px;">
+                  <a href="{% url 'website:publication_detail' pub.slug %}" style="color: var(--color-slate-900); text-decoration: none;">
+                    {{ pub.title }}
+                  </a>
+                </h3>
+                {% if pub.edition_volume %}
+                  <div style="font-size: var(--text-xs); color: var(--color-gold-600); font-weight: 600; margin-bottom: var(--space-2);">
+                    {{ pub.edition_volume }}
+                  </div>
+                {% endif %}
+                {% if pub.description %}
+                  <p style="font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--space-4);">
+                    {{ pub.description|truncatechars:110 }}
+                  </p>
+                {% endif %}
+              </div>
+
+              <div style="padding-top: var(--space-4); border-top: 1px solid var(--color-slate-100); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.65rem; color: var(--color-text-muted);">
+                  📥 {{ pub.download_count }} downloads
+                </span>
+                <div style="display: flex; gap: var(--space-2);">
+                  <a href="{% url 'website:publication_detail' pub.slug %}" class="btn btn-xs btn-secondary">Read More</a>
+                  {% if pub.pdf_file %}
+                    <a href="{% url 'website:publication_download' pub.slug %}" class="btn btn-xs btn-primary">Download PDF</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card" style="padding: var(--space-16); text-align: center;">
+        <h3 style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--color-slate-900);">No Publications Available</h3>
+        <p style="color: var(--color-text-secondary); margin-top: var(--space-2);">Check back shortly for new journals and study guides.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

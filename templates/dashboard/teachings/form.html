@@ -1,0 +1,216 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block breadcrumb_title %}{{ form_title }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">{{ form_title }}</h1>
+    <p class="dashboard-page-subtitle">Configure message meta, media files, transcripts, scripture passages, and publishing.</p>
+  </div>
+  <div>
+    <a href="{% url 'dashboard:teachings_list' %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-300);">
+      &larr; Back to Teachings
+    </a>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="card" style="padding: var(--space-8);">
+  {% csrf_token %}
+
+  {% if form.errors %}
+    <div class="alert alert-danger" style="margin-bottom: var(--space-6);">
+      <strong>Please correct the errors below:</strong>
+      <ul style="margin-top: var(--space-2); margin-left: var(--space-4);">
+        {% for field, errors in form.errors.items %}
+          <li>{{ field|title }}: {{ errors|join:", " }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <!-- 5-Section Form Navigation Tabs -->
+  <div class="form-section-tabs">
+    <button type="button" class="form-tab-btn active" data-form-tab="paneBasic">1. Basic Info</button>
+    <button type="button" class="form-tab-btn" data-form-tab="paneMedia">2. Audio &amp; Video Media</button>
+    <button type="button" class="form-tab-btn" data-form-tab="paneTranscript">3. Transcript</button>
+    <button type="button" class="form-tab-btn" data-form-tab="paneScriptures">4. Scripture References</button>
+    <button type="button" class="form-tab-btn" data-form-tab="panePublishing">5. Publishing &amp; SEO</button>
+  </div>
+
+  <!-- PANE 1: BASIC INFORMATION -->
+  <div class="form-section-content active" id="paneBasic" data-form-pane>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-5);">
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">Teaching Title <span class="required">*</span></label>
+        {{ form.title }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Speaker / Minister (Directory Reference)</label>
+        {{ form.speaker }}
+        <span class="form-helper">Select from pastors/speakers directory.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Speaker Name Override</label>
+        {{ form.speaker_name }}
+        <span class="form-helper">Use only if speaker is not in directory.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Date Preached <span class="required">*</span></label>
+        {{ form.preached_date }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Sermon Series</label>
+        {{ form.series }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Topic Category</label>
+        {{ form.category }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Primary Scripture Reference</label>
+        {{ form.scripture_reference }}
+        <span class="form-helper">Summary text (e.g. "Romans 8:28-39").</span>
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">Short Summary / Excerpt</label>
+        {{ form.summary }}
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">Study Notes &amp; Key Outline Points</label>
+        {{ form.study_notes }}
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">Tags</label>
+        {{ form.tags }}
+      </div>
+    </div>
+  </div>
+
+  <!-- PANE 2: MEDIA (AUDIO & VIDEO) -->
+  <div class="form-section-content" id="paneMedia" data-form-pane>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-5);">
+      <div class="form-group">
+        <label class="form-label">Cover Artwork / Flyer Image</label>
+        {{ form.cover_image }}
+        <span class="form-helper">Recommended: 1200x800 JPG/PNG. Max 10MB.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Audio File (MP3 / M4A)</label>
+        {{ form.audio_file }}
+        <span class="form-helper">High quality message recording. Max 100MB.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Video Stream / YouTube URL</label>
+        {{ form.video_url }}
+        <span class="form-helper">Direct YouTube, Vimeo, or Facebook Live replay URL.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Direct Video File Upload (MP4)</label>
+        {{ form.video_file }}
+        <span class="form-helper">Optional direct file. Max 500MB.</span>
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">Custom Video Embed HTML Code</label>
+        {{ form.video_embed_code }}
+      </div>
+    </div>
+  </div>
+
+  <!-- PANE 3: TRANSCRIPT -->
+  <div class="form-section-content" id="paneTranscript" data-form-pane>
+    <div class="form-group" style="margin-bottom: var(--space-5);">
+      <label class="form-label">Upload Printable Transcript PDF</label>
+      {{ form.transcript_file }}
+      <span class="form-helper">Upload sermon study bulletin or transcript PDF.</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Full Text Transcript (Paste / Edit)</label>
+      {{ form.transcript_text }}
+    </div>
+  </div>
+
+  <!-- PANE 4: SCRIPTURE REFERENCES INLINE -->
+  <div class="form-section-content" id="paneScriptures" data-form-pane>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+      <div>
+        <h3 style="font-size: var(--text-base); font-weight: 700; color: var(--color-slate-900);">Referenced Bible Passages</h3>
+        <p style="font-size: var(--text-xs); color: var(--color-text-secondary);">Add individual verses and text passages referenced in this teaching.</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-secondary" id="addScriptureRowBtn">+ Add Scripture Passage</button>
+    </div>
+
+    <div id="scriptureRowsContainer">
+      {% if existing_scriptures %}
+        {% for sc in existing_scriptures %}
+          <div class="scripture-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 4fr auto; gap: var(--space-2); margin-bottom: var(--space-3); align-items: center;">
+            <input type="text" name="scripture_book[]" value="{{ sc.book }}" class="form-input" placeholder="Book (e.g. Romans)" required>
+            <input type="number" name="scripture_chapter[]" value="{{ sc.chapter }}" class="form-input" placeholder="Chap." min="1" required>
+            <input type="number" name="scripture_verse_start[]" value="{{ sc.verse_start }}" class="form-input" placeholder="From" min="1" required>
+            <input type="number" name="scripture_verse_end[]" value="{{ sc.verse_end|default:'' }}" class="form-input" placeholder="To" min="1">
+            <input type="text" name="scripture_text[]" value="{{ sc.scripture_text }}" class="form-input" placeholder="Scripture quote / text">
+            <button type="button" class="btn btn-sm btn-ghost" style="color: var(--color-danger);" onclick="this.closest('.scripture-row').remove();">&times;</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- PANE 5: PUBLISHING & SEO -->
+  <div class="form-section-content" id="panePublishing" data-form-pane>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-5);">
+      <div class="form-group">
+        <label class="form-label">Publication Status <span class="required">*</span></label>
+        {{ form.status }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Scheduled Publication Date &amp; Time</label>
+        {{ form.scheduled_at }}
+        <span class="form-helper">Will remain unpublished until this exact datetime.</span>
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; gap: var(--space-3); padding-top: var(--space-4);">
+        {{ form.is_featured }}
+        <label for="id_is_featured" class="form-label" style="margin-bottom: 0; cursor: pointer;">
+          ★ Feature on Website Homepage &amp; Media Spotlight
+        </label>
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">SEO Meta Title (Search Engines &amp; Social Previews)</label>
+        {{ form.meta_title }}
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">SEO Meta Description</label>
+        {{ form.meta_description }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons Footer -->
+  <div style="margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--color-slate-200); display: flex; justify-content: space-between; align-items: center;">
+    <a href="{% url 'dashboard:teachings_list' %}" class="btn btn-sm btn-ghost">Cancel</a>
+    <div style="display: flex; gap: var(--space-3);">
+      <button type="submit" class="btn btn-primary">Save Teaching Record</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

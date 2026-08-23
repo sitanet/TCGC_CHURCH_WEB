@@ -1,0 +1,86 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Sermon Series{% endblock %}
+{% block breadcrumb_title %}Sermon Series{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Sermon Series</h1>
+    <p class="dashboard-page-subtitle">Group related sermon teachings and media into thematic collections.</p>
+  </div>
+  <div style="display: flex; gap: var(--space-3);">
+    <a href="{% url 'dashboard:teachings_list' %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-300);">
+      &larr; Back to Teachings
+    </a>
+    <a href="{% url 'dashboard:series_create' %}" class="btn btn-sm btn-primary">
+      + New Series
+    </a>
+  </div>
+</div>
+
+{% if series_list %}
+  <div class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 60px;">Cover</th>
+          <th>Series Title</th>
+          <th>Messages</th>
+          <th>Date Range</th>
+          <th>Status</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ser in series_list %}
+          <tr>
+            <td>
+              {% if ser.cover_image %}
+                <img src="{{ ser.cover_image.url }}" alt="{{ ser.title }}" style="width: 48px; height: 48px; border-radius: var(--radius-sm); object-fit: cover;">
+              {% else %}
+                <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background-color: var(--color-slate-100); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">📚</div>
+              {% endif %}
+            </td>
+            <td>
+              <div style="font-weight: 700; color: var(--color-slate-900);">{{ ser.title }}</div>
+              <div style="font-size: var(--text-xs); color: var(--color-text-secondary);">{{ ser.description|truncatechars:60 }}</div>
+            </td>
+            <td>
+              <span class="badge badge-secondary">{{ ser.sermon_count }} sermons</span>
+            </td>
+            <td>
+              <span style="font-size: var(--text-xs); color: var(--color-text-muted);">
+                {% if ser.start_date %}{{ ser.start_date|date:"M Y" }}{% endif %}
+                {% if ser.end_date %} - {{ ser.end_date|date:"M Y" }}{% endif %}
+              </span>
+            </td>
+            <td>
+              {% if ser.status == 'published' %}
+                <span class="badge badge-success">Published</span>
+              {% else %}
+                <span class="badge badge-secondary">Draft</span>
+              {% endif %}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: var(--space-2);">
+                <a href="{% url 'dashboard:series_edit' ser.pk %}" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);">Edit</a>
+                <button type="button" class="btn btn-xs btn-danger" data-delete-trigger data-delete-url="{% url 'dashboard:series_delete' ser.pk %}" data-item-title="{{ ser.title }}">
+                  &times;
+                </button>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="card" style="padding: var(--space-12); text-align: center;">
+    <h3 style="font-family: var(--font-serif); font-size: var(--text-xl); color: var(--color-slate-900);">No Sermon Series Created</h3>
+    <p style="color: var(--color-text-secondary); margin: var(--space-2) auto var(--space-6);">Create your first thematic series to organize individual sermons.</p>
+    <a href="{% url 'dashboard:series_create' %}" class="btn btn-sm btn-primary">+ Create Series</a>
+  </div>
+{% endif %}
+{% endblock %}

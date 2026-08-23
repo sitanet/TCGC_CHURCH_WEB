@@ -1,0 +1,182 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Events &amp; Church Calendar{% endblock %}
+{% block breadcrumb_title %}Events &amp; Calendar{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Events &amp; Church Calendar</h1>
+    <p class="dashboard-page-subtitle">Schedule special services, revival meetings, seminars, and manage attendee registrations.</p>
+  </div>
+  <div style="display: flex; gap: var(--space-3);">
+    <a href="{% url 'dashboard:conferences_list' %}" class="btn btn-sm btn-secondary">🏛 Annual Conferences</a>
+    <a href="{% url 'dashboard:event_create' %}" class="btn btn-sm btn-primary">+ Add New Event</a>
+  </div>
+</div>
+
+<!-- Search & Timeframe Filter Toolbar -->
+<form method="get" class="filter-toolbar">
+  <div class="filter-group">
+    <input type="text" name="q" value="{{ current_q }}" class="form-input" placeholder="Search events..." style="width: 240px; height: 38px;">
+    
+    <select name="category" class="form-select" style="height: 38px;">
+      <option value="">All Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat.pk }}" {% if current_category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="timeframe" class="form-select" style="height: 38px;">
+      <option value="all" {% if current_timeframe == 'all' %}selected{% endif %}>All Events</option>
+      <option value="upcoming" {% if current_timeframe == 'upcoming' %}selected{% endif %}>Upcoming Only</option>
+      <option value="past" {% if current_timeframe == 'past' %}selected{% endif %}>Past Events</option>
+    </select>
+
+    <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+    {% if current_q or current_category or current_timeframe != 'all' %}
+      <a href="{% url 'dashboard:events_list' %}" class="btn btn-sm btn-ghost" style="color: var(--color-danger);">Reset</a>
+    {% endif %}
+  </div>
+
+  <div style="display: flex; gap: var(--space-2);">
+    <a href="?view=list{% if current_q %}&q={{ current_q }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_timeframe %}&timeframe={{ current_timeframe }}{% endif %}" class="btn btn-xs {% if view_mode == 'list' %}btn-secondary{% else %}btn-ghost{% endif %}">
+      ☰ List View
+    </a>
+    <a href="?view=calendar{% if current_q %}&q={{ current_q }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_timeframe %}&timeframe={{ current_timeframe }}{% endif %}" class="btn btn-xs {% if view_mode == 'calendar' %}btn-secondary{% else %}btn-ghost{% endif %}">
+      📅 Calendar Cards
+    </a>
+  </div>
+</form>
+
+{% if events %}
+  {% if view_mode == 'calendar' %}
+    <!-- Calendar Cards View -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6);">
+      {% for event in events %}
+        <div class="card" style="padding: var(--space-6); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+              <span class="badge badge-gold" style="font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem;">
+                {{ event.start_datetime|date:"M d, Y" }}
+              </span>
+              {% if event.is_featured %}<span style="color: var(--color-gold-500); font-size: 1rem;">★</span>{% endif %}
+            </div>
+
+            <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: var(--space-2);">
+              {{ event.title }}
+            </h3>
+
+            <div style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-bottom: var(--space-3);">
+              🕒 {{ event.start_datetime|date:"H:i" }}{% if event.end_datetime %} - {{ event.end_datetime|date:"H:i" }}{% endif %}<br>
+              📍 {{ event.venue_name }}
+              {% if event.speaker %}• Speaker: <strong>{{ event.speaker.name }}</strong>{% endif %}
+            </div>
+
+            {% if event.description %}
+              <p style="font-size: var(--text-xs); color: var(--color-text-muted); line-height: 1.5;">
+                {{ event.description|truncatechars:90 }}
+              </p>
+            {% endif %}
+          </div>
+
+          <div style="margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--color-slate-100); display: flex; justify-content: space-between; align-items: center;">
+            <a href="{% url 'dashboard:event_registrations' event.pk %}" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);">
+              Registrations ({{ event.registrations.count }})
+            </a>
+            <div style="display: flex; gap: var(--space-2);">
+              <a href="{% url 'dashboard:event_edit' event.pk %}" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);">Edit</a>
+              <button type="button" class="btn btn-xs btn-danger" data-delete-trigger data-delete-url="{% url 'dashboard:event_delete' event.pk %}" data-item-title="{{ event.title }}">
+                &times;
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- List View Table -->
+    <div class="data-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Event Title &amp; Category</th>
+            <th>Date &amp; Time</th>
+            <th>Venue / Location</th>
+            <th>Speaker / Ministry</th>
+            <th>Registrations</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in events %}
+            <tr>
+              <td>
+                <div style="font-weight: 700; color: var(--color-slate-900);">
+                  {{ event.title }}
+                  {% if event.is_featured %}<span style="color: var(--color-gold-500);">★</span>{% endif %}
+                </div>
+                {% if event.category %}
+                  <span class="badge badge-outline" style="font-size: 0.65rem;">{{ event.category.name }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-slate-900); font-weight: 600;">
+                  {{ event.start_datetime|date:"M d, Y" }}
+                </div>
+                <div style="font-size: 0.65rem; color: var(--color-text-muted);">
+                  {{ event.start_datetime|date:"H:i" }}
+                </div>
+              </td>
+              <td>
+                <span style="font-size: var(--text-xs); color: var(--color-slate-700);">{{ event.venue_name }}</span>
+              </td>
+              <td>
+                <div style="font-size: var(--text-xs); color: var(--color-slate-800);">
+                  {% if event.speaker %}{{ event.speaker.name }}{% else %}{{ event.speaker_name|default:"-" }}{% endif %}
+                </div>
+                {% if event.ministry %}
+                  <div style="font-size: 0.65rem; color: var(--color-gold-600);">{{ event.ministry.name }}</div>
+                {% endif %}
+              </td>
+              <td>
+                {% if event.requires_registration %}
+                  <a href="{% url 'dashboard:event_registrations' event.pk %}" class="badge badge-primary" style="text-decoration: none;">
+                    {{ event.registrations.count }} Registered
+                  </a>
+                {% else %}
+                  <span style="font-size: var(--text-xs); color: var(--color-text-muted);">Open Entry</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if event.status == 'published' %}
+                  <span class="badge badge-success">Published</span>
+                {% else %}
+                  <span class="badge badge-secondary">Draft</span>
+                {% endif %}
+              </td>
+              <td style="text-align: right;">
+                <div style="display: inline-flex; gap: var(--space-2);">
+                  <a href="{% url 'dashboard:event_edit' event.pk %}" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);">Edit</a>
+                  <button type="button" class="btn btn-xs btn-danger" data-delete-trigger data-delete-url="{% url 'dashboard:event_delete' event.pk %}" data-item-title="{{ event.title }}">
+                    &times;
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% include 'components/dashboard_pagination.html' %}
+    </div>
+  {% endif %}
+{% else %}
+  <div class="card" style="padding: var(--space-12); text-align: center;">
+    <h3 style="font-family: var(--font-serif); font-size: var(--text-xl); color: var(--color-slate-900);">No Events Scheduled</h3>
+    <p style="color: var(--color-text-secondary); margin: var(--space-2) auto var(--space-6);">Schedule church revivals, conferences, vigils, and seminars.</p>
+    <a href="{% url 'dashboard:event_create' %}" class="btn btn-sm btn-primary">+ Schedule First Event</a>
+  </div>
+{% endif %}
+{% endblock %}

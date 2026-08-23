@@ -1,0 +1,25 @@
+{% if is_paginated %}
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-4) var(--space-6); background-color: var(--color-surface-alt); border-top: 1px solid var(--color-slate-200); border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); font-size: var(--text-xs); color: var(--color-text-muted);">
+    <div>
+      Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> of <strong>{{ paginator.count }}</strong> records
+    </div>
+
+    <div style="display: flex; gap: var(--space-2);">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-200); background: #FFF;">&larr; Previous</a>
+      {% else %}
+        <span class="btn btn-sm btn-ghost" style="opacity: 0.4; border: 1px solid var(--color-slate-200); cursor: not-allowed;">&larr; Previous</span>
+      {% endif %}
+
+      <span class="btn btn-sm btn-ghost" style="font-weight: 700; color: var(--color-slate-900); background: #FFF; border: 1px solid var(--color-gold-300);">
+        Page {{ page_obj.number }} of {{ paginator.num_pages }}
+      </span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-200); background: #FFF;">Next &rarr;</a>
+      {% else %}
+        <span class="btn btn-sm btn-ghost" style="opacity: 0.4; border: 1px solid var(--color-slate-200); cursor: not-allowed;">Next &rarr;</span>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

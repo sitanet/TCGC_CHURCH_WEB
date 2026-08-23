@@ -1,5 +1,5 @@
 """
-Serializers for events.
+Serializers for events and registrations.
 """
 from rest_framework import serializers
 from .models import Event, EventCategory, EventRegistration
@@ -13,6 +13,8 @@ class EventCategorySerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
+    speaker_display = serializers.CharField(source="get_speaker_display", read_only=True)
+    ministry_name = serializers.CharField(source="ministry.name", read_only=True)
     registrations_count = serializers.IntegerField(source="registrations.count", read_only=True)
 
     class Meta:
@@ -23,6 +25,11 @@ class EventSerializer(serializers.ModelSerializer):
             "slug",
             "category",
             "category_name",
+            "ministry",
+            "ministry_name",
+            "speaker",
+            "speaker_name",
+            "speaker_display",
             "tagline",
             "description",
             "banner_image",
@@ -32,17 +39,22 @@ class EventSerializer(serializers.ModelSerializer):
             "recurrence_rule",
             "venue_name",
             "venue_address",
+            "location",
             "is_online",
             "stream_link",
             "requires_registration",
+            "registration_url",
             "max_attendees",
             "is_free",
-            "registrations_count",
+            "contact_email",
+            "contact_phone",
+            "status",
             "is_featured",
+            "registrations_count",
         ]
 
 
 class EventRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventRegistration
-        fields = ["id", "event", "full_name", "email", "phone", "notes", "created_at"]
+        fields = ["id", "event", "full_name", "email", "phone", "notes", "is_confirmed", "created_at"]

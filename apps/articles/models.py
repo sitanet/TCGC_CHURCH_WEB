@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from apps.core.models import TimeStampedModel, SluggedModel, PublishableModel, SEOModel
 from apps.accounts.models import User
+from apps.core.validators import validate_image_file
 
 
 class ArticleCategory(TimeStampedModel, SluggedModel):
@@ -14,6 +15,7 @@ class ArticleCategory(TimeStampedModel, SluggedModel):
     class Meta:
         verbose_name = _("Article Category")
         verbose_name_plural = _("Article Categories")
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -26,7 +28,7 @@ class ArticleCategory(TimeStampedModel, SluggedModel):
 
 class Article(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     """
-    Editorial blog post or article.
+    Editorial blog post, journal piece, or pastoral article.
     """
     title = models.CharField(_("article title"), max_length=255)
     category = models.ForeignKey(ArticleCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="articles")
@@ -35,8 +37,14 @@ class Article(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     
     summary = models.TextField(_("excerpt / short summary"), max_length=500, blank=True)
     body = models.TextField(_("article content (HTML / Markdown)"), blank=True)
-    featured_image = models.ImageField(_("featured image"), upload_to="articles/images/", blank=True, null=True)
-    
+    featured_image = models.ImageField(
+        _("featured image"),
+        upload_to="articles/images/",
+        validators=[validate_image_file],
+        blank=True,
+        null=True,
+    )
+    tags = models.CharField(_("tags (comma separated)"), max_length=255, blank=True)
     reading_time_minutes = models.PositiveIntegerField(_("estimated reading time (mins)"), default=3)
     view_count = models.PositiveIntegerField(_("view count"), default=0)
 
@@ -51,6 +59,10 @@ class Article(TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self.generate_unique_slug(self.title)
+        # Auto-calculate reading time if body has text
+        if self.body:
+            words = len(self.body.split())
+            self.reading_time_minutes = max(1, round(words / 200))
         super().save(*args, **kwargs)
 
     @property

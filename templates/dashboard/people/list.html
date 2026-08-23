@@ -1,0 +1,67 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Leadership &amp; Pastors{% endblock %}
+{% block breadcrumb_title %}Leadership Directory{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Pastoral &amp; Leadership Directory</h1>
+    <p class="dashboard-page-subtitle">Manage pastors, ministers, elders, and reusable conference/teaching guest speakers.</p>
+  </div>
+  <div>
+    <a href="{% url 'dashboard:person_create' %}" class="btn btn-sm btn-primary">+ Add Leader / Speaker</a>
+  </div>
+</div>
+
+{% if people %}
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-6);">
+    {% for person in people %}
+      <div class="card" style="padding: var(--space-6); display: flex; flex-direction: column; align-items: center; text-align: center;">
+        {% if person.photo %}
+          <img src="{{ person.photo.url }}" alt="{{ person.name }}" style="width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 3px solid var(--color-gold-400); margin-bottom: var(--space-3);">
+        {% else %}
+          <div style="width: 88px; height: 88px; border-radius: 50%; background: var(--color-slate-100); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--color-slate-400); margin-bottom: var(--space-3);">
+            👤
+          </div>
+        {% endif %}
+
+        <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: 2px;">
+          {{ person.name }}
+          {% if person.is_featured %}<span style="color: var(--color-gold-500); font-size: 0.9rem;">★</span>{% endif %}
+        </h3>
+        <div style="font-size: var(--text-xs); color: var(--color-gold-600); font-weight: 600; margin-bottom: var(--space-2);">
+          {{ person.title|default:"Minister" }}
+        </div>
+        {% if person.category %}
+          <span class="badge badge-outline" style="font-size: 0.65rem; margin-bottom: var(--space-3);">{{ person.category.name }}</span>
+        {% endif %}
+
+        {% if person.biography %}
+          <p style="font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-4);">
+            {{ person.biography|truncatechars:90 }}
+          </p>
+        {% endif %}
+
+        <div style="width: 100%; padding-top: var(--space-3); border-top: 1px solid var(--color-slate-100); display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+          <a href="{% url 'dashboard:person_edit' person.pk %}" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);">Edit Profile</a>
+          <button type="button" class="btn btn-xs btn-danger" data-delete-trigger data-delete-url="{% url 'dashboard:person_delete' person.pk %}" data-item-title="{{ person.name }}">
+            &times;
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top: var(--space-6);">
+    {% include 'components/dashboard_pagination.html' %}
+  </div>
+{% else %}
+  <div class="card" style="padding: var(--space-12); text-align: center;">
+    <h3 style="font-family: var(--font-serif); font-size: var(--text-xl); color: var(--color-slate-900);">No People in Directory</h3>
+    <p style="color: var(--color-text-secondary); margin: var(--space-2) auto var(--space-6);">Add church pastors, ministers, and guest speakers.</p>
+    <a href="{% url 'dashboard:person_create' %}" class="btn btn-sm btn-primary">+ Add First Person</a>
+  </div>
+{% endif %}
+{% endblock %}

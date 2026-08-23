@@ -1,0 +1,104 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Manage Ministry{% endblock %}
+{% block breadcrumb_title %}Ministry Editor{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Ministry Editor</h1>
+    <p class="dashboard-page-subtitle">Configure department information, leader assignments, schedule, and volunteer settings.</p>
+  </div>
+  <div>
+    <a href="{% url 'dashboard:ministries_list' %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-300);">
+      &larr; Back to Ministries
+    </a>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="card" style="padding: var(--space-8); max-width: 860px;">
+  {% csrf_token %}
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-5);">
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label class="form-label">Ministry Name <span class="required">*</span></label>
+      {{ form.name }}
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label class="form-label">Tagline / Motto</label>
+      {{ form.tagline }}
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label class="form-label">Detailed Description</label>
+      {{ form.description }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Ministry Leader</label>
+      {{ form.leader }}
+      <span class="form-helper">Select leader from people directory.</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Icon Name</label>
+      {{ form.icon_name }}
+      <span class="form-helper">e.g. heart, users, book-open, music</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Meeting Schedule Description</label>
+      {{ form.meeting_schedule }}
+      <span class="form-helper">e.g. "Every 2nd Saturday at 4:00 PM"</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Meeting Location / Room</label>
+      {{ form.meeting_location }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Contact Email</label>
+      {{ form.contact_email }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Contact Phone</label>
+      {{ form.contact_phone }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Cover Artwork</label>
+      {{ form.cover_image }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      {{ form.status }}
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: var(--space-2);">
+      <div style="display: flex; align-items: center; gap: var(--space-3);">
+        {{ form.accepts_volunteers }}
+        <label for="id_accepts_volunteers" class="form-label" style="margin-bottom: 0; cursor: pointer;">
+          Accepting New Volunteers / Members
+        </label>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-3);">
+        {{ form.is_featured }}
+        <label for="id_is_featured" class="form-label" style="margin-bottom: 0; cursor: pointer;">
+          ★ Feature on Website Homepage
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--color-slate-200); display: flex; justify-content: space-between;">
+    <a href="{% url 'dashboard:ministries_list' %}" class="btn btn-sm btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Ministry</button>
+  </div>
+</form>
+{% endblock %}

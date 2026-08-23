@@ -1,0 +1,67 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Ministries &amp; Community Groups{% endblock %}
+{% block breadcrumb_title %}Ministries{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Ministries &amp; Groups</h1>
+    <p class="dashboard-page-subtitle">Manage church departments, fellowships, meeting times, and volunteer teams.</p>
+  </div>
+  <div style="display: flex; gap: var(--space-3);">
+    <a href="{% url 'dashboard:meetings_list' %}" class="btn btn-sm btn-secondary">⏰ Weekly Meetings</a>
+    <a href="{% url 'dashboard:locations_list' %}" class="btn btn-sm btn-secondary">📍 Campuses</a>
+    <a href="{% url 'dashboard:ministry_create' %}" class="btn btn-sm btn-primary">+ Add Ministry</a>
+  </div>
+</div>
+
+{% if ministries %}
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-6);">
+    {% for ministry in ministries %}
+      <div class="card" style="padding: var(--space-6); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+            <div style="width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--color-slate-100); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+              🤝
+            </div>
+            {% if ministry.is_featured %}<span style="color: var(--color-gold-500); font-size: 1rem;">★</span>{% endif %}
+          </div>
+
+          <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: 2px;">
+            {{ ministry.name }}
+          </h3>
+          {% if ministry.tagline %}
+            <div style="font-size: var(--text-xs); color: var(--color-gold-600); font-weight: 600; margin-bottom: var(--space-2);">
+              {{ ministry.tagline }}
+            </div>
+          {% endif %}
+
+          <p style="font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-3);">
+            {{ ministry.description|truncatechars:90 }}
+          </p>
+
+          <div style="font-size: 0.65rem; color: var(--color-text-muted);">
+            {% if ministry.leader %}Leader: <strong>{{ ministry.leader.name }}</strong><br>{% endif %}
+            {% if ministry.meeting_schedule %}Schedule: {{ ministry.meeting_schedule }}{% endif %}
+          </div>
+        </div>
+
+        <div style="width: 100%; padding-top: var(--space-4); border-top: 1px solid var(--color-slate-100); display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4);">
+          <a href="{% url 'dashboard:ministry_edit' ministry.pk %}" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);">Edit</a>
+          <button type="button" class="btn btn-xs btn-danger" data-delete-trigger data-delete-url="{% url 'dashboard:ministry_delete' ministry.pk %}" data-item-title="{{ ministry.name }}">
+            &times;
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card" style="padding: var(--space-12); text-align: center;">
+    <h3 style="font-family: var(--font-serif); font-size: var(--text-xl); color: var(--color-slate-900);">No Ministries Configured</h3>
+    <p style="color: var(--color-text-secondary); margin: var(--space-2) auto var(--space-6);">Create unlimited church departments and community groups.</p>
+    <a href="{% url 'dashboard:ministry_create' %}" class="btn btn-sm btn-primary">+ Add First Ministry</a>
+  </div>
+{% endif %}
+{% endblock %}

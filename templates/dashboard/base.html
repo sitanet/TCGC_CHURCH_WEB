@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Administration Portal{% endblock %} — {{ CHURCH_NAME }}</title>
+  <title>{% block title %}Administration Control Center{% endblock %} — {{ CHURCH_NAME }}</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Core Styles -->
   <link rel="stylesheet" href="{% static 'css/variables.css' %}">
@@ -31,84 +31,161 @@
   {% include 'components/alerts.html' %}
 
   <div class="dashboard-layout">
+    <!-- Sidebar Navigation Overlay for Mobile -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- Sidebar Navigation -->
-    <aside class="dashboard-sidebar">
+    <aside class="dashboard-sidebar" id="dashboardSidebar">
+      <!-- Header -->
       <div class="sidebar-header">
-        <div class="brand-logo-mark" style="width: 32px; height: 32px; font-size: 0.9rem;">CG</div>
-        <div>
+        <div class="brand-logo-mark" style="width: 34px; height: 34px; font-size: 0.95rem;">CG</div>
+        <div style="flex: 1; min-width: 0;">
           <div class="sidebar-brand-name">THE CITYGATE</div>
-          <div class="sidebar-brand-subtitle">Control Center</div>
+          <div class="sidebar-brand-subtitle">Content Management</div>
         </div>
+        <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar">&times;</button>
       </div>
 
+      <!-- Menu -->
       <div class="sidebar-menu">
-        <div class="sidebar-section-title">Core Management</div>
+        <!-- 1. DASHBOARD -->
+        <div class="sidebar-section-title">Dashboard</div>
         <a href="{% url 'dashboard:index' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
           <span class="sidebar-nav-item-icon">❖</span>
           <span>Overview</span>
         </a>
 
-        <div class="sidebar-section-title">Spiritual Content</div>
-        <a href="{% url 'api_v1:teachings:sermon_list' %}" class="sidebar-nav-item" target="_blank">
+        <!-- 2. CONTENT -->
+        <div class="sidebar-section-title">Content</div>
+        <a href="{% url 'dashboard:teachings_list' %}" class="sidebar-nav-item {% if 'teaching' in request.path or 'series' in request.path %}active{% endif %}">
           <span class="sidebar-nav-item-icon">🎙</span>
           <span>Teachings &amp; Sermons</span>
-          <span class="sidebar-badge">API</span>
         </a>
-        <a href="{% url 'api_v1:media_library:gallery_list' %}" class="sidebar-nav-item" target="_blank">
-          <span class="sidebar-nav-item-icon">🖼</span>
-          <span>Media &amp; Photos</span>
-          <span class="sidebar-badge">API</span>
-        </a>
-        <a href="{% url 'api_v1:publications:publication_list' %}" class="sidebar-nav-item" target="_blank">
-          <span class="sidebar-nav-item-icon">📄</span>
-          <span>Publications &amp; PDFs</span>
-          <span class="sidebar-badge">API</span>
-        </a>
-        <a href="{% url 'api_v1:articles:article_list' %}" class="sidebar-nav-item" target="_blank">
+        <a href="{% url 'dashboard:articles_list' %}" class="sidebar-nav-item {% if 'article' in request.path %}active{% endif %}">
           <span class="sidebar-nav-item-icon">✍</span>
           <span>Articles &amp; Blog</span>
-          <span class="sidebar-badge">API</span>
         </a>
-
-        <div class="sidebar-section-title">Community &amp; Gatherings</div>
-        <a href="{% url 'api_v1:events:event_list' %}" class="sidebar-nav-item" target="_blank">
-          <span class="sidebar-nav-item-icon">📅</span>
-          <span>Events &amp; Services</span>
-          <span class="sidebar-badge">API</span>
-        </a>
-        <a href="{% url 'api_v1:conferences:conference_list' %}" class="sidebar-nav-item" target="_blank">
-          <span class="sidebar-nav-item-icon">🏛</span>
-          <span>Conferences</span>
-          <span class="sidebar-badge">API</span>
-        </a>
-        <a href="{% url 'api_v1:ministries:ministry_list' %}" class="sidebar-nav-item" target="_blank">
-          <span class="sidebar-nav-item-icon">🤝</span>
-          <span>Ministries</span>
-          <span class="sidebar-badge">API</span>
-        </a>
-        <a href="{% url 'api_v1:people:people_list' %}" class="sidebar-nav-item" target="_blank">
-          <span class="sidebar-nav-item-icon">👥</span>
-          <span>Pastoral &amp; Staff</span>
-          <span class="sidebar-badge">API</span>
-        </a>
-
-        <div class="sidebar-section-title">Operations</div>
-        <a href="{% url 'api_v1:streaming:status' %}" class="sidebar-nav-item" target="_blank">
-          <span class="sidebar-nav-item-icon">📡</span>
-          <span>Live Streaming</span>
-          <span class="sidebar-badge">API</span>
-        </a>
-        <a href="{% url 'api_v1:announcements:announcement_list' %}" class="sidebar-nav-item" target="_blank">
+        <a href="{% url 'dashboard:announcements_list' %}" class="sidebar-nav-item {% if 'announcement' in request.path %}active{% endif %}">
           <span class="sidebar-nav-item-icon">📢</span>
           <span>Announcements</span>
-          <span class="sidebar-badge">API</span>
         </a>
-        <a href="{% url 'accounts:profile' %}" class="sidebar-nav-item">
-          <span class="sidebar-nav-item-icon">⚙</span>
-          <span>My Profile</span>
+
+        <!-- 3. MEDIA -->
+        <div class="sidebar-section-title">Media</div>
+        <a href="{% url 'dashboard:media_library' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'media_library' %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">📁</span>
+          <span>Media Library</span>
         </a>
+        <a href="{% url 'dashboard:audio_manager' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'audio_manager' %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">🎧</span>
+          <span>Audio Files</span>
+        </a>
+        <a href="{% url 'dashboard:video_manager' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'video_manager' %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">🎬</span>
+          <span>Video Files</span>
+        </a>
+        <a href="{% url 'dashboard:photo_albums_list' %}" class="sidebar-nav-item {% if 'album' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">🖼</span>
+          <span>Photo Albums</span>
+        </a>
+
+        <!-- 4. CHURCH & COMMUNITY -->
+        <div class="sidebar-section-title">Church</div>
+        <a href="{% url 'dashboard:people_list' %}" class="sidebar-nav-item {% if 'people' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">👥</span>
+          <span>Leadership &amp; Pastors</span>
+        </a>
+        <a href="{% url 'dashboard:ministries_list' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'ministries_list' or request.resolver_match.url_name == 'ministry_create' or request.resolver_match.url_name == 'ministry_edit' %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">🤝</span>
+          <span>Ministries</span>
+        </a>
+        <a href="{% url 'dashboard:meetings_list' %}" class="sidebar-nav-item {% if 'meeting' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">⏰</span>
+          <span>Recurring Meetings</span>
+        </a>
+        <a href="{% url 'dashboard:locations_list' %}" class="sidebar-nav-item {% if 'location' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">📍</span>
+          <span>Campuses &amp; Locations</span>
+        </a>
+
+        <!-- 5. EVENTS & CONFERENCES -->
+        <div class="sidebar-section-title">Events</div>
+        <a href="{% url 'dashboard:events_list' %}" class="sidebar-nav-item {% if 'event' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">📅</span>
+          <span>Events &amp; Calendar</span>
+        </a>
+        <a href="{% url 'dashboard:conferences_list' %}" class="sidebar-nav-item {% if 'conference' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">🏛</span>
+          <span>Conferences &amp; Summits</span>
+        </a>
+
+        <!-- 6. PUBLICATIONS & JOURNALS -->
+        <div class="sidebar-section-title">Publications</div>
+        <a href="{% url 'dashboard:publications_list' %}" class="sidebar-nav-item {% if 'publication' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">📄</span>
+          <span>Publications &amp; Journals</span>
+          <span class="sidebar-badge" style="background-color: var(--color-gold-500); color: #FFF;">PDF</span>
+        </a>
+
+        <!-- 7. LIVE STREAMING -->
+        <div class="sidebar-section-title">Broadcast</div>
+        <a href="{% url 'dashboard:live_stream' %}" class="sidebar-nav-item {% if 'live-stream' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">📡</span>
+          <span>Live Control Center</span>
+          <span class="sidebar-badge badge-live">Live</span>
+        </a>
+
+        <!-- 8. COMMUNICATIONS -->
+        <div class="sidebar-section-title">Communication</div>
+        <a href="{% url 'dashboard:contact_messages' %}" class="sidebar-nav-item {% if 'message' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">✉</span>
+          <span>Contact Messages</span>
+          {% if UNREAD_MESSAGES_COUNT > 0 %}
+            <span class="sidebar-badge" style="background-color: var(--color-danger); color: #FFF;">{{ UNREAD_MESSAGES_COUNT }}</span>
+          {% endif %}
+        </a>
+        <a href="{% url 'dashboard:prayer_requests' %}" class="sidebar-nav-item {% if 'prayer' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">🙏</span>
+          <span>Prayer Requests</span>
+          {% if NEW_PRAYER_REQUESTS_COUNT > 0 %}
+            <span class="sidebar-badge" style="background-color: var(--color-gold-500); color: #FFF;">{{ NEW_PRAYER_REQUESTS_COUNT }}</span>
+          {% endif %}
+        </a>
+        <a href="{% url 'dashboard:subscribers_list' %}" class="sidebar-nav-item {% if 'subscriber' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">📬</span>
+          <span>Newsletter List</span>
+        </a>
+
+        <!-- 9. ANALYTICS -->
+        <div class="sidebar-section-title">Analytics</div>
+        <a href="{% url 'dashboard:analytics_overview' %}" class="sidebar-nav-item {% if 'analytics' in request.path %}active{% endif %}">
+          <span class="sidebar-nav-item-icon">📊</span>
+          <span>Performance &amp; Telemetry</span>
+        </a>
+
+        <!-- 10. SYSTEM & SETTINGS -->
+        {% if user.is_admin_user %}
+          <div class="sidebar-section-title">System</div>
+          <a href="{% url 'dashboard:users_list' %}" class="sidebar-nav-item {% if 'user' in request.path %}active{% endif %}">
+            <span class="sidebar-nav-item-icon">👤</span>
+            <span>Staff &amp; Roles</span>
+          </a>
+          <a href="{% url 'dashboard:activity_logs' %}" class="sidebar-nav-item {% if 'activity' in request.path %}active{% endif %}">
+            <span class="sidebar-nav-item-icon">📜</span>
+            <span>Activity Logs</span>
+          </a>
+          <a href="{% url 'dashboard:homepage_settings' %}" class="sidebar-nav-item {% if 'homepage' in request.path %}active{% endif %}">
+            <span class="sidebar-nav-item-icon">🎨</span>
+            <span>Homepage Hero</span>
+          </a>
+          <a href="{% url 'dashboard:website_settings' %}" class="sidebar-nav-item {% if 'system/settings' in request.path %}active{% endif %}">
+            <span class="sidebar-nav-item-icon">⚙</span>
+            <span>Website &amp; SEO</span>
+          </a>
+        {% endif %}
       </div>
 
+      <!-- Footer -->
       <div class="sidebar-footer">
         <a href="{% url 'website:home' %}" class="btn btn-sm btn-ghost" style="color: var(--color-slate-400);" target="_blank">
           🌐 View Website
@@ -123,13 +200,18 @@
     <main class="dashboard-main">
       <!-- Topbar -->
       <header class="dashboard-topbar">
-        <div class="topbar-search-wrapper">
-          <span class="topbar-search-icon">🔍</span>
-          <input type="text" class="topbar-search-input" placeholder="Search resources, members, teachings..." id="globalSearchInput">
+        <div style="display: flex; align-items: center; gap: var(--space-4);">
+          <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" aria-label="Toggle Sidebar">
+            ☰
+          </button>
+          <div class="topbar-breadcrumb">
+            <span style="color: var(--color-text-muted);">The CityGate</span> / 
+            <strong style="color: var(--color-slate-900);">{% block breadcrumb_title %}Control Center{% endblock %}</strong>
+          </div>
         </div>
 
         <div class="topbar-actions">
-          <a href="{% url 'api_v1:api_root' %}" class="btn btn-sm btn-outline" target="_blank">
+          <a href="{% url 'api_v1:api_root' %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-200); font-family: var(--font-mono); font-size: 0.75rem;" target="_blank">
             API v1
           </a>
           
@@ -137,7 +219,7 @@
             <div class="user-avatar-circle">
               {{ user.first_name|first|default:user.username|first|upper }}
             </div>
-            <div style="text-align: left;">
+            <div class="user-profile-meta" style="text-align: left;">
               <div class="user-meta-name">{{ user.get_full_name|default:user.username }}</div>
               <div class="user-meta-role">{{ user.get_role_display }}</div>
             </div>
@@ -150,6 +232,28 @@
         {% block dashboard_content %}{% endblock %}
       </div>
     </main>
+  </div>
+
+  <!-- Delete Confirmation Modal Component -->
+  <div class="modal-backdrop" id="deleteConfirmModal">
+    <div class="modal-container" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-danger);">Confirm Deletion</h3>
+        <button class="modal-close-btn" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6;" id="deleteConfirmMessage">
+          Are you sure you want to permanently delete this item? This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-ghost" data-modal-close>Cancel</button>
+        <form method="post" id="deleteConfirmForm" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger">Confirm Delete</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <!-- Core Scripts -->

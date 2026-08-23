@@ -66,4 +66,4 @@ class AccountsAuthenticationTests(TestCase):
         self.client.login(username="pastor_sam", password="SecurePassword123!")
         staff_response = self.client.get(reverse("dashboard:index"))
         self.assertEqual(staff_response.status_code, 200)
-        self.assertContains(staff_response, "Executive Dashboard")
+        self.assertContains(staff_response, "Executive Overview")

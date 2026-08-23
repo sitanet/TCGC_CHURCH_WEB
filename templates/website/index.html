@@ -1,28 +1,28 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}The CityGate Church — A Place of Divine Encounter{% endblock %}
+{% block title %}{{ SITE_CONFIG.site_name }} — {{ SITE_CONFIG.tagline }}{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
+<!-- Hero Section (Dynamic from Database) -->
+<section class="hero-section" style="{% if hero.hero_image %}background: linear-gradient(180deg, rgba(11, 19, 31, 0.88), rgba(11, 19, 31, 0.96)), url('{{ hero.hero_image.url }}') center/cover no-repeat;{% endif %}">
   <div class="container">
     <div class="hero-grid">
       <!-- Left Column: Vision & Action -->
       <div>
         <div class="hero-tag">
-          <span>✦ Welcome to The CityGate</span>
+          <span>{{ hero.hero_tag }}</span>
         </div>
         <h1 class="hero-title">
-          Where Faith Meets <span>Purpose &amp; Kingdom</span> Power.
+          {{ hero.hero_title }}
         </h1>
         <p class="lead-text">
-          A vibrant community of believers devoted to word-centered truth, spirit-led worship, and transformative impact in our city and across the nations.
+          {{ hero.hero_subtitle }}
         </p>
 
         <div class="hero-actions">
-          <a href="{% url 'website:visit' %}" class="btn btn-lg btn-primary">Plan Your Visit</a>
-          <a href="{% url 'website:about' %}" class="btn btn-lg btn-outline">Our Beliefs &amp; Story</a>
+          <a href="{{ hero.primary_cta_link }}" class="btn btn-lg btn-primary">{{ hero.primary_cta_text }}</a>
+          <a href="{{ hero.secondary_cta_link }}" class="btn btn-lg btn-outline">{{ hero.secondary_cta_text }}</a>
         </div>
       </div>
 
@@ -30,28 +30,50 @@
       <div>
         <div class="hero-visual-card">
           <div class="hero-live-badge">
-            <span>●</span> Sunday Service
+            <span>●</span> Service Gathering
           </div>
           <h3 style="font-family: var(--font-serif); font-size: var(--text-2xl); margin-bottom: var(--space-3); color: var(--color-gold-300);">
-            Join Us This Sunday
+            {{ hero.service_banner_title }}
           </h3>
           <p style="font-size: var(--text-sm); line-height: 1.7; color: var(--color-slate-300); margin-bottom: var(--space-6);">
-            Experience deep worship, prophetic insight, and practical biblical teachings designed to empower your everyday life.
+            {{ hero.service_banner_desc }}
           </p>
 
           <div style="background-color: rgba(255,255,255,0.06); padding: var(--space-4); border-radius: var(--radius-sm); margin-bottom: var(--space-6);">
             <div style="font-size: var(--text-xs); text-transform: uppercase; color: var(--color-gold-400); font-weight: 700; letter-spacing: 0.08em;">Service Times</div>
-            <div style="font-size: var(--text-base); font-weight: 600; margin-top: 4px;">1st Service: 8:00 AM | 2nd Service: 10:30 AM</div>
+            <div style="font-size: var(--text-base); font-weight: 600; margin-top: 4px;">{{ hero.service_banner_times }}</div>
           </div>
 
           <a href="{% url 'website:visit' %}" class="btn btn-full btn-outline" style="border-color: var(--color-gold-400); color: #FFFFFF;">
-            Get Directions &amp; Information &rarr;
+            Plan Your Visit &amp; Directions &rarr;
           </a>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- Active Homepage Announcements -->
+{% if active_announcements %}
+  <section style="padding: var(--space-6) 0; background-color: var(--color-obsidian-950); border-bottom: 1px solid var(--color-gold-500);">
+    <div class="container">
+      {% for ann in active_announcements %}
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); color: #FFF; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: var(--space-3);">
+            <span class="badge {% if ann.priority == 'urgent' %}badge-danger{% elif ann.priority == 'important' %}badge-gold{% else %}badge-primary{% endif %}">
+              {{ ann.get_priority_display }}
+            </span>
+            <strong style="font-size: var(--text-sm);">{{ ann.title }}:</strong>
+            <span style="font-size: var(--text-sm); color: var(--color-slate-300);">{{ ann.message }}</span>
+          </div>
+          {% if ann.link_url %}
+            <a href="{{ ann.link_url }}" class="btn btn-xs btn-gold">{{ ann.link_label|default:"Learn More" }}</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
 
 <!-- Scripture Quote Section -->
 <section style="padding: var(--space-12) 0; background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
@@ -65,48 +87,83 @@
   </div>
 </section>
 
-<!-- Core Pillars Section -->
-<section class="features-section">
-  <div class="container">
-    <div class="text-center" style="max-width: 640px; margin: 0 auto;">
-      <span class="section-eyebrow">Discover The CityGate</span>
-      <h2 class="section-title">Built Upon Kingdom Truth &amp; Genuine Community</h2>
+<!-- Publications & Journals Spotlight -->
+{% if recent_publications or featured_publication %}
+  <section style="padding: var(--space-16) 0; background-color: var(--color-surface); border-bottom: 1px solid var(--color-slate-200);">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-10); flex-wrap: wrap; gap: var(--space-4);">
+        <div>
+          <span class="section-eyebrow">Publications &amp; Resources</span>
+          <h2 class="section-title" style="margin-bottom: 0;">Apostolic Journals &amp; Study Guides</h2>
+        </div>
+        <a href="{% url 'website:publications_list' %}" class="btn btn-sm btn-secondary">
+          View All Publications &rarr;
+        </a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-8);">
+        {% for pub in recent_publications %}
+          <div class="card" style="overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="height: 280px; background-color: var(--color-slate-900); position: relative;">
+              {% if pub.cover_image %}
+                <img src="{{ pub.cover_image.url }}" alt="{{ pub.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+              {% else %}
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: var(--color-gold-400);">📄</div>
+              {% endif %}
+              <div style="position: absolute; top: 12px; left: 12px;">
+                <span class="badge badge-gold" style="font-size: 0.65rem;">{{ pub.get_publication_type_display }}</span>
+              </div>
+            </div>
+
+            <div style="padding: var(--space-5); flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <h3 style="font-family: var(--font-serif); font-size: var(--text-base); color: var(--color-slate-900); margin-bottom: 2px;">
+                  <a href="{% url 'website:publication_detail' pub.slug %}" style="color: var(--color-slate-900); text-decoration: none;">
+                    {{ pub.title }}
+                  </a>
+                </h3>
+                {% if pub.edition_volume %}
+                  <div style="font-size: var(--text-xs); color: var(--color-gold-600); font-weight: 600; margin-bottom: var(--space-2);">
+                    {{ pub.edition_volume }}
+                  </div>
+                {% endif %}
+                {% if pub.description %}
+                  <p style="font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.5;">
+                    {{ pub.description|truncatechars:90 }}
+                  </p>
+                {% endif %}
+              </div>
+
+              <div style="padding-top: var(--space-3); border-top: 1px solid var(--color-slate-100); display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4);">
+                <span style="font-size: 0.65rem; color: var(--color-text-muted);">{{ pub.download_count }} downloads</span>
+                {% if pub.pdf_file %}
+                  <a href="{% url 'website:publication_download' pub.slug %}" class="btn btn-xs btn-primary">Download PDF</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
+  </section>
+{% endif %}
 
-    <div class="features-grid">
-      <!-- Feature 1 -->
-      <div class="card card-gold-accent">
-        <div class="card-header">
-          <span class="card-subtitle">Foundational Truth</span>
-          <h3 class="card-title">Sound Biblical Teaching</h3>
-        </div>
-        <div class="card-body">
-          In-depth, uncompromised exposition of scripture providing practical revelation for faith, leadership, and godly impact.
-        </div>
-      </div>
+<!-- Newsletter Subscription Box -->
+<section style="padding: var(--space-16) 0; background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-950)); color: #FFF;">
+  <div class="container" style="max-width: 680px; text-align: center;">
+    <span class="badge badge-gold" style="margin-bottom: var(--space-3);">✦ Stay Connected</span>
+    <h2 style="font-family: var(--font-serif); font-size: var(--text-3xl); color: #FFF; margin-bottom: var(--space-3);">
+      Subscribe to Devotionals &amp; Bulletins
+    </h2>
+    <p style="color: var(--color-slate-300); font-size: var(--text-sm); line-height: 1.6; margin-bottom: var(--space-6);">
+      Receive weekly sermon study guides, prophetic declarations, monthly journals, and event invitations directly to your inbox.
+    </p>
 
-      <!-- Feature 2 -->
-      <div class="card card-gold-accent">
-        <div class="card-header">
-          <span class="card-subtitle">Spirit-Led Devotion</span>
-          <h3 class="card-title">Atmosphere of Worship</h3>
-        </div>
-        <div class="card-body">
-          Dynamic praise and deep intimate worship that welcomes the tangible presence and transformative power of the Holy Spirit.
-        </div>
-      </div>
-
-      <!-- Feature 3 -->
-      <div class="card card-gold-accent">
-        <div class="card-header">
-          <span class="card-subtitle">Discipleship &amp; Care</span>
-          <h3 class="card-title">Vibrant Community</h3>
-        </div>
-        <div class="card-body">
-          A welcoming family of faith where people of all generations connect, serve, grow spiritually, and build lifelong bonds.
-        </div>
-      </div>
-    </div>
+    <form method="post" action="{% url 'website:newsletter_subscribe' %}" style="display: flex; gap: var(--space-3); max-width: 480px; margin: 0 auto; flex-wrap: wrap;">
+      {% csrf_token %}
+      <input type="email" name="email" class="form-input" placeholder="Enter your email address" required style="flex: 1; min-width: 220px; background: #FFF; color: var(--color-slate-900);">
+      <button type="submit" class="btn btn-gold">Subscribe</button>
+    </form>
   </div>
 </section>
 {% endblock %}

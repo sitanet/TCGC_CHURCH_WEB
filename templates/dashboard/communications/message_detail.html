@@ -1,0 +1,85 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Message from {{ msg.full_name }}{% endblock %}
+{% block breadcrumb_title %}Message Detail{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Inquiry from {{ msg.full_name }}</h1>
+    <p class="dashboard-page-subtitle">Submitted on {{ msg.created_at|date:"F d, Y @ H:i" }}</p>
+  </div>
+  <div>
+    <a href="{% url 'dashboard:contact_messages' %}" class="btn btn-sm btn-ghost" style="border: 1px solid var(--color-slate-300);">
+      &larr; Back to Inbox
+    </a>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6);">
+  <!-- Message Body -->
+  <div class="card" style="padding: var(--space-8);">
+    <div style="margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-slate-100);">
+      <h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--color-slate-900);">{{ msg.subject }}</h3>
+      <div style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top: var(--space-1);">
+        From: <strong>{{ msg.full_name }}</strong> &lt;<a href="mailto:{{ msg.email }}" style="color: var(--color-gold-600);">{{ msg.email }}</a>&gt; {% if msg.phone %}• Phone: {{ msg.phone }}{% endif %}
+      </div>
+    </div>
+
+    <div style="font-size: var(--text-base); color: var(--color-slate-900); line-height: 1.7; white-space: pre-wrap; margin-bottom: var(--space-8);">
+      {{ msg.message }}
+    </div>
+
+    <!-- Staff Notes & Reply Form -->
+    <form method="post" style="padding-top: var(--space-6); border-top: 1px solid var(--color-slate-200);">
+      {% csrf_token %}
+      <h4 style="font-size: var(--text-sm); font-weight: 700; color: var(--color-slate-900); margin-bottom: var(--space-3);">
+        Internal Staff Notes &amp; Follow-up Actions
+      </h4>
+      <div class="form-group">
+        <textarea name="admin_notes" class="form-textarea" rows="3" placeholder="Enter notes on follow-up, phone call outcome, or counseling actions...">{{ msg.admin_notes }}</textarea>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4);">
+        <button type="submit" name="action" value="archive" class="btn btn-sm btn-ghost" style="color: var(--color-text-muted);">
+          Archive Message
+        </button>
+        <button type="submit" name="action" value="mark_replied" class="btn btn-sm btn-primary">
+          Save Notes &amp; Mark Replied
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sender Meta Card -->
+  <div class="card" style="padding: var(--space-6); height: fit-content;">
+    <h3 style="font-family: var(--font-serif); font-size: var(--text-base); color: var(--color-slate-900); margin-bottom: var(--space-4);">
+      Contact Details
+    </h3>
+
+    <div style="display: flex; flex-direction: column; gap: var(--space-3); font-size: var(--text-xs);">
+      <div>
+        <span style="color: var(--color-text-muted); display: block;">Full Name</span>
+        <strong style="color: var(--color-slate-900); font-size: var(--text-sm);">{{ msg.full_name }}</strong>
+      </div>
+      <div>
+        <span style="color: var(--color-text-muted); display: block;">Email</span>
+        <a href="mailto:{{ msg.email }}" style="color: var(--color-gold-600); font-weight: 600;">{{ msg.email }}</a>
+      </div>
+      {% if msg.phone %}
+        <div>
+          <span style="color: var(--color-text-muted); display: block;">Phone</span>
+          <a href="tel:{{ msg.phone }}" style="color: var(--color-slate-900); font-weight: 600;">{{ msg.phone }}</a>
+        </div>
+      {% endif %}
+      <div>
+        <span style="color: var(--color-text-muted); display: block;">Status</span>
+        <span class="badge {% if msg.status == 'new' %}badge-danger{% elif msg.status == 'replied' %}badge-success{% else %}badge-secondary{% endif %}">
+          {{ msg.get_status_display }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

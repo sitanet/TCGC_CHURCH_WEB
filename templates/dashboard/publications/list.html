@@ -1,0 +1,139 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Publications, Journals &amp; E-Books{% endblock %}
+{% block breadcrumb_title %}Publications &amp; Resources{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-page-header">
+  <div>
+    <h1 class="dashboard-page-title">Publications &amp; Journals</h1>
+    <p class="dashboard-page-subtitle">Publish downloadable church journals, study guides, monthly newsletters, and e-books.</p>
+  </div>
+  <div style="display: flex; gap: var(--space-3);">
+    <a href="{% url 'dashboard:publication_create' %}?type=journal" class="btn btn-sm btn-gold">
+      + New Journal Edition
+    </a>
+    <a href="{% url 'dashboard:publication_create' %}" class="btn btn-sm btn-primary">
+      + Add Publication
+    </a>
+  </div>
+</div>
+
+<!-- Search & Type Filter Toolbar -->
+<form method="get" class="filter-toolbar">
+  <div class="filter-group">
+    <input type="text" name="q" value="{{ current_q }}" class="form-input" placeholder="Search by title, edition, author..." style="width: 260px; height: 38px;">
+    
+    <select name="type" class="form-select" style="height: 38px;">
+      <option value="">All Publication Types</option>
+      {% for val, lbl in publication_types %}
+        <option value="{{ val }}" {% if current_type == val %}selected{% endif %}>{{ lbl }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="status" class="form-select" style="height: 38px;">
+      <option value="">All Statuses</option>
+      {% for val, lbl in status_choices %}
+        <option value="{{ val }}" {% if current_status == val %}selected{% endif %}>{{ lbl }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+    {% if current_q or current_type or current_status %}
+      <a href="{% url 'dashboard:publications_list' %}" class="btn btn-sm btn-ghost" style="color: var(--color-danger);">Reset</a>
+    {% endif %}
+  </div>
+</form>
+
+{% if publications %}
+  <div class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 60px;">Cover</th>
+          <th>Publication Title &amp; Edition</th>
+          <th>Type / Category</th>
+          <th>Date</th>
+          <th>File Size</th>
+          <th>Downloads</th>
+          <th>Status</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pub in publications %}
+          <tr>
+            <td>
+              {% if pub.cover_image %}
+                <img src="{{ pub.cover_image.url }}" alt="{{ pub.title }}" style="width: 48px; height: 64px; border-radius: var(--radius-sm); object-fit: cover; border: 1px solid var(--color-slate-200);">
+              {% else %}
+                <div style="width: 48px; height: 64px; border-radius: var(--radius-sm); background-color: var(--color-slate-100); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📄</div>
+              {% endif %}
+            </td>
+            <td>
+              <div style="font-weight: 700; color: var(--color-slate-900);">
+                {{ pub.title }}
+                {% if pub.is_featured %}<span style="color: var(--color-gold-500); font-size: 0.9rem;">★</span>{% endif %}
+              </div>
+              {% if pub.edition_volume %}
+                <div style="font-size: var(--text-xs); color: var(--color-gold-600); font-weight: 600;">{{ pub.edition_volume }}</div>
+              {% endif %}
+              <div style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top: 2px;">
+                By {{ pub.author_name }}
+              </div>
+            </td>
+            <td>
+              <span class="badge {% if pub.publication_type == 'journal' %}badge-gold{% elif pub.publication_type == 'ebook' %}badge-primary{% else %}badge-outline{% endif %}" style="font-size: 0.65rem;">
+                {{ pub.get_publication_type_display }}
+              </span>
+              {% if pub.category %}
+                <div style="font-size: 0.65rem; color: var(--color-text-muted); margin-top: 2px;">{{ pub.category.name }}</div>
+              {% endif %}
+            </td>
+            <td>
+              <span style="font-size: var(--text-xs); color: var(--color-slate-700);">{{ pub.publication_date|date:"M d, Y"|default:"-" }}</span>
+            </td>
+            <td>
+              <span style="font-size: var(--text-xs); color: var(--color-text-muted);">{{ pub.file_size_bytes|filesizeformat }}</span>
+            </td>
+            <td>
+              <span class="badge badge-secondary" style="font-size: 0.75rem; font-weight: 700;">{{ pub.download_count }}</span>
+            </td>
+            <td>
+              {% if pub.status == 'published' %}
+                <span class="badge badge-success">Published</span>
+              {% elif pub.status == 'archived' %}
+                <span class="badge badge-outline">Archived</span>
+              {% else %}
+                <span class="badge badge-secondary">Draft</span>
+              {% endif %}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: var(--space-2); align-items: center;">
+                {% if pub.pdf_file %}
+                  <a href="{{ pub.pdf_file.url }}" target="_blank" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);" title="Preview PDF">Read PDF</a>
+                {% endif %}
+                <a href="{% url 'dashboard:publication_edit' pub.pk %}" class="btn btn-xs btn-ghost" style="border: 1px solid var(--color-slate-200);">Edit</a>
+                <button type="button" class="btn btn-xs btn-danger" data-delete-trigger data-delete-url="{% url 'dashboard:publication_delete' pub.pk %}" data-item-title="{{ pub.title }}">
+                  &times;
+                </button>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include 'components/dashboard_pagination.html' %}
+  </div>
+{% else %}
+  <div class="card" style="padding: var(--space-12); text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: var(--space-3);">📄</div>
+    <h3 style="font-family: var(--font-serif); font-size: var(--text-xl); color: var(--color-slate-900);">No Publications Found</h3>
+    <p style="color: var(--color-text-secondary); max-width: 400px; margin: var(--space-2) auto var(--space-6);">
+      Publish church journals, study guides, monthly bulletins, or e-books with downloadable PDF attachments.
+    </p>
+    <a href="{% url 'dashboard:publication_create' %}?type=journal" class="btn btn-sm btn-gold">+ Publish First Journal</a>
+  </div>
+{% endif %}
+{% endblock %}
