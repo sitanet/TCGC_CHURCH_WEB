@@ -59,12 +59,12 @@
               </div>
             {% endif %}
 
-            <div style="display: flex; gap: var(--space-3);">
-              <a href="{% url 'website:live_stream' %}" class="btn btn-primary" style="flex: 1; justify-content: center;">
+            <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+              <a href="{% url 'website:live_stream' %}" class="btn btn-primary" style="flex: 1; min-width: 140px; justify-content: center;">
                 ▶ Watch Stream
               </a>
               {% if live_channel.audio_stream_url %}
-                <a href="{% url 'website:live_stream' %}#audio" class="btn btn-secondary" style="flex: 1; justify-content: center;">
+                <a href="{% url 'website:live_stream' %}#audio" class="btn btn-secondary" style="flex: 1; min-width: 140px; justify-content: center;">
                   🎧 Listen Live
                 </a>
               {% endif %}
@@ -102,7 +102,7 @@
     <div class="discovery-grid">
       <!-- 1. Watch -->
       <a href="{% url 'website:teachings_list' %}?media=video" class="discovery-pill">
-        <div class="discovery-icon">▶</div>
+        <div class="discovery-icon" aria-hidden="true">▶</div>
         <div>
           <div class="discovery-title">Watch</div>
           <div class="discovery-subtitle">Video Messages</div>
@@ -111,7 +111,7 @@
 
       <!-- 2. Listen -->
       <a href="{% url 'website:teachings_list' %}?media=audio" class="discovery-pill">
-        <div class="discovery-icon">🎙</div>
+        <div class="discovery-icon" aria-hidden="true">🎙</div>
         <div>
           <div class="discovery-title">Listen</div>
           <div class="discovery-subtitle">Audio Sermons</div>
@@ -120,7 +120,7 @@
 
       <!-- 3. Read -->
       <a href="{% url 'website:publications_list' %}" class="discovery-pill">
-        <div class="discovery-icon">📖</div>
+        <div class="discovery-icon" aria-hidden="true">📖</div>
         <div>
           <div class="discovery-title">Read</div>
           <div class="discovery-subtitle">Journals &amp; Books</div>
@@ -129,7 +129,7 @@
 
       <!-- 4. Events -->
       <a href="{% url 'website:events_list' %}" class="discovery-pill">
-        <div class="discovery-icon">📅</div>
+        <div class="discovery-icon" aria-hidden="true">📅</div>
         <div>
           <div class="discovery-title">Events</div>
           <div class="discovery-subtitle">Church Calendar</div>
@@ -138,7 +138,7 @@
 
       <!-- 5. Visit -->
       <a href="{% url 'website:plan_visit' %}" class="discovery-pill">
-        <div class="discovery-icon">📍</div>
+        <div class="discovery-icon" aria-hidden="true">📍</div>
         <div>
           <div class="discovery-title">Visit</div>
           <div class="discovery-subtitle">Plan Your Visit</div>
@@ -148,9 +148,9 @@
   </div>
 </section>
 
-<!-- 3. FEATURED TEACHING SPOTLIGHT -->
+<!-- 3. FEATURED TEACHING SPOTLIGHT (Split Layout) -->
 {% if featured_sermon %}
-<section style="padding: var(--space-20) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
   <div class="container">
     <div class="section-header-editorial">
       <div>
@@ -162,12 +162,12 @@
       </a>
     </div>
 
-    <div class="card" style="padding: var(--space-8); background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-950)); color: #FFFFFF; border: 1px solid var(--color-slate-800); box-shadow: var(--shadow-xl);">
-      <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: var(--space-10); align-items: center;">
+    <div class="card" style="padding: clamp(var(--space-6), 4vw, var(--space-10)); background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-950)); color: #FFFFFF; border: 1px solid var(--color-slate-800); box-shadow: var(--shadow-xl);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-10); align-items: center;">
         <!-- Cover Art Frame -->
-        <div style="height: 340px; border-radius: var(--radius-md); overflow: hidden; background-color: var(--color-slate-850); position: relative; box-shadow: var(--shadow-lg);">
+        <div style="aspect-ratio: 16 / 10; border-radius: var(--radius-md); overflow: hidden; background-color: var(--color-slate-850); position: relative; box-shadow: var(--shadow-lg);">
           {% if featured_sermon.cover_image %}
-            <img src="{{ featured_sermon.cover_image.url }}" alt="{{ featured_sermon.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="{{ featured_sermon.cover_image.url }}" alt="{{ featured_sermon.title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
           {% else %}
             <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--color-gold-400);">🎙</div>
           {% endif %}
@@ -180,7 +180,7 @@
 
         <!-- Sermon Details & Interactive Audio/Video Player -->
         <div>
-          <div style="display: flex; align-items: center; gap: var(--space-3); font-size: 0.78rem; color: var(--color-slate-400); margin-bottom: var(--space-3);">
+          <div style="display: flex; align-items: center; gap: var(--space-3); font-size: 0.78rem; color: var(--color-slate-400); margin-bottom: var(--space-3); flex-wrap: wrap;">
             <span>🗓 {{ featured_sermon.preached_date|date:"F d, Y" }}</span>
             <span>•</span>
             <span style="color: var(--color-gold-300); font-weight: 600;">{{ featured_sermon.get_speaker_display }}</span>
@@ -205,13 +205,13 @@
             <div class="audio-player-card" data-audio-player style="margin-bottom: var(--space-6);">
               <audio src="{{ featured_sermon.audio_file.url }}" preload="metadata"></audio>
               <div class="audio-controls-row">
-                <button type="button" class="btn-audio-play" data-audio-play-btn aria-label="Play Message">
+                <button type="button" class="btn-audio-play" data-audio-play-btn aria-label="Play Message Audio">
                   <span data-audio-play-icon>▶</span>
                 </button>
                 <div class="audio-progress-container">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                     <span style="font-size: 0.72rem; font-weight: 600; color: var(--color-gold-300);">Audio Message</span>
-                    <button type="button" class="audio-speed-btn" data-audio-speed-btn>1x</button>
+                    <button type="button" class="audio-speed-btn" data-audio-speed-btn aria-label="Playback speed">1x</button>
                   </div>
                   <div class="audio-progress-bar" data-audio-progress-bar>
                     <div class="audio-progress-fill" data-audio-progress-fill></div>
@@ -225,7 +225,7 @@
             </div>
           {% endif %}
 
-          <div style="display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
             <a href="{% url 'website:teaching_detail' featured_sermon.slug %}" class="btn btn-primary">
               View Full Message &amp; Transcript &rarr;
             </a>
@@ -249,7 +249,7 @@
 
 <!-- 4. LATEST TEACHINGS GRID -->
 {% if latest_sermons %}
-<section style="padding: var(--space-20) 0; background-color: var(--color-warm-bg); border-bottom: 1px solid var(--color-slate-200);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: var(--color-warm-bg); border-bottom: 1px solid var(--color-slate-200);">
   <div class="container">
     <div class="section-header-editorial">
       <div>
@@ -266,7 +266,7 @@
         <div class="sermon-card">
           <div class="sermon-cover-wrapper">
             {% if sermon.cover_image %}
-              <img src="{{ sermon.cover_image.url }}" alt="{{ sermon.title }}" class="sermon-cover-img">
+              <img src="{{ sermon.cover_image.url }}" alt="{{ sermon.title }}" class="sermon-cover-img" loading="lazy">
             {% else %}
               <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--color-gold-400);">🎙</div>
             {% endif %}
@@ -318,10 +318,10 @@
 </section>
 {% endif %}
 
-<!-- 5. EDITORIAL ABOUT CITYGATE -->
-<section style="padding: var(--space-20) 0; background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
+<!-- 5. EDITORIAL ABOUT CITYGATE (Magazine Spread) -->
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: var(--color-warm-subtle); border-bottom: 1px solid var(--color-slate-200);">
   <div class="container">
-    <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--space-12); align-items: center;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-12); align-items: center;">
       <div>
         <span class="section-eyebrow">Spiritual Heritage &amp; Mandate</span>
         <h2 class="section-title" style="margin-bottom: var(--space-6);">
@@ -348,8 +348,8 @@
       </div>
 
       <!-- Editorial Scripture Block -->
-      <div class="card" style="padding: var(--space-10); background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-950)); color: #FFFFFF; border: 1px solid var(--color-gold-500); box-shadow: var(--shadow-xl); text-align: center;">
-        <span style="font-size: 2.5rem; color: var(--color-gold-400); display: block; margin-bottom: var(--space-2);">✦</span>
+      <div class="card" style="padding: clamp(var(--space-6), 4vw, var(--space-10)); background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-950)); color: #FFFFFF; border: 1px solid var(--color-gold-500); box-shadow: var(--shadow-xl); text-align: center;">
+        <span style="font-size: 2.5rem; color: var(--color-gold-400); display: block; margin-bottom: var(--space-2);" aria-hidden="true">✦</span>
         <blockquote style="font-family: var(--font-serif); font-size: clamp(1.15rem, 2vw, 1.5rem); font-style: italic; line-height: 1.6; color: #FFFFFF; margin-bottom: var(--space-4);">
           &ldquo;Open to me the gates of righteousness: I will go into them, and I will praise the Lord: This gate of the Lord, into which the righteous shall enter.&rdquo;
         </blockquote>
@@ -363,7 +363,7 @@
 
 <!-- 6. UPCOMING EVENTS -->
 {% if upcoming_events %}
-<section style="padding: var(--space-20) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
   <div class="container">
     <div class="section-header-editorial">
       <div>
@@ -424,7 +424,7 @@
 
 <!-- 7. MINISTRIES SHOWCASE -->
 {% if showcase_ministries %}
-<section style="padding: var(--space-20) 0; background-color: var(--color-warm-bg); border-bottom: 1px solid var(--color-slate-200);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: var(--color-warm-bg); border-bottom: 1px solid var(--color-slate-200);">
   <div class="container">
     <div class="section-header-editorial">
       <div>
@@ -440,7 +440,7 @@
       {% for min_item in showcase_ministries %}
         <div class="card" style="padding: var(--space-6); display: flex; flex-direction: column; justify-content: space-between; background-color: #FFFFFF; border: 1px solid var(--color-slate-200); box-shadow: var(--shadow-sm);">
           <div>
-            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--color-gold-100); color: var(--color-gold-800); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: var(--space-4);">
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--color-gold-100); color: var(--color-gold-800); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: var(--space-4);" aria-hidden="true">
               ✦
             </div>
             <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: 2px;">
@@ -477,7 +477,7 @@
 
 <!-- 8. PUBLICATIONS & APOSTOLIC JOURNALS SPOTLIGHT -->
 {% if recent_publications %}
-<section style="padding: var(--space-20) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: #FFFFFF; border-bottom: 1px solid var(--color-slate-200);">
   <div class="container">
     <div class="section-header-editorial">
       <div>
@@ -494,7 +494,7 @@
         <div class="publication-book-card">
           <div class="publication-cover-frame">
             {% if pub.cover_image %}
-              <img src="{{ pub.cover_image.url }}" alt="{{ pub.title }}">
+              <img src="{{ pub.cover_image.url }}" alt="{{ pub.title }}" loading="lazy">
             {% else %}
               <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: var(--color-gold-400);">📖</div>
             {% endif %}
@@ -536,7 +536,7 @@
 
 <!-- 9. EDITORIAL ARTICLES / BLOG -->
 {% if recent_articles %}
-<section style="padding: var(--space-20) 0; background-color: var(--color-warm-bg);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: var(--color-warm-bg); border-bottom: 1px solid var(--color-slate-200);">
   <div class="container">
     <div class="section-header-editorial">
       <div>
@@ -584,4 +584,25 @@
   </div>
 </section>
 {% endif %}
+
+<!-- 10. CONNECT & VISIT PRE-FOOTER BANNER -->
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-950)); color: #FFFFFF; text-align: center;">
+  <div class="container" style="max-width: 780px;">
+    <span class="section-eyebrow" style="color: var(--color-gold-400);">✦ Welcome Home</span>
+    <h2 style="font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; color: #FFFFFF; margin-bottom: var(--space-4);">
+      Experience The Tangible Presence of God
+    </h2>
+    <p style="font-size: var(--text-base); color: var(--color-slate-300); line-height: 1.8; margin-bottom: var(--space-8);">
+      Whether you are joining us in person at our auditoriums or streaming from across the nations, there is a place for you at The CityGate Church.
+    </p>
+    <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'website:plan_visit' %}" class="btn btn-lg btn-primary" style="font-weight: 700;">
+        Plan Your Visit This Sunday &rarr;
+      </a>
+      <a href="{% url 'website:prayer_request' %}" class="btn btn-lg btn-outline" style="border-color: rgba(255,255,255,0.4); color: #FFFFFF;">
+        Submit Prayer Request
+      </a>
+    </div>
+  </div>
+</section>
 {% endblock %}

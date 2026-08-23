@@ -1,19 +1,51 @@
 /* ==============================================================================
-   THE CITYGATE CHURCH - INTERNATIONAL PUBLIC WEBSITE DESIGN SYSTEM
-   Theme: Spiritual Luxury, Editorial Elegance, Warm Ivory & Deep Obsidian
+   THE CITYGATE CHURCH — WORLD-CLASS DIGITAL DESIGN SYSTEM & UX
+   Theme: Spiritual Luxury, Editorial Authority, Warm Ivory & Deep Obsidian
    Colors: Obsidian #0B131F | Warm Divine Gold #C5A059 | Warm Ivory #FAF8F5
-============================================================================== */
+   ============================================================================== */
 
-/* Base Layout & Reset Extensions */
+/* ==============================================================================
+   1. BASE TYPOGRAPHY SCALE & RHYTHM
+   ============================================================================== */
+
+:root {
+  --color-obsidian-950: #070B12;
+  --color-obsidian-900: #0B131F;
+  --color-obsidian-850: #101B2B;
+  --color-obsidian-800: #172437;
+  --color-gold-50: #FAF6ED;
+  --color-gold-100: #F3EBD6;
+  --color-gold-200: #E6D4AA;
+  --color-gold-300: #D8BD7D;
+  --color-gold-400: #CBA751;
+  --color-gold-500: #C5A059;
+  --color-gold-600: #A8833E;
+  --color-gold-700: #88652A;
+  --color-ivory-50: #FFFFFF;
+  --color-ivory-100: #FAF8F5;
+  --color-ivory-200: #F4EFE6;
+  --color-ivory-300: #E8E0D2;
+}
+
 body {
   background-color: var(--color-warm-bg);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  text-rendering: optimizeLegibility;
 }
 
+/* Accessible Focus Ring */
+*:focus-visible {
+  outline: 2px solid var(--color-gold-500) !important;
+  outline-offset: 3px !important;
+}
+
+/* Containers */
 .container {
   width: 100%;
   max-width: var(--container-max);
@@ -24,35 +56,68 @@ body {
 }
 
 .container-narrow {
-  max-width: 860px;
+  width: 100%;
+  max-width: 820px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
 }
 
 .container-wide {
+  width: 100%;
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+/* Editorial Section Variations for Rhythm */
+.section-light {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--color-slate-200);
+}
+
+.section-warm {
+  background-color: var(--color-warm-bg);
+  border-bottom: 1px solid var(--color-slate-200);
+}
+
+.section-subtle {
+  background-color: var(--color-warm-subtle);
+  border-bottom: 1px solid var(--color-slate-200);
+}
+
+.section-editorial {
+  background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-950));
+  color: #FFFFFF;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+}
+
+.section-dark {
+  background-color: var(--color-slate-950);
+  color: #FFFFFF;
 }
 
 /* ==============================================================================
-   1. GLOBAL NAVIGATION & HEADER
-============================================================================== */
+   2. GLOBAL NAVIGATION & STICKY HEADER
+   ============================================================================== */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background-color: rgba(250, 248, 245, 0.94);
+  background-color: rgba(250, 248, 245, 0.96);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(197, 160, 89, 0.22);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.2);
   transition: all var(--transition-base);
 }
 
 .site-header.is-scrolled {
   background-color: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 4px 20px rgba(11, 19, 31, 0.08);
+  box-shadow: 0 4px 24px rgba(11, 19, 31, 0.08);
   border-bottom-color: rgba(197, 160, 89, 0.35);
 }
 
@@ -73,9 +138,9 @@ body {
 }
 
 .brand-logo-mark {
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-800));
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--color-slate-950), var(--color-slate-850));
   border: 1.5px solid var(--color-gold-400);
   border-radius: var(--radius-sm);
   display: flex;
@@ -84,9 +149,10 @@ body {
   color: var(--color-gold-400);
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   letter-spacing: 0.05em;
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
 .brand-logo-text {
@@ -123,7 +189,7 @@ body {
 .nav-link {
   font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--color-slate-700);
   text-transform: uppercase;
   text-decoration: none;
@@ -165,11 +231,16 @@ body {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.8rem;
   border-radius: var(--radius-full);
   text-decoration: none;
-  animation: pulseGlow 2s infinite;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-live-indicator {
+    animation: pulseGlow 2s infinite;
+  }
 }
 
 .nav-live-dot {
@@ -177,7 +248,12 @@ body {
   height: 7px;
   background-color: #FFFFFF;
   border-radius: 50%;
-  animation: blink 1.2s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-live-dot {
+    animation: blink 1.2s infinite ease-in-out;
+  }
 }
 
 @keyframes blink {
@@ -196,8 +272,9 @@ body {
   background: transparent;
   border: 1px solid var(--color-slate-300);
   color: var(--color-slate-700);
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -208,20 +285,23 @@ body {
 }
 
 .btn-nav-search:hover {
-  background-color: var(--color-surface);
+  background-color: #FFFFFF;
   border-color: var(--color-gold-500);
   color: var(--color-gold-700);
+  transform: translateY(-1px);
 }
 
-/* Mobile Toggle */
+/* Mobile Nav Toggle */
 .mobile-nav-toggle {
   display: none;
   background: transparent;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   color: var(--color-slate-900);
   cursor: pointer;
   padding: var(--space-2);
+  min-width: 44px;
+  min-height: 44px;
 }
 
 /* Fullscreen Mobile Drawer */
@@ -230,12 +310,12 @@ body {
   top: 0;
   right: -100%;
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   height: 100vh;
   background-color: var(--color-slate-950);
   color: #FFFFFF;
   z-index: 1100;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
+  box-shadow: -8px 0 36px rgba(0, 0, 0, 0.5);
   transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
@@ -253,8 +333,8 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(7, 11, 18, 0.7);
-  backdrop-filter: blur(6px);
+  background-color: rgba(7, 11, 18, 0.75);
+  backdrop-filter: blur(8px);
   z-index: 1050;
   opacity: 0;
   pointer-events: none;
@@ -270,7 +350,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: var(--space-6);
+  padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--color-slate-800);
   margin-bottom: var(--space-6);
 }
@@ -279,10 +359,10 @@ body {
   background: transparent;
   border: 1px solid var(--color-slate-800);
   color: #FFFFFF;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -292,7 +372,7 @@ body {
 .mobile-menu-links {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
   list-style: none;
   padding: 0;
   margin: 0 0 var(--space-8);
@@ -300,15 +380,16 @@ body {
 
 .mobile-menu-link {
   font-family: var(--font-serif);
-  font-size: var(--text-lg);
+  font-size: 1.1rem;
   color: #FFFFFF;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   transition: color var(--transition-fast);
+  min-height: 44px;
 }
 
 .mobile-menu-link:hover,
@@ -317,13 +398,13 @@ body {
 }
 
 /* ==============================================================================
-   2. HERO SECTION
-============================================================================== */
+   3. HERO SECTION (EDITORIAL & CINEMATIC)
+   ============================================================================== */
 
 .hero-editorial {
   position: relative;
-  padding: var(--space-20) 0 var(--space-24);
-  background: radial-gradient(circle at 85% 20%, rgba(197, 160, 89, 0.12) 0%, transparent 60%),
+  padding: clamp(var(--space-16), 8vw, var(--space-28)) 0 clamp(var(--space-16), 8vw, var(--space-28));
+  background: radial-gradient(circle at 85% 20%, rgba(197, 160, 89, 0.15) 0%, transparent 60%),
               linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%);
   color: #FFFFFF;
   overflow: hidden;
@@ -338,14 +419,14 @@ body {
   right: 0;
   bottom: 0;
   background-image: radial-gradient(rgba(197, 160, 89, 0.08) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-size: 36px 36px;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .hero-grid-editorial {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: 1.25fr 0.75fr;
   gap: var(--space-12);
   align-items: center;
   position: relative;
@@ -356,23 +437,23 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 0.4rem 1rem;
-  background: rgba(197, 160, 89, 0.15);
+  padding: 0.4rem 1.1rem;
+  background: rgba(197, 160, 89, 0.18);
   border: 1px solid var(--color-gold-500);
   border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-gold-300);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: var(--space-6);
 }
 
 .hero-headline {
   font-family: var(--font-serif);
-  font-size: clamp(2.6rem, 5.8vw, 4.4rem);
+  font-size: clamp(2.4rem, 5.2vw, 4.2rem);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.12;
   color: #FFFFFF;
   margin-bottom: var(--space-6);
   letter-spacing: -0.01em;
@@ -385,10 +466,10 @@ body {
 }
 
 .hero-narrative {
-  font-size: clamp(1.05rem, 1.8vw, 1.2rem);
-  line-height: 1.7;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.8;
   color: var(--color-slate-300);
-  max-width: 580px;
+  max-width: 600px;
   margin-bottom: var(--space-8);
 }
 
@@ -401,26 +482,26 @@ body {
 
 /* Service Gathering Hero Card */
 .hero-service-card {
-  background: rgba(16, 27, 43, 0.85);
-  border: 1.5px solid rgba(197, 160, 89, 0.4);
+  background: rgba(16, 27, 43, 0.88);
+  border: 1.5px solid rgba(197, 160, 89, 0.45);
   border-radius: var(--radius-lg);
   padding: var(--space-8);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.45);
 }
 
 .hero-service-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(197, 160, 89, 0.15);
+  background: rgba(197, 160, 89, 0.18);
   border: 1px solid var(--color-gold-500);
   color: var(--color-gold-300);
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 0.3rem 0.75rem;
+  padding: 0.3rem 0.8rem;
   border-radius: var(--radius-full);
   margin-bottom: var(--space-4);
 }
@@ -435,12 +516,12 @@ body {
 .hero-service-desc {
   font-size: var(--text-sm);
   color: var(--color-slate-300);
-  line-height: 1.6;
+  line-height: 1.65;
   margin-bottom: var(--space-6);
 }
 
 .hero-service-times-box {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.06);
   border-left: 3px solid var(--color-gold-400);
   padding: var(--space-4);
   border-radius: var(--radius-sm);
@@ -448,9 +529,9 @@ body {
 }
 
 .hero-times-label {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--color-gold-400);
   font-weight: 700;
 }
@@ -463,14 +544,14 @@ body {
 }
 
 /* ==============================================================================
-   3. QUICK DISCOVERY NAVIGATION
-============================================================================== */
+   4. QUICK DISCOVERY NAVIGATION
+   ============================================================================== */
 
 .quick-discovery-section {
   padding: var(--space-8) 0;
   background-color: #FFFFFF;
   border-bottom: 1px solid var(--color-slate-200);
-  box-shadow: 0 4px 16px rgba(11, 19, 31, 0.04);
+  box-shadow: 0 4px 18px rgba(11, 19, 31, 0.04);
 }
 
 .discovery-grid {
@@ -490,6 +571,7 @@ body {
   text-decoration: none;
   color: var(--color-slate-900);
   transition: all var(--transition-fast);
+  min-height: 44px;
 }
 
 .discovery-pill:hover {
@@ -500,15 +582,16 @@ body {
 }
 
 .discovery-icon {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-sm);
   background: var(--color-gold-100);
   color: var(--color-gold-800);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  flex-shrink: 0;
 }
 
 .discovery-title {
@@ -524,8 +607,8 @@ body {
 }
 
 /* ==============================================================================
-   4. CONTENT CARDS & TEACHINGS GRID
-============================================================================== */
+   5. UNIFIED CARD SYSTEMS
+   ============================================================================== */
 
 .section-header-editorial {
   display: flex;
@@ -554,7 +637,7 @@ body {
   line-height: 1.2;
 }
 
-/* Sermon Teaching Cards */
+/* 5.1 Sermon Teaching Cards */
 .sermon-card {
   background-color: #FFFFFF;
   border: 1px solid var(--color-slate-200);
@@ -574,7 +657,7 @@ body {
 }
 
 .sermon-cover-wrapper {
-  height: 220px;
+  aspect-ratio: 16 / 9;
   background-color: var(--color-slate-900);
   position: relative;
   overflow: hidden;
@@ -606,6 +689,7 @@ body {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   margin-bottom: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .sermon-speaker {
@@ -645,7 +729,7 @@ body {
   gap: 4px;
   font-size: 0.68rem;
   font-weight: 600;
-  padding: 0.2rem 0.55rem;
+  padding: 0.25rem 0.6rem;
   border-radius: var(--radius-full);
   background-color: var(--color-slate-100);
   color: var(--color-slate-700);
@@ -656,10 +740,7 @@ body {
   color: var(--color-gold-900);
 }
 
-/* ==============================================================================
-   5. PUBLICATIONS & JOURNALS (PHYSICAL BOOK LOOK)
-============================================================================== */
-
+/* 5.2 Publications / Journals Cards (Physical Book Depth) */
 .publication-book-card {
   background-color: #FFFFFF;
   border: 1px solid var(--color-slate-200);
@@ -668,7 +749,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 8px 24px rgba(11, 19, 31, 0.06);
+  box-shadow: 0 10px 28px rgba(11, 19, 31, 0.07);
   transition: all var(--transition-base);
 }
 
@@ -679,11 +760,11 @@ body {
 }
 
 .publication-cover-frame {
-  height: 300px;
+  aspect-ratio: 3 / 4;
   background-color: var(--color-slate-900);
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: inset -6px 0 14px rgba(0, 0, 0, 0.35);
 }
 
 .publication-cover-frame img {
@@ -696,12 +777,12 @@ body {
   position: absolute;
   bottom: 12px;
   left: 12px;
-  background-color: rgba(11, 19, 31, 0.85);
+  background-color: rgba(11, 19, 31, 0.88);
   color: var(--color-gold-300);
   border: 1px solid var(--color-gold-500);
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.65rem;
   border-radius: var(--radius-sm);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
   backdrop-filter: blur(4px);
 }
@@ -716,8 +797,8 @@ body {
 }
 
 /* ==============================================================================
-   6. DEDICATED AUDIO & VIDEO PLAYERS
-============================================================================== */
+   6. AUDIO PLAYER & MEDIA WIDGETS
+   ============================================================================== */
 
 .audio-player-card {
   background: linear-gradient(135deg, var(--color-slate-950), var(--color-slate-900));
@@ -735,8 +816,9 @@ body {
 }
 
 .btn-audio-play {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-gold-500), var(--color-gold-600));
   border: none;
@@ -762,9 +844,9 @@ body {
 
 .audio-progress-bar {
   width: 100%;
-  height: 6px;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
   cursor: pointer;
   position: relative;
 }
@@ -772,7 +854,7 @@ body {
 .audio-progress-fill {
   height: 100%;
   background-color: var(--color-gold-400);
-  border-radius: 3px;
+  border-radius: 4px;
   width: 0%;
   transition: width 0.1s linear;
 }
@@ -781,24 +863,25 @@ body {
   display: flex;
   justify-content: space-between;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--color-slate-400);
 }
 
 .audio-speed-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #FFFFFF;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 0.25rem 0.55rem;
+  padding: 0.25rem 0.6rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  min-height: 28px;
 }
 
 /* ==============================================================================
    7. LIVE BROADCAST ROOM
-============================================================================== */
+   ============================================================================== */
 
 .live-room-container {
   display: grid;
@@ -827,8 +910,8 @@ body {
 }
 
 /* ==============================================================================
-   8. GLOBAL SEARCH MODAL
-============================================================================== */
+   8. GLOBAL SEARCH OVERLAY MODAL
+   ============================================================================== */
 
 .search-modal-backdrop {
   position: fixed;
@@ -836,8 +919,8 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(7, 11, 18, 0.8);
-  backdrop-filter: blur(8px);
+  background-color: rgba(7, 11, 18, 0.82);
+  backdrop-filter: blur(10px);
   z-index: 2000;
   display: none;
   align-items: flex-start;
@@ -856,7 +939,7 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
-  border: 1px solid var(--color-gold-500);
+  border: 1.5px solid var(--color-gold-500);
 }
 
 .search-input-header {
@@ -874,11 +957,12 @@ body {
   font-size: var(--text-lg);
   color: var(--color-slate-900);
   outline: none;
+  min-height: 44px;
 }
 
 /* ==============================================================================
    9. EDITORIAL FOOTER
-============================================================================== */
+   ============================================================================== */
 
 .editorial-footer {
   background-color: var(--color-slate-950);
@@ -889,7 +973,7 @@ body {
 
 .footer-newsletter-card {
   background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-850));
-  border: 1px solid rgba(197, 160, 89, 0.3);
+  border: 1px solid rgba(197, 160, 89, 0.35);
   border-radius: var(--radius-lg);
   padding: var(--space-10);
   margin-bottom: var(--space-16);
@@ -912,7 +996,7 @@ body {
   font-family: var(--font-serif);
   font-size: var(--text-base);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   margin-bottom: var(--space-4);
   text-transform: uppercase;
 }
@@ -931,13 +1015,14 @@ body {
   font-size: 0.85rem;
   text-decoration: none;
   transition: color var(--transition-fast);
+  padding: 2px 0;
+  display: inline-block;
 }
 
 .footer-link-list a:hover {
   color: var(--color-gold-300);
 }
 
-/* Social Media Pill Icons */
 .footer-social-icons {
   display: flex;
   gap: var(--space-2);
@@ -946,8 +1031,8 @@ body {
 }
 
 .social-icon-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--color-slate-900);
   border: 1px solid var(--color-slate-800);
@@ -957,6 +1042,7 @@ body {
   justify-content: center;
   text-decoration: none;
   font-size: 0.85rem;
+  font-weight: 700;
   transition: all var(--transition-fast);
 }
 
@@ -967,12 +1053,13 @@ body {
 }
 
 /* ==============================================================================
-   10. RESPONSIVE BREAKPOINTS
-============================================================================== */
+   10. RESPONSIVE BREAKPOINTS (375px to 1920px)
+   ============================================================================== */
 
 @media (max-width: 1024px) {
   .hero-grid-editorial {
     grid-template-columns: 1fr;
+    gap: var(--space-8);
   }
   .discovery-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -1009,5 +1096,12 @@ body {
   }
   .footer-newsletter-card {
     padding: var(--space-6);
+  }
+  .hero-headline {
+    font-size: clamp(2rem, 8vw, 2.8rem);
+  }
+  .hero-cta-group .btn {
+    width: 100%;
+    justify-content: center;
   }
 }

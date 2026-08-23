@@ -6,16 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{{ SITE_CONFIG.site_name }}{% if SITE_CONFIG.tagline %} — {{ SITE_CONFIG.tagline }}{% endif %}{% endblock %}</title>
   
-  <!-- Meta & OpenGraph -->
-  <meta name="description" content="{% block meta_description %}{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline }}{% endblock %}">
-  <meta property="og:title" content="{% block og_title %}{{ SITE_CONFIG.site_name }}{% endblock %}">
-  <meta property="og:description" content="{% block og_description %}{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline }}{% endblock %}">
-  <meta property="og:type" content="website">
+  <!-- SEO Meta & OpenGraph -->
+  <meta name="description" content="{% block meta_description %}{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline|default:'A vibrant, kingdom-minded assembly devoted to sound biblical truth, apostolic impartation, and societal transformation.' }}{% endblock %}">
+  <meta property="og:site_name" content="{{ SITE_CONFIG.site_name|default:'The CityGate Church' }}">
+  <meta property="og:title" content="{% block og_title %}{{ SITE_CONFIG.site_name }}{% if SITE_CONFIG.tagline %} — {{ SITE_CONFIG.tagline }}{% endif %}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline|default:'A vibrant, kingdom-minded assembly devoted to sound biblical truth, apostolic impartation, and societal transformation.' }}{% endblock %}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}{{ SITE_CONFIG.site_name }}{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline }}{% endblock %}">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
   {% if SITE_CONFIG.favicon %}
     <link rel="icon" type="image/png" href="{{ SITE_CONFIG.favicon.url }}">
   {% endif %}
 
-  <!-- Google Fonts: Editorial Serif & Clean Sans & Mono -->
+  <!-- Google Fonts: Cinzel Serif & Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -33,9 +40,34 @@
   <link rel="stylesheet" href="{% static 'css/components/states.css' %}">
   <link rel="stylesheet" href="{% static 'css/public.css' %}">
   
+  <!-- Schema.org JSON-LD Structured Data for Church Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Church",
+    "name": "{{ SITE_CONFIG.site_name|default:'The CityGate Church' }}",
+    "description": "{{ SITE_CONFIG.default_meta_description|default:SITE_CONFIG.tagline }}",
+    "url": "{{ request.build_absolute_uri }}",
+    "telephone": "{{ SITE_CONFIG.phone_primary }}",
+    "email": "{{ SITE_CONFIG.email }}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ SITE_CONFIG.address_line_1 }}",
+      "addressLocality": "{{ SITE_CONFIG.city }}",
+      "addressCountry": "{{ SITE_CONFIG.country }}"
+    }
+  }
+  </script>
+
+  {% block extra_head %}{% endblock %}
   {% block extra_css %}{% endblock %}
 </head>
 <body>
+  <!-- Accessibility Skip Link -->
+  <a href="#main-content" class="btn btn-sm btn-primary" style="position: absolute; top: -100px; left: 16px; z-index: 9999; transition: top 0.2s ease;" onfocus="this.style.top='16px'" onblur="this.style.top='-100px'">
+    Skip to Main Content
+  </a>
+
   <!-- Flash Message & Toast Notifications -->
   {% include 'components/alerts.html' %}
 

@@ -1,32 +1,45 @@
 /**
  * THE CITYGATE CHURCH - PUBLIC JAVASCRIPT CONTROLLERS
  * Interactive Audio, Video, Search Modal, Mobile Drawer & Transcripts
+ * Enhanced for Keyboard Accessibility, Motion Sensitivity & Focus Trapping
  */
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Sticky Header Scroll Effect
   const header = document.querySelector(".site-header");
   if (header) {
+    let ticking = false;
     window.addEventListener("scroll", () => {
-      if (window.scrollY > 25) {
-        header.classList.add("is-scrolled");
-      } else {
-        header.classList.remove("is-scrolled");
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (window.scrollY > 20) {
+            header.classList.add("is-scrolled");
+          } else {
+            header.classList.remove("is-scrolled");
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     }, { passive: true });
   }
 
-  // 2. Mobile Navigation Drawer
+  // 2. Mobile Navigation Drawer & Focus Management
   const mobileToggle = document.querySelector(".mobile-nav-toggle");
   const mobileDrawer = document.getElementById("mobileNavDrawer");
   const mobileBackdrop = document.getElementById("mobileDrawerBackdrop");
   const mobileClose = document.getElementById("mobileDrawerClose");
+  let lastActiveElement = null;
 
   function openMobileMenu() {
     if (mobileDrawer && mobileBackdrop) {
+      lastActiveElement = document.activeElement;
       mobileDrawer.classList.add("is-open");
       mobileBackdrop.classList.add("is-open");
       document.body.style.overflow = "hidden";
+      if (mobileClose) {
+        setTimeout(() => mobileClose.focus(), 150);
+      }
     }
   }
 
@@ -35,6 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
       mobileDrawer.classList.remove("is-open");
       mobileBackdrop.classList.remove("is-open");
       document.body.style.overflow = "";
+      if (lastActiveElement) {
+        lastActiveElement.focus();
+      }
     }
   }
 
@@ -50,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openSearchModal() {
     if (searchModal) {
+      lastActiveElement = document.activeElement;
       searchModal.classList.add("is-open");
       document.body.style.overflow = "hidden";
       if (searchInput) {
@@ -62,6 +79,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchModal) {
       searchModal.classList.remove("is-open");
       document.body.style.overflow = "";
+      if (lastActiveElement) {
+        lastActiveElement.focus();
+      }
     }
   }
 
@@ -76,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Keyboard shortcut Ctrl+K or Cmd+K or Escape
   document.addEventListener("keydown", (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       if (searchModal && searchModal.classList.contains("is-open")) {
         closeSearchModal();
@@ -90,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 4. Dedicated Audio Player Controller
+  // 4. Dedicated HTML5 Audio Player Controller
   const audioPlayers = document.querySelectorAll("[data-audio-player]");
   audioPlayers.forEach(player => {
     const audio = player.querySelector("audio");
@@ -105,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audio) return;
 
     function formatTime(seconds) {
-      if (isNaN(seconds)) return "00:00";
+      if (isNaN(seconds) || seconds === Infinity) return "00:00";
       const mins = Math.floor(seconds / 60);
       const secs = Math.floor(seconds % 60);
       return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
@@ -135,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.querySelectorAll("audio").forEach(a => {
             if (a !== audio) a.pause();
           });
-          audio.play();
+          audio.play().catch(err => console.warn("Audio playback error:", err));
           if (playIcon) playIcon.textContent = "⏸";
         } else {
           audio.pause();
@@ -149,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const rect = progressBar.getBoundingClientRect();
         const clickPos = (e.clientX - rect.left) / rect.width;
         if (audio.duration) {
-          audio.currentTime = clickPos * audio.duration;
+          audio.currentTime = Math.max(0, Math.min(clickPos * audio.duration, audio.duration));
         }
       });
     }

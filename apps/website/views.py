@@ -33,6 +33,7 @@ from apps.analytics.models import DownloadEvent
 class HomeView(TemplateView):
     """
     Dynamic landing page driven by HomepageConfig and database records.
+    Optimized with select_related and prefetch_related for maximum throughput.
     """
     template_name = "website/index.html"
 
@@ -41,12 +42,26 @@ class HomeView(TemplateView):
         home_config = HomepageConfig.load()
         now = datetime.now()
 
-        # Dynamic featured content
-        featured_sermon = home_config.featured_teaching or Sermon.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-preached_date").first()
-        featured_event = home_config.featured_event or Event.objects.filter(status=PublishableStatus.PUBLISHED, start_datetime__gte=now).order_by("start_datetime").first()
-        featured_conf = home_config.featured_conference or Conference.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-start_date").first()
-        featured_pub = home_config.featured_publication or Publication.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-publication_date", "-created_at").first()
-        featured_art = home_config.featured_article or Article.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-published_at").first()
+        # Dynamic featured content with optimized joins
+        featured_sermon = home_config.featured_teaching
+        if not featured_sermon:
+            featured_sermon = Sermon.objects.filter(status=PublishableStatus.PUBLISHED).select_related("series", "speaker", "category").order_by("-preached_date").first()
+
+        featured_event = home_config.featured_event
+        if not featured_event:
+            featured_event = Event.objects.filter(status=PublishableStatus.PUBLISHED, start_datetime__gte=now).select_related("category", "speaker").order_by("start_datetime").first()
+
+        featured_conf = home_config.featured_conference
+        if not featured_conf:
+            featured_conf = Conference.objects.filter(status=PublishableStatus.PUBLISHED).prefetch_related("speakers").order_by("-start_date").first()
+
+        featured_pub = home_config.featured_publication
+        if not featured_pub:
+            featured_pub = Publication.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-publication_date", "-created_at").first()
+
+        featured_art = home_config.featured_article
+        if not featured_art:
+            featured_art = Article.objects.filter(status=PublishableStatus.PUBLISHED).select_related("category", "author").order_by("-published_at").first()
 
         context["hero"] = home_config
         context["live_channel"] = LiveStreamChannel.load()
@@ -56,12 +71,12 @@ class HomeView(TemplateView):
         context["featured_publication"] = featured_pub
         context["featured_article"] = featured_art
 
-        # Recent content streams
-        context["latest_sermons"] = Sermon.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-preached_date")[:3]
-        context["upcoming_events"] = Event.objects.filter(status=PublishableStatus.PUBLISHED, start_datetime__gte=now).order_by("start_datetime")[:3]
-        context["showcase_ministries"] = Ministry.objects.filter(status=PublishableStatus.PUBLISHED).order_by("sort_order")[:4]
+        # Recent content streams with eager loading
+        context["latest_sermons"] = Sermon.objects.filter(status=PublishableStatus.PUBLISHED).select_related("series", "speaker", "category").order_by("-preached_date")[:3]
+        context["upcoming_events"] = Event.objects.filter(status=PublishableStatus.PUBLISHED, start_datetime__gte=now).select_related("category", "speaker", "ministry").order_by("start_datetime")[:3]
+        context["showcase_ministries"] = Ministry.objects.filter(status=PublishableStatus.PUBLISHED).select_related("leader").order_by("sort_order")[:4]
         context["recent_publications"] = Publication.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-created_at")[:4]
-        context["recent_articles"] = Article.objects.filter(status=PublishableStatus.PUBLISHED).order_by("-published_at")[:3]
+        context["recent_articles"] = Article.objects.filter(status=PublishableStatus.PUBLISHED).select_related("category", "author").order_by("-published_at")[:3]
         context["active_announcements"] = Announcement.objects.filter(is_active=True, show_homepage=True).order_by("-priority", "-created_at")[:3]
         return context
 
@@ -98,7 +113,7 @@ class PlanVisitView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["meetings"] = ChurchMeeting.objects.filter(is_active=True).order_by("day_of_week", "start_time")
+        context["meetings"] = ChurchMeeting.objects.filter(is_active=True).select_related("location", "ministry").order_by("day_of_week", "start_time")
         context["campuses"] = ChurchLocation.objects.all().order_by("sort_order")
         return context
 

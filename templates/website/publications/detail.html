@@ -3,10 +3,33 @@
 
 {% block title %}{{ publication.title }} — Publications &amp; Journals — {{ SITE_CONFIG.site_name }}{% endblock %}
 
+{% block meta_description %}{{ publication.description|default:publication.title|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ publication.title }} — {{ SITE_CONFIG.site_name }}{% endblock %}
+{% block og_description %}{{ publication.description|default:publication.title|truncatechars:200 }}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "{{ publication.title }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ publication.author_name }}"
+  },
+  "description": "{{ publication.description|default:publication.title }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ SITE_CONFIG.site_name|default:'The CityGate Church' }}"
+  }
+}
+</script>
+{% endblock %}
+
 {% block content %}
-<section style="padding: var(--space-16) 0 var(--space-12); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFF; border-bottom: 1px solid rgba(197, 160, 89, 0.2);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0 clamp(var(--space-10), 4vw, var(--space-16)); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFF; border-bottom: 1px solid rgba(197, 160, 89, 0.2);">
   <div class="container">
-    <div style="display: flex; gap: var(--space-2); align-items: center; margin-bottom: var(--space-3);">
+    <div style="display: flex; gap: var(--space-2); align-items: center; margin-bottom: var(--space-3); flex-wrap: wrap;">
       <a href="{% url 'website:publications_list' %}" style="color: var(--color-gold-400); font-size: 0.8rem; font-weight: 700; text-decoration: none;">
         &larr; All Publications
       </a>
@@ -25,12 +48,12 @@
   </div>
 </section>
 
-<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: var(--color-warm-bg);">
   <div class="container">
-    <div style="display: grid; grid-template-columns: 1fr 2.2fr; gap: var(--space-10); align-items: start; margin-bottom: var(--space-12);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-10); align-items: start; margin-bottom: var(--space-12);">
       <!-- Cover Column -->
       <div class="card" style="padding: var(--space-6); background: #FFF; border: 1px solid var(--color-slate-200); box-shadow: var(--shadow-md);">
-        <div style="height: 380px; background: var(--color-slate-900); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: var(--space-6);">
+        <div style="aspect-ratio: 3 / 4; max-height: 420px; background: var(--color-slate-900); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: var(--space-6);">
           {% if publication.cover_image %}
             <img src="{{ publication.cover_image.url }}" alt="{{ publication.title }}" style="width: 100%; height: 100%; object-fit: cover;">
           {% else %}
@@ -43,7 +66,7 @@
             <a href="{% url 'website:publication_download' publication.slug %}" class="btn btn-primary btn-full" style="justify-content: center;">
               📥 Download PDF File
             </a>
-            <a href="{{ publication.pdf_file.url }}" target="_blank" class="btn btn-secondary btn-full" style="justify-content: center;">
+            <a href="{{ publication.pdf_file.url }}" target="_blank" rel="noopener" class="btn btn-secondary btn-full" style="justify-content: center;">
               👁 Open PDF in New Tab
             </a>
           {% endif %}
@@ -54,7 +77,7 @@
       </div>
 
       <!-- Narrative Column -->
-      <div class="card" style="padding: var(--space-8); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
+      <div class="card" style="padding: var(--space-8); background: #FFFFFF; border: 1px solid var(--color-slate-200); grid-column: span 2;">
         <h2 style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--color-slate-900); margin-bottom: var(--space-4);">
           About this Publication
         </h2>
@@ -77,8 +100,8 @@
     <!-- Embedded In-Browser PDF Reader (If browser supports PDF iframe) -->
     {% if publication.pdf_file %}
       <div class="card" style="padding: var(--space-6); background: #FFFFFF; border: 1px solid var(--color-slate-200);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-          <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
+          <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-slate-900); margin-bottom: 0;">
             📖 Interactive Document Preview
           </h3>
           <a href="{% url 'website:publication_download' publication.slug %}" class="btn btn-xs btn-primary">

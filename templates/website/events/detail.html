@@ -3,11 +3,35 @@
 
 {% block title %}{{ event.title }} — Events — {{ SITE_CONFIG.site_name }}{% endblock %}
 
+{% block meta_description %}{{ event.description|default:event.title|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ event.title }} — {{ SITE_CONFIG.site_name }}{% endblock %}
+{% block og_description %}{{ event.description|default:event.title|truncatechars:200 }}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "{{ event.title }}",
+  "startDate": "{{ event.start_datetime|date:'c' }}",
+  {% if event.end_datetime %}"endDate": "{{ event.end_datetime|date:'c' }}",{% endif %}
+  "eventAttendanceMode": "{% if event.is_online %}https://schema.org/OnlineEventAttendanceMode{% else %}https://schema.org/OfflineEventAttendanceMode{% endif %}",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "{{ event.venue_name }}",
+    "address": "{{ event.venue_address|default:SITE_CONFIG.address_line_1 }}"
+  },
+  "description": "{{ event.description|default:event.title }}"
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <!-- Event Header -->
-<section style="padding: var(--space-16) 0 var(--space-12); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0 clamp(var(--space-10), 4vw, var(--space-16)); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
   <div class="container">
-    <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4); align-items: center;">
+    <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4); align-items: center; flex-wrap: wrap;">
       <a href="{% url 'website:events_list' %}" style="color: var(--color-gold-400); font-size: 0.8rem; font-weight: 700; text-decoration: none;">
         &larr; Events Calendar
       </a>
@@ -17,7 +41,7 @@
       {% endif %}
     </div>
 
-    <div style="max-width: 800px;">
+    <div style="max-width: 840px;">
       <span class="badge badge-gold" style="font-size: 0.75rem; font-weight: 700; margin-bottom: var(--space-3);">
         {{ event.start_datetime|date:"l, F d, Y" }}
       </span>
@@ -34,20 +58,20 @@
 </section>
 
 <!-- Event Details & Registration -->
-<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: var(--color-warm-bg);">
   <div class="container">
-    <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: var(--space-10); align-items: start;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-10); align-items: start;">
       <!-- Left Column: Banner, Details & Map -->
-      <div>
+      <div style="grid-column: span 2;">
         {% if event.banner_image %}
-          <div style="height: 380px; border-radius: var(--radius-lg); overflow: hidden; background-color: var(--color-slate-900); margin-bottom: var(--space-8); box-shadow: var(--shadow-lg);">
+          <div style="aspect-ratio: 16 / 9; max-height: 420px; border-radius: var(--radius-lg); overflow: hidden; background-color: var(--color-slate-900); margin-bottom: var(--space-8); box-shadow: var(--shadow-lg);">
             <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
         {% endif %}
 
         <div class="card" style="padding: var(--space-8); background: #FFFFFF; border: 1px solid var(--color-slate-200); margin-bottom: var(--space-8);">
           <h2 style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--color-slate-900); margin-bottom: var(--space-4);">
-            About this Event
+            About this Gathering
           </h2>
           <div style="font-size: var(--text-base); line-height: 1.8; color: var(--color-slate-800); white-space: pre-wrap;">
             {{ event.description|default:"Detailed overview for this gathering will be available shortly." }}
@@ -87,7 +111,7 @@
 
             {% if event.is_online and event.stream_link %}
               <div>
-                <a href="{{ event.stream_link }}" target="_blank" class="btn btn-sm btn-primary btn-full" style="justify-content: center;">
+                <a href="{{ event.stream_link }}" target="_blank" rel="noopener" class="btn btn-sm btn-primary btn-full" style="justify-content: center;">
                   🔴 Join Online Live Stream
                 </a>
               </div>
@@ -105,26 +129,26 @@
             <form method="post" action="{% url 'website:event_register' event.slug %}">
               {% csrf_token %}
               <div class="form-group">
-                <label class="form-label">Full Name <span class="required">*</span></label>
-                <input type="text" name="full_name" class="form-input" placeholder="Your full name" required>
+                <label class="form-label" for="reg_full_name">Full Name <span class="required">*</span></label>
+                <input type="text" id="reg_full_name" name="full_name" class="form-input" placeholder="Your full name" required>
               </div>
 
               <div class="form-group">
-                <label class="form-label">Email Address <span class="required">*</span></label>
-                <input type="email" name="email" class="form-input" placeholder="name@domain.com" required>
+                <label class="form-label" for="reg_email">Email Address <span class="required">*</span></label>
+                <input type="email" id="reg_email" name="email" class="form-input" placeholder="name@domain.com" required>
               </div>
 
               <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="tel" name="phone" class="form-input" placeholder="+234...">
+                <label class="form-label" for="reg_phone">Phone Number</label>
+                <input type="tel" id="reg_phone" name="phone" class="form-input" placeholder="+234...">
               </div>
 
               <div class="form-group">
-                <label class="form-label">Special Notes / Dietary Requirements</label>
-                <textarea name="notes" class="form-textarea" rows="2" placeholder="Optional notes..."></textarea>
+                <label class="form-label" for="reg_notes">Special Notes</label>
+                <textarea id="reg_notes" name="notes" class="form-textarea" rows="2" placeholder="Optional notes or questions..."></textarea>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-full">
+              <button type="submit" class="btn btn-primary btn-full" style="justify-content: center;">
                 Confirm Event Registration
               </button>
             </form>

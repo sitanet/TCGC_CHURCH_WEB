@@ -3,9 +3,32 @@
 
 {% block title %}{{ sermon.title }} — {{ sermon.get_speaker_display }} — {{ SITE_CONFIG.site_name }}{% endblock %}
 
+{% block meta_description %}{{ sermon.summary|default:sermon.title|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ sermon.title }} — {{ sermon.get_speaker_display }}{% endblock %}
+{% block og_description %}{{ sermon.summary|default:sermon.title|truncatechars:200 }}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AudioObject",
+  "name": "{{ sermon.title }}",
+  "description": "{{ sermon.summary|default:sermon.title }}",
+  "datePublished": "{{ sermon.preached_date|date:'c' }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ sermon.get_speaker_display }}"
+  }{% if sermon.audio_file %},
+  "contentUrl": "{{ request.scheme }}://{{ request.get_host }}{{ sermon.audio_file.url }}",
+  "encodingFormat": "audio/mpeg"
+  {% endif %}
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <!-- 1. Cinematic Sermon Header -->
-<section style="padding: var(--space-16) 0 var(--space-12); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0 clamp(var(--space-10), 4vw, var(--space-16)); background: linear-gradient(180deg, var(--color-slate-950) 0%, var(--color-slate-900) 100%); color: #FFFFFF; border-bottom: 1px solid rgba(197, 160, 89, 0.25);">
   <div class="container">
     <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-4); align-items: center; flex-wrap: wrap;">
       <a href="{% url 'website:teachings_list' %}" style="color: var(--color-gold-400); font-size: 0.8rem; font-weight: 700; text-decoration: none;">
@@ -20,9 +43,9 @@
       {% endif %}
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1.8fr; gap: var(--space-10); align-items: center;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-10); align-items: center;">
       <!-- Cover Artwork -->
-      <div style="height: 320px; border-radius: var(--radius-lg); overflow: hidden; background-color: var(--color-slate-850); position: relative; box-shadow: var(--shadow-xl); border: 1px solid var(--color-gold-500);">
+      <div style="aspect-ratio: 16 / 10; max-height: 340px; border-radius: var(--radius-lg); overflow: hidden; background-color: var(--color-slate-850); position: relative; box-shadow: var(--shadow-xl); border: 1px solid var(--color-gold-500);">
         {% if sermon.cover_image %}
           <img src="{{ sermon.cover_image.url }}" alt="{{ sermon.title }}" style="width: 100%; height: 100%; object-fit: cover;">
         {% else %}
@@ -61,7 +84,7 @@
               <div class="audio-progress-container">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                   <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-gold-300); text-transform: uppercase;">Audio Broadcast</span>
-                  <button type="button" class="audio-speed-btn" data-audio-speed-btn>1x</button>
+                  <button type="button" class="audio-speed-btn" data-audio-speed-btn aria-label="Playback Speed">1x</button>
                 </div>
                 <div class="audio-progress-bar" data-audio-progress-bar>
                   <div class="audio-progress-fill" data-audio-progress-fill></div>
@@ -92,11 +115,11 @@
 </section>
 
 <!-- 2. Main Content: Video, Scripture, Summary & Transcript -->
-<section style="padding: var(--space-16) 0; background-color: var(--color-warm-bg);">
+<section style="padding: clamp(var(--space-12), 6vw, var(--space-20)) 0; background-color: var(--color-warm-bg);">
   <div class="container">
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-10); align-items: start;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-10); align-items: start;">
       <!-- Left Column: Video & Transcript -->
-      <div>
+      <div style="grid-column: span 2;">
         <!-- Video Stream Player (If video attached) -->
         {% if sermon.video_url or sermon.video_file %}
           <div id="video" class="card" style="padding: var(--space-6); margin-bottom: var(--space-8); background: #000; overflow: hidden;">
@@ -107,7 +130,7 @@
               {% if sermon.video_file %}
                 <video src="{{ sermon.video_file.url }}" controls style="width: 100%; height: 100%;"></video>
               {% elif sermon.video_url %}
-                <iframe src="{{ sermon.video_url }}" allowfullscreen></iframe>
+                <iframe src="{{ sermon.video_url }}" allowfullscreen title="{{ sermon.title }}"></iframe>
               {% endif %}
             </div>
           </div>
@@ -141,12 +164,12 @@
               </h3>
               <div style="display: flex; gap: var(--space-2); align-items: center;">
                 <span style="font-size: 0.75rem; color: var(--color-text-muted);">Font size:</span>
-                <button type="button" class="btn btn-xs btn-ghost" id="fontDecreaseBtn" style="border: 1px solid var(--color-slate-200);">A-</button>
-                <button type="button" class="btn btn-xs btn-ghost" id="fontIncreaseBtn" style="border: 1px solid var(--color-slate-200);">A+</button>
+                <button type="button" class="btn btn-xs btn-ghost" id="fontDecreaseBtn" style="border: 1px solid var(--color-slate-200);" aria-label="Decrease font size">A-</button>
+                <button type="button" class="btn btn-xs btn-ghost" id="fontIncreaseBtn" style="border: 1px solid var(--color-slate-200);" aria-label="Increase font size">A+</button>
               </div>
             </div>
 
-            <div id="transcriptContent" style="font-size: 16px; line-height: 1.9; color: var(--color-slate-800); white-space: pre-wrap; font-family: var(--font-sans);">
+            <div id="transcriptContent" style="font-size: 16px; line-height: 1.9; color: var(--color-slate-800); white-space: pre-wrap; font-family: var(--font-sans); max-width: 760px;">
               {{ sermon.transcript_text }}
             </div>
           </div>
@@ -189,7 +212,7 @@
                 <div style="display: flex; gap: var(--space-3); align-items: center;">
                   <div style="width: 54px; height: 54px; border-radius: var(--radius-sm); overflow: hidden; background: var(--color-slate-900); flex-shrink: 0;">
                     {% if rel.cover_image %}
-                      <img src="{{ rel.cover_image.url }}" alt="{{ rel.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                      <img src="{{ rel.cover_image.url }}" alt="{{ rel.title }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
                     {% else %}
                       <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #FFF;">🎙</div>
                     {% endif %}
