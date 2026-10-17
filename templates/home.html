@@ -4,8 +4,8 @@
 {% block title %}The CityGate Church — A New Testament Kingdom Apostolic Centre{% endblock %}
 
 {% block content %}
-<!-- HERO SECTION (Node 1:2 / 21:266 Animated GIF) -->
-<section class="tcgc-hero" style="background-image: url('{% static 'images/hero_collage.gif' %}?v=5'), url('{% static 'images/hero_bg.png' %}');">
+<!-- HERO SECTION (Ultra-Fast Optimized WebP Background) -->
+<section class="tcgc-hero" style="background-image: url('{% static 'images/hero_collage.webp' %}'), url('{% static 'images/hero_collage.png' %}');">
     <div class="tcgc-hero-overlay"></div>
 
     <!-- Header / Navbar (Node 1:56) -->
@@ -63,7 +63,7 @@
     <div class="tcgc-welcome-inner">
         <!-- Left: Pastors Tilted Frame Card (Node 9:240) -->
         <div class="tcgc-welcome-image-wrap">
-            <img src="{% static 'images/pastors_card.png' %}" alt="Pst Dimeji & Pst (Mrs) Fisayo Elugbadebo" class="tcgc-pastors-card-img">
+            <img src="{% static 'images/pastors_card.webp' %}" alt="Pst Dimeji & Pst (Mrs) Fisayo Elugbadebo" class="tcgc-pastors-card-img" loading="lazy">
         </div>
 
         <!-- Right: Welcome Note Copy (Node 9:238) -->
@@ -106,7 +106,7 @@
              data-embed-url="{{ youtube_live_info.embed_url }}"
              data-channel-embed-url="{{ youtube_live_info.channel_embed_url }}"
              data-watch-url="{{ youtube_live_info.watch_url }}"
-             style="background-image: url('{{ youtube_live_info.thumbnail_url|default:youtube_live_info.thumbnail|default:'/static/images/tsc_youtube_bg.png' }}');">
+             style="background-image: url('{{ youtube_live_info.thumbnail_url|default:youtube_live_info.thumbnail|default:'/static/images/tsc_youtube_bg.webp' }}');">
             <div class="tcgc-youtube-overlay" id="home-video-poster-overlay">
                 <h2 class="tcgc-youtube-heading">WATCH OUR LIVE<br>STREAM</h2>
                 <button type="button" class="tcgc-youtube-play-btn" id="trigger-home-youtube-embed" aria-label="Watch Live Stream">
@@ -142,13 +142,12 @@
     </div>
 </section>
 
-<!-- DOWNLOAD THE CITYGATE MOBILE APP SECTION (Node 75:378 with Animated GIF 33:276) -->
-<section class="tcgc-app-section" style="background-image: url('{% static 'images/app_section_bg.png' %}?v=2');">
-    <div class="tcgc-app-gif-layer" style="background-image: url('{% static 'images/app_showcase.gif' %}?v=5');"></div>
+<!-- DOWNLOAD THE CITYGATE MOBILE APP SECTION (Node 75:378 with Fast WebP) -->
+<section class="tcgc-app-section" style="background-image: url('{% static 'images/app_section_bg.webp' %}'), url('{% static 'images/app_section_bg.png' %}');">
     <div class="tcgc-app-inner">
         <!-- Left: Angled Smartphone Mockup (Node 41:306) -->
         <div class="tcgc-app-mockup-col">
-            <img src="{% static 'images/phone_mockup.png' %}" alt="CityGate Mobile App" class="tcgc-phone-mockup">
+            <img src="{% static 'images/phone_mockup.webp' %}" alt="CityGate Mobile App" class="tcgc-phone-mockup" loading="lazy">
         </div>
 
         <!-- Right: App Copy & Store Buttons (Node 39:301) -->
@@ -205,9 +204,9 @@
             </div>
         </div>
 
-        <!-- Right: Animated Rounded Collage GIF (Node 65:329) -->
+        <!-- Right: Rounded Collage (Node 65:329) -->
         <div class="tcgc-meetings-visual">
-            <img src="{% static 'images/meetings_collage.gif' %}?v=5" alt="Our Meetings" class="tcgc-meetings-collage-img">
+            <img src="{% static 'images/meetings_collage.webp' %}" alt="Our Meetings" class="tcgc-meetings-collage-img" loading="lazy">
         </div>
     </div>
 </section>
@@ -218,15 +217,15 @@
     <div class="tcgc-events-grid">
         <!-- Card 1: Image & Glory Conference 2026 (Links to Registration 116:483) -->
         <a href="{% url 'registration' %}" class="tcgc-event-card">
-            <img src="{% static 'images/event_card_1.png' %}" alt="Image & Glory Conference 2026" class="tcgc-event-card-img">
+            <img src="{% static 'images/event_card_1.webp' %}" alt="Image & Glory Conference 2026" class="tcgc-event-card-img" loading="lazy">
         </a>
         <!-- Card 2: The Shofar 2027 -->
         <a href="{% url 'registration' %}" class="tcgc-event-card">
-            <img src="{% static 'images/event_card_2.png' %}" alt="The Shofar 2027" class="tcgc-event-card-img">
+            <img src="{% static 'images/event_card_2.webp' %}" alt="The Shofar 2027" class="tcgc-event-card-img" loading="lazy">
         </a>
         <!-- Card 3: Baba's Blessing 2027 -->
         <a href="{% url 'registration' %}" class="tcgc-event-card">
-            <img src="{% static 'images/event_card_3.png' %}" alt="Baba's Blessing 2027" class="tcgc-event-card-img">
+            <img src="{% static 'images/event_card_3.webp' %}" alt="Baba's Blessing 2027" class="tcgc-event-card-img" loading="lazy">
         </a>
     </div>
 </section>
