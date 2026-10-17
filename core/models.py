@@ -127,6 +127,8 @@ class ConferenceRegistration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'imgc_registrations'
+        managed = False
         ordering = ['-created_at']
         verbose_name = 'IMGC Conference Registration'
         verbose_name_plural = 'IMGC Conference Registrations'
@@ -134,6 +136,28 @@ class ConferenceRegistration(models.Model):
     def __str__(self):
         code_prefix = f"{self.registration_code} - " if self.registration_code else ""
         return f"{code_prefix}{self.first_name} {self.surname} ({self.get_attendance_mode_display()})"
+
+    @property
+    def expectation(self):
+        return self.special_notes or ''
+
+    @expectation.setter
+    def expectation(self, val):
+        self.special_notes = val
+
+    @property
+    def first_time_attending(self):
+        return self.is_first_time
+
+    @first_time_attending.setter
+    def first_time_attending(self, val):
+        self.is_first_time = val
+
+    @property
+    def phone_country_code(self):
+        if self.phone_number and self.phone_number.startswith('+'):
+            return self.phone_number[:4]
+        return '+234'
 
     def get_feeding_summary(self):
         """Human-readable feeding plan with selected days if applicable."""
@@ -235,6 +259,8 @@ class IMGCFeedingConfig(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'imgc_feeding_config'
+        managed = False
         verbose_name = 'IMGC Feeding Configuration'
         verbose_name_plural = 'IMGC Feeding Configurations'
 

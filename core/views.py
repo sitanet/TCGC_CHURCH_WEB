@@ -737,14 +737,13 @@ def registration(request):
         else:
             registration_code = _generate_imgc_code(attendance_mode, feeding_subscription)
 
-        # Save or update local mirror in SQLite ConferenceRegistration
+        # Save or update in ConferenceRegistration (maps directly to imgc_registrations)
         reg_obj, _ = ConferenceRegistration.objects.update_or_create(
             registration_code=registration_code,
             defaults={
                 'surname': surname,
                 'first_name': first_name,
                 'email': email,
-                'phone_country_code': phone_country_code,
                 'phone_number': phone_number,
                 'gender': gender,
                 'age_range': age_range,
@@ -754,12 +753,10 @@ def registration(request):
                 'state': state,
                 'country': country,
                 'is_first_time': is_first_time,
-                'first_time_attending': is_first_time,
                 'attendance_mode': attendance_mode,
                 'feeding_subscription': feeding_subscription,
                 'feeding_days': feeding_days,
                 'amount_paid': calculated_amount,
-                'expectation': special_notes,
                 'special_notes': special_notes,
                 'requires_code_dispatch': requires_dispatch,
                 'dispatch_phone_target': target_phone,
