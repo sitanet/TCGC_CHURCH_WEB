@@ -4,8 +4,8 @@
 {% block title %}The CityGate Church — A New Testament Kingdom Apostolic Centre{% endblock %}
 
 {% block content %}
-<!-- HERO SECTION (Ultra-Fast Optimized WebP Background) -->
-<section class="tcgc-hero" style="background-image: url('{% static 'images/hero_collage.webp' %}'), url('{% static 'images/hero_collage.png' %}');">
+<!-- HERO SECTION (Animated Background) -->
+<section class="tcgc-hero" style="background-image: url('{% static 'images/hero_collage_anim.webp' %}'), url('{% static 'images/hero_collage.gif' %}');">
     <div class="tcgc-hero-overlay"></div>
 
     <!-- Header / Navbar (Node 1:56) -->
@@ -142,8 +142,9 @@
     </div>
 </section>
 
-<!-- DOWNLOAD THE CITYGATE MOBILE APP SECTION (Node 75:378 with Fast WebP) -->
+<!-- DOWNLOAD THE CITYGATE MOBILE APP SECTION (Node 75:378 with Animated Showcase) -->
 <section class="tcgc-app-section" style="background-image: url('{% static 'images/app_section_bg.webp' %}'), url('{% static 'images/app_section_bg.png' %}');">
+    <div class="tcgc-app-gif-layer" style="background-image: url('{% static 'images/app_showcase_anim.webp' %}'), url('{% static 'images/app_showcase.gif' %}');"></div>
     <div class="tcgc-app-inner">
         <!-- Left: Angled Smartphone Mockup (Node 41:306) -->
         <div class="tcgc-app-mockup-col">
@@ -204,9 +205,12 @@
             </div>
         </div>
 
-        <!-- Right: Rounded Collage (Node 65:329) -->
+        <!-- Right: Animated Rounded Collage (Node 65:329) -->
         <div class="tcgc-meetings-visual">
-            <img src="{% static 'images/meetings_collage.webp' %}" alt="Our Meetings" class="tcgc-meetings-collage-img" loading="lazy">
+            <picture>
+                <source srcset="{% static 'images/meetings_collage_anim.webp' %}" type="image/webp">
+                <img src="{% static 'images/meetings_collage.gif' %}" alt="Our Meetings" class="tcgc-meetings-collage-img" loading="lazy">
+            </picture>
         </div>
     </div>
 </section>
