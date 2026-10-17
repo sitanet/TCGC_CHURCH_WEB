@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Watch Live — The CityGate Church{% endblock %}
+
+{% block content %}
+<!-- LIGHT NAVBAR (Node 138:353) -->
+<header class="tcgc-header tcgc-header-light">
+    <div class="tcgc-header-container">
+        <!-- Prototype Link: 138:355 -> 1:2 (Home) -->
+        <a href="{% url 'home' %}" class="tcgc-logo-link">
+            <img src="{% static 'images/logo_dark.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
+        </a>
+        <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="tcgc-nav">
+            <ul class="tcgc-nav-list">
+                <li><a href="{% url 'ministries' %}" class="tcgc-nav-link">About Us</a></li>
+                <li><a href="{% url 'video_streaming' %}" class="tcgc-nav-link tcgc-nav-link-active">Resources/Media</a></li>
+                <li><a href="{% url 'registration' %}" class="tcgc-nav-link">Events</a></li>
+                <li><a href="{% url 'ministries' %}#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
+            </ul>
+            <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
+        </nav>
+        <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
+    </div>
+</header>
+
+<!-- WATCH LIVE SECTION (Node 138:287 — Integrated with @dcitygatechurch YouTube Channel) -->
+<main class="tcgc-stream-page">
+    <div class="tcgc-container">
+        <h1 class="tcgc-stream-heading">WATCH LIVE!!</h1>
+
+        <!-- @dcitygatechurch Live Broadcast Control Bar (ported from TCGC_BACKEND) -->
+        <div class="tcgc-yt-channel-bar" id="yt-channel-toolbar">
+            <div class="tcgc-yt-bar-left">
+                <span class="tcgc-yt-live-badge {% if youtube_live_info.is_live %}is-live{% endif %}" id="liveBadgeIndicator">
+                    {% if youtube_live_info.is_live %}● LIVE NOW{% else %}● SERVICE BROADCAST{% endif %}
+                </span>
+                <span class="tcgc-yt-video-title" id="liveVideoTitle">
+                    {{ youtube_live_info.video_title|default:"The CityGate Church Live Broadcast" }}
+                </span>
+            </div>
+            <div class="tcgc-yt-bar-actions">
+                <div class="tcgc-yt-source-switch" role="group" aria-label="Video Stream Source">
+                    <button type="button" class="tcgc-yt-source-btn active" id="btnSourceDirect" data-source="direct">Live Video</button>
+                    <button type="button" class="tcgc-yt-source-btn" id="btnSourceChannel" data-source="channel">Channel Stream</button>
+                </div>
+                <button type="button" class="tcgc-yt-action-btn" id="btnRefreshLiveVideo" title="Check for latest live broadcast">
+                    <span id="refreshVideoIcon">&#8635;</span> Refresh
+                </button>
+                <a href="{{ youtube_live_info.watch_url|default:'https://www.youtube.com/@dcitygatechurch/live' }}"
+                   target="_blank"
+                   rel="noopener"
+                   id="openYouTubeBtn"
+                   class="tcgc-yt-action-btn tcgc-yt-open-link">
+                    Watch on YouTube &#8599;
+                </a>
+            </div>
+        </div>
+
+        <!-- Video Player Card (Node 138:522) -->
+        <div class="tcgc-youtube-card tcgc-youtube-card-live"
+             id="video-player-card"
+             data-embed-url="{{ youtube_live_info.embed_url }}"
+             data-channel-embed-url="{{ youtube_live_info.channel_embed_url }}"
+             data-watch-url="{{ youtube_live_info.watch_url }}"
+             style="background-image: url('{{ youtube_live_info.thumbnail_url|default:youtube_live_info.thumbnail|default:'/static/images/tsc_youtube_bg.png' }}');">
+            <div class="tcgc-youtube-overlay" id="video-poster-overlay">
+                <h2 class="tcgc-youtube-heading">WATCH OUR LIVE<br>STREAM</h2>
+                <button type="button" class="tcgc-youtube-play-btn" id="trigger-youtube-embed" aria-label="Play Live Video Stream">
+                    <img src="{% static 'images/youtube_icon.svg' %}" alt="Play Live Stream" class="tcgc-youtube-svg">
+                </button>
+            </div>
+            <!-- Embedded YouTube Container (revealed when play button is clicked) -->
+            <div class="tcgc-youtube-iframe-wrap" id="youtube-iframe-container" style="display: none;">
+                <iframe
+                    id="tcgc-yt-iframe"
+                    width="100%"
+                    height="100%"
+                    src=""
+                    title="{{ youtube_live_info.video_title|default:'The CityGate Church Live Stream' }}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+
+        <div class="tcgc-yt-channel-footer-meta">
+            <span>If playback doesn't start or shows offline, click <strong>Refresh</strong> or switch to <strong>Channel Stream</strong> above.</span>
+            <a href="https://www.youtube.com/@dcitygatechurch" target="_blank" rel="noopener" class="tcgc-yt-handle-link">
+                Visit @dcitygatechurch on YouTube &#8594;
+            </a>
+        </div>
+
+        <!-- Switch to Audio Streaming Button (Node 138:531 -> LINK 138:534) -->
+        <div class="tcgc-stream-switch-wrap">
+            <a href="{% url 'audio_streaming' %}" class="tcgc-btn-stream-switch">
+                <span>Listen Live</span>
+                <span class="tcgc-arrow-long">&#8594;</span>
+            </a>
+        </div>
+
+        <!-- Recent Broadcasts from @dcitygatechurch YouTube Channel -->
+        {% if youtube_live_info.recent_videos %}
+        <section class="tcgc-yt-recent-section">
+            <div class="tcgc-yt-recent-header">
+                <h2 class="tcgc-yt-recent-title">RECENT BROADCASTS ON @DCITYGATECHURCH</h2>
+                <a href="https://www.youtube.com/@dcitygatechurch/streams" target="_blank" rel="noopener" class="tcgc-yt-view-channel">
+                    View Full Channel Archive &#8594;
+                </a>
+            </div>
+            <div class="tcgc-yt-recent-grid">
+                {% for video in youtube_live_info.recent_videos %}
+                <div class="tcgc-yt-recent-card"
+                     role="button"
+                     tabindex="0"
+                     data-embed-url="{{ video.embed_url }}"
+                     data-watch-url="{{ video.watch_url }}"
+                     data-video-title="{{ video.title }}">
+                    <div class="tcgc-yt-recent-thumb">
+                        <img src="{{ video.thumbnail }}" alt="{{ video.title }}" loading="lazy">
+                        <span class="tcgc-yt-recent-play-badge">&#9654;</span>
+                    </div>
+                    <div class="tcgc-yt-recent-body">
+                        <h3 class="tcgc-yt-recent-card-title">{{ video.title }}</h3>
+                        <span class="tcgc-yt-recent-date">{{ video.published }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

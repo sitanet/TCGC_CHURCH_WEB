@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registration Confirmed ({{ reg.registration_code }}) — Image & Glory Conference 2026{% endblock %}
+
+{% block content %}
+<!-- REGISTRATION HERO SECTION -->
+<section class="tcgc-reg-hero" style="background-image: url('{% static 'images/reg_hero_bg.gif' %}?v=5'), url('{% static 'images/reg_hero_bg.png' %}'); height: 640px;">
+    <div class="tcgc-reg-hero-overlay"></div>
+
+    <!-- Header / Navbar -->
+    <header class="tcgc-header tcgc-header-dark">
+        <div class="tcgc-header-container">
+            <a href="{% url 'home' %}" class="tcgc-logo-link">
+                <img src="{% static 'images/logo_white.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
+            </a>
+            <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="tcgc-nav">
+                <ul class="tcgc-nav-list">
+                    <li><a href="{% url 'ministries' %}" class="tcgc-nav-link">About Us</a></li>
+                    <li><a href="{% url 'video_streaming' %}" class="tcgc-nav-link">Resources/Media</a></li>
+                    <li><a href="{% url 'registration' %}" class="tcgc-nav-link tcgc-nav-link-active">Events</a></li>
+                    <li><a href="{% url 'ministries' %}#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
+                </ul>
+                <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
+            </nav>
+            <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
+        </div>
+    </header>
+
+    <div class="tcgc-reg-hero-content">
+        <h1 class="tcgc-reg-hero-title">
+            REGISTRATION<br>
+            CONFIRMED
+        </h1>
+        <p class="tcgc-reg-hero-subtitle">
+            Thank you, <strong>{{ reg.first_name }} {{ reg.surname }}</strong>! You are officially registered for Image &amp; Glory Conference 2026.
+        </p>
+    </div>
+</section>
+
+<!-- CONFIRMATION SLIP CARD -->
+<section class="tcgc-reg-card-section" style="margin-top: -220px;">
+    <div class="tcgc-reg-card tcgc-confirm-card">
+        <div class="tcgc-confirm-badge-wrap">
+            <div class="tcgc-confirm-check-circle">&#10003;</div>
+            <h2 class="tcgc-reg-card-heading" style="margin-bottom: 8px;">Registration Confirmed</h2>
+            <p class="tcgc-confirm-subtitle">
+                Keep your unique registration code below for conference accreditation and check-in.
+            </p>
+        </div>
+
+        <!-- Unique Pass / Reference Code Box -->
+        <div class="tcgc-pass-box">
+            <div class="tcgc-pass-label">YOUR UNIQUE REGISTRATION CODE</div>
+            <div class="tcgc-pass-code">{{ reg.registration_code }}</div>
+            <div class="tcgc-pass-mode-pill-wrap">
+                {% if reg.attendance_mode == 'camping' %}
+                    <span class="tcgc-pass-pill tcgc-pass-pill-gold">
+                        On-Site Camp (Residential) &bull; {{ reg.get_feeding_summary }}
+                    </span>
+                {% elif reg.attendance_mode == 'non_camping' %}
+                    <span class="tcgc-pass-pill tcgc-pass-pill-orange">
+                        Physical Day Attendee &bull; {{ reg.get_feeding_summary }}
+                    </span>
+                {% else %}
+                    <span class="tcgc-pass-pill tcgc-pass-pill-crimson">
+                        Online Virtual Streamer &bull; Global Broadcast Access
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mandatory WhatsApp Dispatch Notice if Camping or Meal Subscribed -->
+        {% if reg.requires_code_dispatch and whatsapp_url %}
+        <div class="tcgc-whatsapp-dispatch-card">
+            <h3 class="tcgc-whatsapp-dispatch-title">Important Next Step — WhatsApp Verification</h3>
+            <p class="tcgc-whatsapp-dispatch-desc">
+                {% if reg.attendance_mode == 'camping' %}
+                    To finalize your <strong>Camp Accommodation &amp; Feeding Allocation</strong>, please click below to send your Registration Code (<strong>{{ reg.registration_code }}</strong>) to either of the <strong>Camping &amp; Accommodation Desks</strong>.
+                {% else %}
+                    To confirm your <strong>{{ reg.get_feeding_summary }}</strong>, please click below to send your Registration Code (<strong>{{ reg.registration_code }}</strong>) to either of the <strong>Registration &amp; Meal Desks</strong>.
+                {% endif %}
+            </p>
+            <div class="tcgc-whatsapp-btn-group">
+                <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-primary">
+                    <span>Send Code to Desk 1 (+234 706 521 3082)</span>
+                    <span class="tcgc-arrow-long">&#8594;</span>
+                </a>
+                {% if whatsapp_url_alt %}
+                <a href="{{ whatsapp_url_alt }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-secondary">
+                    <span>Send Code to Desk 2 (+234 703 205 5268)</span>
+                    <span class="tcgc-arrow-long">&#8594;</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Attendee Information Breakdown Table -->
+        <div class="tcgc-confirm-table-wrap">
+            <h3 class="tcgc-reg-section-title" style="font-size: 28px; margin-bottom: 16px;">Attendee Summary</h3>
+            <table class="tcgc-confirm-table">
+                <tbody>
+                    <tr>
+                        <td>Attendee Name</td>
+                        <td>{{ reg.first_name }} {{ reg.surname }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email Address</td>
+                        <td>{{ reg.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone Number (WhatsApp)</td>
+                        <td>{{ reg.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Location</td>
+                        <td>{{ reg.city }}{% if reg.state %}, {{ reg.state }}{% endif %}, {{ reg.country }}</td>
+                    </tr>
+                    <tr>
+                        <td>Designation / Role</td>
+                        <td>{{ reg.get_designation_display }}{% if reg.other_designation %} ({{ reg.other_designation }}){% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>First Time Attendee?</td>
+                        <td>{% if reg.is_first_time %}Yes, First Time Attendee{% else %}No, Returning Attendee{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Attendance Mode</td>
+                        <td>{{ reg.get_attendance_mode_display }}</td>
+                    </tr>
+                    <tr>
+                        <td>Feeding Plan</td>
+                        <td>
+                            <strong>{{ reg.get_feeding_summary }}</strong>
+                            {% if reg.feeding_days and reg.feeding_days != 'All Days' %}
+                                <div class="tcgc-confirm-days-note">Selected Days: {{ reg.feeding_days }}</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if reg.designation == 'church_worker' and reg.amount_paid and reg.amount_paid > 0 %}
+                    <tr class="tcgc-confirm-row-highlight">
+                        <td>Total Amount to Pay</td>
+                        <td>
+                            <strong class="tcgc-confirm-amount">&#8358;{{ reg.amount_paid|floatformat:2 }}</strong>
+                            <span class="tcgc-confirm-days-sub">({{ reg.feeding_days|default:'All 5 Days' }})</span>
+                        </td>
+                    </tr>
+                    {% if feeding_config.account_number %}
+                    <tr class="tcgc-confirm-row-bank">
+                        <td>Payment Account</td>
+                        <td>
+                            <div><strong>{{ feeding_config.bank_name }} &mdash; {{ feeding_config.account_number }}</strong></div>
+                            <div>{{ feeding_config.account_name }}</div>
+                            {% if feeding_config.payment_notes %}
+                            <div class="tcgc-confirm-bank-note">{{ feeding_config.payment_notes }}</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endif %}
+                    {% if reg.expectation %}
+                    <tr>
+                        <td>Expectation</td>
+                        <td>{{ reg.expectation }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="tcgc-confirm-actions">
+            <button type="button" onclick="window.print()" class="tcgc-btn-outline-gold tcgc-btn-confirm-action">
+                <span>Print / Save Slip</span>
+            </button>
+            <a href="{% url 'registration' %}" class="tcgc-btn-complete-reg tcgc-btn-confirm-action">
+                <span>Register Another Person</span>
+                <span class="tcgc-arrow-long">&#8594;</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

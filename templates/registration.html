@@ -1,0 +1,544 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Image & Glory Conference 2026 Registration — The CityGate Church{% endblock %}
+
+{% block content %}
+<!-- REGISTRATION HERO SECTION (Node 116:483 / 130:34 Animated GIF) -->
+<section class="tcgc-reg-hero" style="background-image: url('{% static 'images/reg_hero_bg.gif' %}?v=5'), url('{% static 'images/reg_hero_bg.png' %}');">
+    <div class="tcgc-reg-hero-overlay"></div>
+
+    <!-- Header / Navbar (Node 116:702) -->
+    <header class="tcgc-header tcgc-header-dark">
+        <div class="tcgc-header-container">
+            <!-- Prototype Link: 116:704 -> 1:2 (Home) -->
+            <a href="{% url 'home' %}" class="tcgc-logo-link">
+                <img src="{% static 'images/logo_white.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
+            </a>
+            <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="tcgc-nav">
+                <ul class="tcgc-nav-list">
+                    <li><a href="{% url 'ministries' %}" class="tcgc-nav-link">About Us</a></li>
+                    <li><a href="{% url 'video_streaming' %}" class="tcgc-nav-link">Resources/Media</a></li>
+                    <li><a href="{% url 'registration' %}" class="tcgc-nav-link tcgc-nav-link-active">Events</a></li>
+                    <li><a href="{% url 'ministries' %}#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
+                </ul>
+                <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
+            </nav>
+            <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
+        </div>
+    </header>
+
+    <!-- Hero Title & Subtitle (Node 130:35) -->
+    <div class="tcgc-reg-hero-content">
+        <h1 class="tcgc-reg-hero-title">
+            IMAGE &amp; GLORY<br>
+            CONFERENCE 2026
+        </h1>
+        <p class="tcgc-reg-hero-subtitle">
+            Experience Seven transformative days in God's presence. Discover your divine heritage and<br>
+            rise from glory to glory.
+        </p>
+    </div>
+</section>
+
+<!-- OVERLAPPING CONFERENCE REGISTRATION CARD (Node 118:729) -->
+<section class="tcgc-reg-card-section">
+    <div class="tcgc-reg-card">
+        <h2 class="tcgc-reg-card-heading">Conference Registration</h2>
+
+        <!-- DUPLICATE REGISTRATION WARNING BANNER (from /imgc/ logic) -->
+        {% if errors.duplicate %}
+        <div class="tcgc-reg-group tcgc-dup-alert" id="duplicate-warning-banner">
+            <h4 class="tcgc-dup-alert-title">Already Registered for IMGC 2026!</h4>
+            <p class="tcgc-dup-alert-desc">{{ errors.duplicate }}</p>
+            {% if existing_code %}
+            <div class="tcgc-dup-alert-actions">
+                <a href="{% url 'registration_confirmation' existing_code %}" class="tcgc-btn-dup-view">
+                    <span>View Existing Registration ({{ existing_code }})</span>
+                    <span class="tcgc-arrow-long">&#8594;</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form action="{% url 'registration' %}" method="POST" id="conference-reg-form" class="tcgc-reg-form">
+            {% csrf_token %}
+            <input type="hidden" id="serviceTeamDailyRate" value="{{ service_team_daily_cost|default:1500 }}">
+
+            <!-- 1. Personal Information (Node 138:160) -->
+            <div class="tcgc-reg-group">
+                <h3 class="tcgc-reg-section-title">Personal Information</h3>
+
+                <div class="tcgc-reg-grid-2">
+                    <div class="tcgc-reg-field">
+                        <label for="reg_surname">Surname<span class="tcgc-req">*</span></label>
+                        <input type="text" id="reg_surname" name="surname" value="{{ form_data.surname|default:'' }}" placeholder="e.g. Adeleke" required class="tcgc-reg-input">
+                        {% if errors.surname %}<p class="tcgc-field-error">{{ errors.surname }}</p>{% endif %}
+                    </div>
+                    <div class="tcgc-reg-field">
+                        <label for="reg_first_name">First Name<span class="tcgc-req">*</span></label>
+                        <input type="text" id="reg_first_name" name="first_name" value="{{ form_data.first_name|default:'' }}" placeholder="e.g. Emmanuel" required class="tcgc-reg-input">
+                        {% if errors.first_name %}<p class="tcgc-field-error">{{ errors.first_name }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="tcgc-reg-grid-2">
+                    <div class="tcgc-reg-field">
+                        <label for="reg_email">Email Address<span class="tcgc-req">*</span></label>
+                        <input type="email" id="reg_email" name="email" value="{{ form_data.email|default:'' }}" placeholder="e.g. Adeleke@example.com" required class="tcgc-reg-input">
+                        {% if errors.email %}<p class="tcgc-field-error">{{ errors.email }}</p>{% endif %}
+                    </div>
+                    <div class="tcgc-reg-field">
+                        <label for="reg_phone">Phone Number (Whatsapp)<span class="tcgc-req">*</span></label>
+                        <div class="tcgc-reg-phone-box">
+                            <input type="text" name="phone_country_code" value="{{ form_data.phone_country_code|default:'+234' }}" class="tcgc-reg-phone-prefix" aria-label="Country Code">
+                            <span class="tcgc-reg-phone-divider"></span>
+                            <input type="tel" id="reg_phone" name="phone_number" value="{{ form_data.phone_number|default:'' }}" placeholder="e.g. 8012345678" required class="tcgc-reg-phone-input">
+                        </div>
+                        {% if errors.phone_number %}<p class="tcgc-field-error">{{ errors.phone_number }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="tcgc-reg-grid-2">
+                    <div class="tcgc-reg-field">
+                        <label for="reg_gender">Gender<span class="tcgc-req">*</span></label>
+                        <div class="tcgc-select-wrap">
+                            <select id="reg_gender" name="gender" required class="tcgc-reg-select">
+                                <option value="" disabled {% if not form_data.gender %}selected{% endif %}>Select Gender</option>
+                                <option value="male" {% if form_data.gender == 'male' %}selected{% endif %}>Male</option>
+                                <option value="female" {% if form_data.gender == 'female' %}selected{% endif %}>Female</option>
+                            </select>
+                        </div>
+                        {% if errors.gender %}<p class="tcgc-field-error">{{ errors.gender }}</p>{% endif %}
+                    </div>
+                    <div class="tcgc-reg-field">
+                        <label for="reg_age">Age Range<span class="tcgc-req">*</span></label>
+                        <div class="tcgc-select-wrap">
+                            <select id="reg_age" name="age_range" required class="tcgc-reg-select">
+                                <option value="" disabled {% if not form_data.age_range %}selected{% endif %}>Select Age</option>
+                                <option value="under_18" {% if form_data.age_range == 'under_18' %}selected{% endif %}>Under 18</option>
+                                <option value="18_25" {% if form_data.age_range == '18_25' %}selected{% endif %}>18 - 25 years</option>
+                                <option value="26_35" {% if form_data.age_range == '26_35' %}selected{% endif %}>26 - 35 years</option>
+                                <option value="36_45" {% if form_data.age_range == '36_45' %}selected{% endif %}>36 - 45 years</option>
+                                <option value="46_55" {% if form_data.age_range == '46_55' %}selected{% endif %}>46 - 55 years</option>
+                                <option value="56_above" {% if form_data.age_range == '56_above' %}selected{% endif %}>56 years &amp; above</option>
+                            </select>
+                        </div>
+                        {% if errors.age_range %}<p class="tcgc-field-error">{{ errors.age_range }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="tcgc-reg-field tcgc-reg-field-full">
+                    <label for="reg_designation">Designation/Role<span class="tcgc-req">*</span></label>
+                    <div class="tcgc-select-wrap">
+                        <select id="reg_designation" name="designation" required class="tcgc-reg-select">
+                            <option value="" disabled {% if not form_data.designation %}selected{% endif %}>Select Designation/Role</option>
+                            <option value="student" {% if form_data.designation == 'student' %}selected{% endif %}>Student</option>
+                            <option value="working_professional" {% if form_data.designation == 'working_professional' %}selected{% endif %}>Working Professional</option>
+                            <option value="business_owner" {% if form_data.designation == 'business_owner' %}selected{% endif %}>Business Owner / Entrepreneur</option>
+                            <option value="minister_pastor" {% if form_data.designation == 'minister_pastor' %}selected{% endif %}>Minister / Pastor / Church Leader</option>
+                            <option value="church_worker" {% if form_data.designation == 'church_worker' %}selected{% endif %}>TCGC Service Team</option>
+                            <option value="job_seeker" {% if form_data.designation == 'job_seeker' %}selected{% endif %}>Job Seeker</option>
+                            <option value="retiree" {% if form_data.designation == 'retiree' %}selected{% endif %}>Retiree</option>
+                            <option value="other" {% if form_data.designation == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    {% if errors.designation %}<p class="tcgc-field-error">{{ errors.designation }}</p>{% endif %}
+                </div>
+
+                <!-- Conditional Field: Specify Your Role / Occupation (shown when Designation == 'other') -->
+                <div id="otherDesignationGroup" class="tcgc-reg-field tcgc-reg-field-full tcgc-conditional-field" style="display: none; margin-top: 25px;">
+                    <label for="other_designation">Specify Your Role / Occupation<span class="tcgc-req">*</span></label>
+                    <input type="text" id="other_designation" name="other_designation" value="{{ form_data.other_designation|default:'' }}" placeholder="e.g. Media Consultant, Artisan, etc." class="tcgc-reg-input">
+                </div>
+
+                <!-- Conditional Field: TCGC Service Team Lunch Plan & Price Box (shown when Designation == 'church_worker') -->
+                <div id="workerFeedingSection" class="tcgc-reg-conditional-panel" style="display: none; margin-top: 25px;">
+                    <div class="tcgc-conditional-header">
+                        <h4 class="tcgc-conditional-title">TCGC Service Team Lunch Plan</h4>
+                        <span class="tcgc-conditional-badge">Service Team Exclusive</span>
+                    </div>
+                    <p class="tcgc-conditional-desc">
+                        Service Team members are permitted to subscribe for <strong>lunch only</strong>. You can subscribe for <strong>all 5 conference days</strong> or hand-pick the <strong>specific days</strong> you will be on duty.
+                    </p>
+
+                    <div class="tcgc-feeding-options-stack">
+                        <!-- Option 1: Subscribe for Service Team Lunch -->
+                        <div class="tcgc-feeding-option-card active" id="workerLunchCardYes">
+                            <label class="tcgc-custom-radio tcgc-radio-block">
+                                <input type="radio" name="worker_lunch_choice" id="workerLunchYes" value="lunch_only" checked>
+                                <span class="tcgc-radio-circle"></span>
+                                <span class="tcgc-radio-text-wrap">
+                                    <strong class="tcgc-radio-main-label">Subscribe for Service Team Lunch</strong>
+                                    <small class="tcgc-radio-sub-label">Receive daily hot lunch ticket during afternoon duty break sessions.</small>
+                                </span>
+                            </label>
+
+                            <!-- Inner Days Selector & Live Price Calculation -->
+                            <div id="workerDaysInnerContainer" class="tcgc-days-inner-box">
+                                <div class="tcgc-reg-radio-options tcgc-scope-radios">
+                                    <label class="tcgc-custom-radio">
+                                        <input type="radio" name="worker_scope" value="all" id="workerScopeAll" checked>
+                                        <span class="tcgc-radio-circle"></span>
+                                        <span class="tcgc-radio-label">All 5 Days (Full Conference)</span>
+                                    </label>
+                                    <label class="tcgc-custom-radio">
+                                        <input type="radio" name="worker_scope" value="selected" id="workerScopeSelected">
+                                        <span class="tcgc-radio-circle"></span>
+                                        <span class="tcgc-radio-label">Select Specific Duty Days</span>
+                                    </label>
+                                </div>
+
+                                <!-- 5 Days Pill Checkboxes -->
+                                <div id="workerDayCheckboxes" class="tcgc-day-pills-grid" style="display: none;">
+                                    <label class="tcgc-day-pill active" id="workerDayBox1">
+                                        <input type="checkbox" value="Day 1" class="worker-day-cb" checked>
+                                        <span class="tcgc-day-pill-name">Day 1</span>
+                                        <span class="tcgc-day-pill-sub">Lunch</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="workerDayBox2">
+                                        <input type="checkbox" value="Day 2" class="worker-day-cb" checked>
+                                        <span class="tcgc-day-pill-name">Day 2</span>
+                                        <span class="tcgc-day-pill-sub">Lunch</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="workerDayBox3">
+                                        <input type="checkbox" value="Day 3" class="worker-day-cb" checked>
+                                        <span class="tcgc-day-pill-name">Day 3</span>
+                                        <span class="tcgc-day-pill-sub">Lunch</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="workerDayBox4">
+                                        <input type="checkbox" value="Day 4" class="worker-day-cb" checked>
+                                        <span class="tcgc-day-pill-name">Day 4</span>
+                                        <span class="tcgc-day-pill-sub">Lunch</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="workerDayBox5">
+                                        <input type="checkbox" value="Day 5" class="worker-day-cb" checked>
+                                        <span class="tcgc-day-pill-name">Day 5</span>
+                                        <span class="tcgc-day-pill-sub">Lunch</span>
+                                    </label>
+                                </div>
+
+                                <div class="tcgc-days-summary-line">
+                                    <span id="workerDaysSummaryText">Subscribing to Lunch for: All 5 Days</span>
+                                </div>
+
+                                <!-- Dynamic Calculation Box for Service Team -->
+                                <div id="workerPriceCard" class="tcgc-worker-price-card">
+                                    <div class="tcgc-price-left">
+                                        <span class="tcgc-price-caption">TOTAL FEEDING AMOUNT:</span>
+                                        <div class="tcgc-price-amount" id="workerTotalAmountDisplay">&#8358;7,500.00</div>
+                                    </div>
+                                    <div class="tcgc-price-right">
+                                        <div class="tcgc-price-rate" id="workerRateCalcDisplay">&#8358;{{ service_team_daily_cost|default:1500|floatformat:2 }} / Day</div>
+                                        <div class="tcgc-price-days" id="workerDaysCountLabel">All 5 Conference Days (&#8358;7,500.00)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Option 2: Self-Arranged Lunch -->
+                        <div class="tcgc-feeding-option-card" id="workerLunchCardNo">
+                            <label class="tcgc-custom-radio tcgc-radio-block">
+                                <input type="radio" name="worker_lunch_choice" id="workerLunchNo" value="none">
+                                <span class="tcgc-radio-circle"></span>
+                                <span class="tcgc-radio-text-wrap">
+                                    <strong class="tcgc-radio-main-label">Self-Arranged Lunch (No Meal Ticket)</strong>
+                                    <small class="tcgc-radio-sub-label">I will handle my own lunch during conference duty breaks.</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Location & Residence (Node 138:159) -->
+            <div class="tcgc-reg-group">
+                <h3 class="tcgc-reg-section-title">Location &amp; Residence</h3>
+
+                <div class="tcgc-reg-grid-2">
+                    <div class="tcgc-reg-field">
+                        <label for="reg_city">City or Town<span class="tcgc-req">*</span></label>
+                        <input type="text" id="reg_city" name="city" value="{{ form_data.city|default:'' }}" placeholder="e.g. Ibadan, Lagos, Abuja" required class="tcgc-reg-input">
+                        {% if errors.city %}<p class="tcgc-field-error">{{ errors.city }}</p>{% endif %}
+                    </div>
+                    <div class="tcgc-reg-field">
+                        <label for="reg_state">State/Region<span class="tcgc-req">*</span></label>
+                        <input type="text" id="reg_state" name="state" value="{{ form_data.state|default:'' }}" placeholder="e.g. Oyo State" required class="tcgc-reg-input">
+                    </div>
+                </div>
+
+                <div class="tcgc-reg-field tcgc-reg-field-full">
+                    <label for="reg_country">Country<span class="tcgc-req">*</span></label>
+                    <div class="tcgc-select-wrap">
+                        <select id="reg_country" name="country" required class="tcgc-reg-select">
+                            <option value="Nigeria" {% if form_data.country == 'Nigeria' or not form_data.country %}selected{% endif %}>Nigeria</option>
+                            <option value="United Kingdom" {% if form_data.country == 'United Kingdom' %}selected{% endif %}>United Kingdom</option>
+                            <option value="United States" {% if form_data.country == 'United States' %}selected{% endif %}>United States</option>
+                            <option value="Canada" {% if form_data.country == 'Canada' %}selected{% endif %}>Canada</option>
+                            <option value="Ghana" {% if form_data.country == 'Ghana' %}selected{% endif %}>Ghana</option>
+                            <option value="South Africa" {% if form_data.country == 'South Africa' %}selected{% endif %}>South Africa</option>
+                            <option value="Other" {% if form_data.country == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    {% if errors.country %}<p class="tcgc-field-error">{{ errors.country }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- 3. Attendance and Feeding Preferences (Node 138:271) -->
+            <div class="tcgc-reg-group">
+                <h3 class="tcgc-reg-section-title">Attendance and Feeding Preferences</h3>
+
+                <div class="tcgc-reg-radio-panel">
+                    <p class="tcgc-reg-radio-question">
+                        Is this your first time attending Image &amp; Glory Conference<span class="tcgc-req">*</span>
+                    </p>
+                    <div class="tcgc-reg-radio-options">
+                        <label class="tcgc-custom-radio">
+                            <input type="radio" name="is_first_time" value="yes" {% if form_data.is_first_time == 'yes' %}checked{% endif %}>
+                            <span class="tcgc-radio-circle"></span>
+                            <span class="tcgc-radio-label">Yes, this is my first time</span>
+                        </label>
+                        <label class="tcgc-custom-radio">
+                            <input type="radio" name="is_first_time" value="no" {% if form_data.is_first_time == 'no' or not form_data.is_first_time %}checked{% endif %}>
+                            <span class="tcgc-radio-circle"></span>
+                            <span class="tcgc-radio-label">No, I have attended previously</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Select Attendance Mode (Node 138:270) + Dynamic Feeding Subscription Options -->
+            <div class="tcgc-reg-group tcgc-reg-mode-group">
+                <h3 class="tcgc-reg-section-title">Select Attendance Mode</h3>
+                <input type="hidden" name="attendance_mode" id="selected_attendance_mode" value="{{ form_data.attendance_mode|default:'camping' }}">
+                <input type="hidden" name="feeding_days" id="finalFeedingDays" value="{{ form_data.feeding_days|default:'All Days' }}">
+
+                <div class="tcgc-mode-cards-grid">
+                    <!-- Mode Card 1: ON-SITE CAMP (Node 138:247, #D9B857) -->
+                    <div class="tcgc-mode-card tcgc-mode-gold {% if form_data.attendance_mode == 'camping' or not form_data.attendance_mode %}active{% endif %}"
+                         id="modeCardCamping"
+                         data-mode="camping"
+                         tabindex="0"
+                         role="button"
+                         aria-pressed="{% if form_data.attendance_mode == 'camping' or not form_data.attendance_mode %}true{% else %}false{% endif %}">
+                        <div class="tcgc-mode-card-top">
+                            <div class="tcgc-mode-title-row">
+                                <span class="tcgc-mode-main-title">ON-SITE CAMP</span>
+                                <span class="tcgc-mode-dot"></span>
+                            </div>
+                            <div class="tcgc-mode-subtitle">Camping</div>
+                            <p class="tcgc-mode-desc">
+                                Reside On-site throughout the conference with church accommodation
+                            </p>
+                        </div>
+                        <div class="tcgc-mode-footer-tag">FULL 5-DAY STAY</div>
+                    </div>
+
+                    <!-- Mode Card 2: PHYSICAL DAY (Node 138:248, #CB4905) -->
+                    <div class="tcgc-mode-card tcgc-mode-orange {% if form_data.attendance_mode == 'non_camping' %}active{% endif %}"
+                         id="modeCardNonCamping"
+                         data-mode="non_camping"
+                         tabindex="0"
+                         role="button"
+                         aria-pressed="{% if form_data.attendance_mode == 'non_camping' %}true{% else %}false{% endif %}">
+                        <div class="tcgc-mode-card-top">
+                            <div class="tcgc-mode-title-row">
+                                <span class="tcgc-mode-main-title">PHYSICAL DAY</span>
+                                <span class="tcgc-mode-dot"></span>
+                            </div>
+                            <div class="tcgc-mode-subtitle">Non-Camping</div>
+                            <p class="tcgc-mode-desc">
+                                Attend physical sessions daily and return home or hotel after service.
+                            </p>
+                        </div>
+                        <div class="tcgc-mode-footer-tag">DAY ATTENDEE/<br>SERVICE TEAM</div>
+                    </div>
+
+                    <!-- Mode Card 3: VIRTUAL STREAMING (Node 138:258, #980E03) -->
+                    <div class="tcgc-mode-card tcgc-mode-crimson {% if form_data.attendance_mode == 'online' %}active{% endif %}"
+                         id="modeCardOnline"
+                         data-mode="online"
+                         tabindex="0"
+                         role="button"
+                         aria-pressed="{% if form_data.attendance_mode == 'online' %}true{% else %}false{% endif %}">
+                        <div class="tcgc-mode-card-top">
+                            <div class="tcgc-mode-title-row">
+                                <span class="tcgc-mode-main-title">VIRTUAL<br>STREAMING</span>
+                                <span class="tcgc-mode-dot"></span>
+                            </div>
+                            <div class="tcgc-mode-subtitle">Online Streaming</div>
+                            <p class="tcgc-mode-desc">
+                                Connect virtually via HD live broadcast from any country or city
+                            </p>
+                        </div>
+                        <div class="tcgc-mode-footer-tag">GLOBAL BROADCAST<br>ACCESS</div>
+                    </div>
+                </div>
+                {% if errors.attendance_mode %}<p class="tcgc-field-error">{{ errors.attendance_mode }}</p>{% endif %}
+
+                <!-- DYNAMIC FEEDING BOX 1: CAMPING (ON-SITE) -->
+                <div id="campingFeedingBox" class="tcgc-reg-conditional-panel tcgc-feeding-mode-panel">
+                    <div class="tcgc-conditional-header">
+                        <h4 class="tcgc-conditional-title">Camping Feeding &amp; Accommodation (All 5 Days)</h4>
+                        <span class="tcgc-conditional-badge">On-Site Camp</span>
+                    </div>
+                    <p class="tcgc-conditional-desc">
+                        For campers, feeding covers <strong>all 5 conference days</strong> with hot <strong>Lunch and Dinner</strong> prepared daily. An accreditation reference code will be generated for you to submit to the <strong>Accommodation Desk</strong>.
+                    </p>
+                    <div class="tcgc-feeding-options-stack">
+                        <div class="tcgc-feeding-option-card">
+                            <label class="tcgc-custom-radio tcgc-radio-block">
+                                <input type="radio" name="feeding_subscription" value="lunch_dinner" class="camping-feed-input" id="feedCampingFull" {% if form_data.feeding_subscription == 'lunch_dinner' or not form_data.feeding_subscription %}checked{% endif %}>
+                                <span class="tcgc-radio-circle"></span>
+                                <span class="tcgc-radio-text-wrap">
+                                    <strong class="tcgc-radio-main-label">Full Feeding Subscription (Lunch &amp; Dinner - All 5 Days)</strong>
+                                    <small class="tcgc-radio-sub-label">Hot lunch and evening dinner prepared daily for all 5 camp days.</small>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="tcgc-feeding-option-card">
+                            <label class="tcgc-custom-radio tcgc-radio-block">
+                                <input type="radio" name="feeding_subscription" value="none" class="camping-feed-input" id="feedCampingNone" {% if form_data.feeding_subscription == 'none' %}checked{% endif %}>
+                                <span class="tcgc-radio-circle"></span>
+                                <span class="tcgc-radio-text-wrap">
+                                    <strong class="tcgc-radio-main-label">Self-Arranged Feeding</strong>
+                                    <small class="tcgc-radio-sub-label">I will arrange my personal meals outside the conference camp kitchen.</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC FEEDING BOX 2: NON-CAMPING (PHYSICAL DAY) -->
+                <div id="nonCampingFeedingBox" class="tcgc-reg-conditional-panel tcgc-feeding-mode-panel" style="display: none;">
+                    <div class="tcgc-conditional-header">
+                        <h4 class="tcgc-conditional-title">Day Attendee &amp; Service Team Feeding Plan</h4>
+                        <span class="tcgc-conditional-badge">Physical Day</span>
+                    </div>
+                    <p class="tcgc-conditional-desc">
+                        Subscribe for conference lunch vouchers to eat between morning and afternoon ministry sessions.
+                    </p>
+                    <div class="tcgc-feeding-options-stack">
+                        <!-- Lunch Only Option -->
+                        <div class="tcgc-feeding-option-card">
+                            <label class="tcgc-custom-radio tcgc-radio-block">
+                                <input type="radio" name="feeding_subscription" value="lunch_only" class="non-camping-feed-input" id="feedNonCampingLunch" disabled {% if form_data.feeding_subscription == 'lunch_only' %}checked{% endif %}>
+                                <span class="tcgc-radio-circle"></span>
+                                <span class="tcgc-radio-text-wrap">
+                                    <strong class="tcgc-radio-main-label">Subscribe for Lunch Only (TCGC Service Team &amp; Day Attendees)</strong>
+                                    <small class="tcgc-radio-sub-label">Enjoy prepared hot lunch during conference afternoon breaks.</small>
+                                </span>
+                            </label>
+
+                            <!-- Days Selection Sub-box (Synchronized for Service Team) -->
+                            <div id="workerDaysSelector" class="tcgc-days-inner-box" style="display: none;">
+                                <div class="tcgc-conditional-header" style="margin-bottom: 12px;">
+                                    <span class="tcgc-radio-main-label">Select Lunch Days:</span>
+                                    <div class="tcgc-inline-badges">
+                                        <span id="section3PriceBadge" class="tcgc-conditional-badge">Total: &#8358;7,500.00</span>
+                                        <span id="selectedDaysBadge" class="tcgc-conditional-badge tcgc-badge-gold">All 5 Days</span>
+                                    </div>
+                                </div>
+                                <div class="tcgc-reg-radio-options tcgc-scope-radios">
+                                    <label class="tcgc-custom-radio">
+                                        <input type="radio" name="lunch_day_scope" value="all" id="scopeAllDays" checked>
+                                        <span class="tcgc-radio-circle"></span>
+                                        <span class="tcgc-radio-label">All 5 Days</span>
+                                    </label>
+                                    <label class="tcgc-custom-radio">
+                                        <input type="radio" name="lunch_day_scope" value="selected" id="scopeSelectedDays">
+                                        <span class="tcgc-radio-circle"></span>
+                                        <span class="tcgc-radio-label">Specific Days Only</span>
+                                    </label>
+                                </div>
+                                <div id="dayCheckboxesContainer" class="tcgc-day-pills-grid" style="display: none;">
+                                    <label class="tcgc-day-pill active" id="dayBoxLabel1">
+                                        <input type="checkbox" name="selected_days" value="Day 1" class="day-check" checked>
+                                        <span class="tcgc-day-pill-name">Day 1</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="dayBoxLabel2">
+                                        <input type="checkbox" name="selected_days" value="Day 2" class="day-check" checked>
+                                        <span class="tcgc-day-pill-name">Day 2</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="dayBoxLabel3">
+                                        <input type="checkbox" name="selected_days" value="Day 3" class="day-check" checked>
+                                        <span class="tcgc-day-pill-name">Day 3</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="dayBoxLabel4">
+                                        <input type="checkbox" name="selected_days" value="Day 4" class="day-check" checked>
+                                        <span class="tcgc-day-pill-name">Day 4</span>
+                                    </label>
+                                    <label class="tcgc-day-pill active" id="dayBoxLabel5">
+                                        <input type="checkbox" name="selected_days" value="Day 5" class="day-check" checked>
+                                        <span class="tcgc-day-pill-name">Day 5</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Full Feeding Option (Hidden for Service Team) -->
+                        <div class="tcgc-feeding-option-card" id="nonCampingFullLabel">
+                            <label class="tcgc-custom-radio tcgc-radio-block">
+                                <input type="radio" name="feeding_subscription" value="lunch_dinner" class="non-camping-feed-input" id="feedNonCampingFull" disabled {% if form_data.feeding_subscription == 'lunch_dinner' %}checked{% endif %}>
+                                <span class="tcgc-radio-circle"></span>
+                                <span class="tcgc-radio-text-wrap">
+                                    <strong class="tcgc-radio-main-label">Lunch &amp; Dinner (Full Daily Feeding)</strong>
+                                    <small class="tcgc-radio-sub-label">Includes afternoon lunch and evening dinner for physical day attendees.</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- No Feeding Option -->
+                        <div class="tcgc-feeding-option-card">
+                            <label class="tcgc-custom-radio tcgc-radio-block">
+                                <input type="radio" name="feeding_subscription" value="none" class="non-camping-feed-input" id="feedNonCampingNone" disabled {% if form_data.feeding_subscription == 'none' %}checked{% endif %}>
+                                <span class="tcgc-radio-circle"></span>
+                                <span class="tcgc-radio-text-wrap">
+                                    <strong class="tcgc-radio-main-label">No Feeding Subscription (Self-Arranged)</strong>
+                                    <small class="tcgc-radio-sub-label">I do not require meal tickets or catering services.</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC FEEDING BOX 3: ONLINE STREAMING -->
+                <div id="onlineStreamingBox" class="tcgc-reg-conditional-panel tcgc-feeding-mode-panel" style="display: none;">
+                    <input type="hidden" name="feeding_subscription" id="feedOnlineNone" value="none" disabled>
+                    <div class="tcgc-conditional-header">
+                        <h4 class="tcgc-conditional-title">Global Virtual Streamer Access</h4>
+                        <span class="tcgc-conditional-badge">Online Streaming</span>
+                    </div>
+                    <p class="tcgc-conditional-desc" style="margin-bottom: 0;">
+                        You will receive your unique streaming access links and conference broadcast details directly. No meal or on-site accommodation payment required.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 5. Expectation for the Conference* (Node 138:189) -->
+            <div class="tcgc-reg-group">
+                <h3 class="tcgc-reg-section-title">
+                    Expectation for the Conference<span class="tcgc-req">*</span>
+                </h3>
+                <div class="tcgc-reg-field tcgc-reg-field-full">
+                    <input type="text" name="expectation" value="{{ form_data.expectation|default:'' }}" placeholder="Share your expectations and desires for the conference..." required class="tcgc-reg-input">
+                </div>
+            </div>
+
+            <!-- Submit Button (Node 138:214) -->
+            <div class="tcgc-reg-submit-row">
+                <button type="submit" class="tcgc-btn-complete-reg" id="submitRegBtn">
+                    <span>Complete Registration</span>
+                    <span class="tcgc-arrow-long">&#8594;</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

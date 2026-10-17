@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Listen Live — The CityGate Church{% endblock %}
+
+{% block content %}
+<!-- LIGHT NAVBAR (Node 138:598) -->
+<header class="tcgc-header tcgc-header-light">
+    <div class="tcgc-header-container">
+        <!-- Prototype Link: 138:600 -> 1:2 (Home) -->
+        <a href="{% url 'home' %}" class="tcgc-logo-link">
+            <img src="{% static 'images/logo_dark.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
+        </a>
+        <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="tcgc-nav">
+            <ul class="tcgc-nav-list">
+                <li><a href="{% url 'ministries' %}" class="tcgc-nav-link">About Us</a></li>
+                <li><a href="{% url 'audio_streaming' %}" class="tcgc-nav-link tcgc-nav-link-active">Resources/Media</a></li>
+                <li><a href="{% url 'registration' %}" class="tcgc-nav-link">Events</a></li>
+                <li><a href="{% url 'ministries' %}#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
+            </ul>
+            <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
+        </nav>
+        <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
+    </div>
+</header>
+
+<!-- LISTEN LIVE SECTION (Node 138:534) -->
+<main class="tcgc-stream-page tcgc-audio-page">
+    <div class="tcgc-container">
+        <h1 class="tcgc-stream-heading">LISTEN LIVE!!</h1>
+
+        <!-- Audio Broadcast Player Card (Node 138:633, 571x737) -->
+        <div class="tcgc-audio-card-wrap">
+            <div class="tcgc-audio-card" id="audio-player-widget">
+                <img src="{% static 'images/audio_player_card.png' %}" alt="dcitygatechurch Live Audio Broadcast" class="tcgc-audio-card-img">
+
+                <!-- Interactive Controls Overlay positioned over the exact card controls -->
+                <button type="button" class="tcgc-audio-hotspot tcgc-hotspot-like" id="audio-like-btn" title="Like Broadcast" aria-label="Like Broadcast">
+                    <span class="tcgc-like-badge" id="audio-like-count"></span>
+                </button>
+                <button type="button" class="tcgc-audio-hotspot tcgc-hotspot-mute" id="audio-mute-btn" title="Toggle Mute" aria-label="Toggle Mute"></button>
+                <button type="button" class="tcgc-audio-hotspot tcgc-hotspot-play" id="audio-play-btn" title="Play/Pause Live Audio" aria-label="Play/Pause Live Audio">
+                    <span class="tcgc-audio-status-ring" id="audio-status-ring"></span>
+                </button>
+            </div>
+            <p class="tcgc-audio-live-indicator" id="audio-live-status" aria-live="polite"></p>
+
+            <!-- Official dcitygatechurch Mixlr Live Audio Embed (ported from TCGC_BACKEND, revealed when Play is clicked) -->
+            <div class="tcgc-mixlr-embed-box" id="mixlr-live-container" style="display: none;">
+                <iframe
+                    id="mixlrLiveFrame"
+                    src=""
+                    data-src="https://dcitygatechurch.mixlr.com/embed"
+                    width="100%"
+                    height="180"
+                    scrolling="no"
+                    frameborder="no"
+                    marginheight="0"
+                    marginwidth="0"
+                    allow="autoplay"
+                    title="The CityGate Church Live Audio Stream (Mixlr)">
+                </iframe>
+                <div class="tcgc-mixlr-meta">
+                    <a href="https://dcitygatechurch.mixlr.com" target="_blank" rel="noopener">Open dcitygatechurch on Mixlr &#8599;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Switch to Video Streaming Button (Node 138:626 -> LINK 138:287) -->
+        <div class="tcgc-stream-switch-wrap">
+            <a href="{% url 'video_streaming' %}" class="tcgc-btn-stream-switch">
+                <span>Watch Live</span>
+                <span class="tcgc-arrow-long">&#8594;</span>
+            </a>
+        </div>
+    </div>
+</main>
+{% endblock %}

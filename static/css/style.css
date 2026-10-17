@@ -1,0 +1,3434 @@
+/* ==========================================================================
+   THE CITYGATE CHURCH (TCGC WEB) — PIXEL-PERFECT FIGMA STYLESHEET
+   Fonts: Clash Display, Lora, Onest
+   ========================================================================== */
+
+:root {
+    --font-display: 'Clash Display', sans-serif;
+    --font-serif: 'Lora', Georgia, serif;
+    --font-sans: 'Onest', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    --color-gold: #D9B857;
+    --color-gold-hover: #c9a745;
+    --color-crimson: #980E03;
+    --color-crimson-dark: #811A19;
+    --color-orange: #CB4905;
+    --color-dark: #1C1C1C;
+    --color-black: #000000;
+    --color-white: #FFFFFF;
+    --color-welcome-bg: rgba(255, 248, 231, 0.46);
+    --color-reg-card-bg: #FDFBF4;
+    --color-input-gray: rgba(217, 217, 217, 0.6);
+    --color-give-card-bg: rgba(217, 217, 217, 0.36);
+    --color-give-label: #505B66;
+    --color-meetings-bg: #FCFCFF;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-serif);
+    color: var(--color-dark);
+    background-color: var(--color-white);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.25s ease;
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    border: none;
+    outline: none;
+}
+
+.tcgc-container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 88px;
+}
+
+.tcgc-gold-text {
+    color: var(--color-gold);
+}
+
+/* ==========================================================================
+   TOAST NOTIFICATIONS
+   ========================================================================== */
+.tcgc-toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+}
+
+.tcgc-toast {
+    background: var(--color-crimson);
+    color: var(--color-white);
+    border-left: 5px solid var(--color-gold);
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.45;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    animation: tcgcSlideIn 0.3s ease forwards;
+}
+
+.tcgc-toast-close {
+    background: transparent;
+    color: var(--color-white);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+}
+
+.tcgc-toast-close:hover {
+    opacity: 1;
+}
+
+@keyframes tcgcSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ==========================================================================
+   HEADER / NAVBAR (Nodes 1:56, 116:702, 138:353)
+   ========================================================================== */
+.tcgc-header {
+    width: 100%;
+    height: 97px;
+    position: relative;
+    z-index: 20;
+}
+
+.tcgc-header-container {
+    max-width: 1440px;
+    height: 97px;
+    margin: 0 auto;
+    padding: 0 88px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tcgc-header-logo {
+    width: 122px;
+    height: 65px;
+    object-fit: contain;
+}
+
+.tcgc-nav-list {
+    display: flex;
+    align-items: center;
+    gap: 78px;
+}
+
+.tcgc-nav-link {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22.4px;
+    letter-spacing: 0.01em;
+    position: relative;
+}
+
+.tcgc-header-dark .tcgc-nav-link {
+    color: var(--color-white);
+}
+
+.tcgc-header-light {
+    background-color: var(--color-white);
+}
+
+.tcgc-header-light .tcgc-nav-link {
+    color: var(--color-black);
+}
+
+.tcgc-nav-link:hover,
+.tcgc-nav-link.tcgc-nav-link-active {
+    color: var(--color-gold) !important;
+}
+
+.tcgc-btn-contact {
+    width: 190px;
+    height: 48px;
+    background-color: var(--color-crimson);
+    color: var(--color-white);
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tcgc-btn-contact:hover {
+    background-color: #7a0b02;
+    transform: translateY(-1px);
+}
+
+.tcgc-btn-contact-mobile {
+    display: none;
+}
+
+.tcgc-mobile-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border-radius: 8px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 30;
+}
+
+.tcgc-mobile-toggle span {
+    display: block;
+    width: 26px;
+    height: 2.5px;
+    background-color: var(--color-white);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.tcgc-header-light .tcgc-mobile-toggle span {
+    background-color: var(--color-black);
+}
+
+.tcgc-mobile-toggle.is-active span:nth-child(1) {
+    transform: translateY(8.5px) rotate(45deg);
+}
+
+.tcgc-mobile-toggle.is-active span:nth-child(2) {
+    opacity: 0;
+}
+
+.tcgc-mobile-toggle.is-active span:nth-child(3) {
+    transform: translateY(-8.5px) rotate(-45deg);
+}
+
+/* ==========================================================================
+   HOME HERO SECTION (Node 1:2 / 21:266)
+   ========================================================================== */
+.tcgc-hero {
+    position: relative;
+    width: 100%;
+    min-height: 820px;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-color: #0b0b0b;
+    display: flex;
+    flex-direction: column;
+}
+
+.tcgc-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.72) 100%);
+    z-index: 1;
+}
+
+.tcgc-hero-content {
+    position: relative;
+    z-index: 5;
+    max-width: 1022px;
+    margin: 174px auto 0;
+    text-align: center;
+    padding: 0 24px;
+}
+
+.tcgc-hero-subtitle {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 24px;
+    color: var(--color-gold);
+    margin-bottom: 16px;
+}
+
+.tcgc-hero-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 72px;
+    color: var(--color-white);
+    margin-bottom: 16px;
+}
+
+.tcgc-hero-description {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 30px;
+    color: var(--color-white);
+    max-width: 748px;
+    margin: 0 auto;
+}
+
+.tcgc-hero-actions {
+    margin-top: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+}
+
+.tcgc-btn-livestream {
+    width: 174px;
+    height: 53px;
+    background-color: var(--color-gold);
+    border-radius: 8px;
+    color: var(--color-white);
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tcgc-btn-livestream:hover {
+    background-color: var(--color-gold-hover);
+    transform: translateY(-2px);
+}
+
+.tcgc-signal-icon {
+    width: 21px;
+    height: 21px;
+    object-fit: contain;
+}
+
+.tcgc-btn-glass {
+    width: 174px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(6px);
+    border-radius: 6px;
+    color: var(--color-white);
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.tcgc-btn-glass:hover {
+    background-color: rgba(255, 255, 255, 0.52);
+    transform: translateY(-2px);
+}
+
+.tcgc-arrow-long {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* ==========================================================================
+   WELCOME NOTE SECTION (Node 21:275)
+   ========================================================================== */
+.tcgc-welcome-section {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-welcome-bg);
+    padding: 100px 0 40px;
+}
+
+.tcgc-welcome-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 78px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 72px;
+}
+
+.tcgc-welcome-image-wrap {
+    flex: 0 0 649px;
+    max-width: 649px;
+}
+
+.tcgc-pastors-card-img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.tcgc-welcome-content {
+    flex: 0 0 480px;
+    max-width: 480px;
+    margin-top: 105px;
+    margin-right: 43px;
+}
+
+.tcgc-welcome-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 238px;
+    height: 50px;
+    background-color: var(--color-crimson);
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.tcgc-welcome-badge span {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29.5px;
+    color: var(--color-white);
+}
+
+.tcgc-welcome-text p {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 25px;
+    color: var(--color-dark);
+    text-align: justify;
+    margin-bottom: 25px;
+}
+
+.tcgc-welcome-cta-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+}
+
+.tcgc-btn-outline-gold {
+    width: 222px;
+    height: 49px;
+    border: 1px solid rgba(217, 184, 87, 0.55);
+    border-radius: 8px;
+    color: var(--color-gold);
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.tcgc-btn-outline-gold:hover {
+    background-color: var(--color-gold);
+    color: var(--color-white);
+}
+
+.tcgc-gold-wave-wrap {
+    max-width: 1440px;
+    margin: 45px auto 0;
+    overflow: hidden;
+}
+
+.tcgc-gold-wave {
+    width: 100%;
+    height: auto;
+}
+
+/* ==========================================================================
+   YOUTUBE LIVE STREAM BANNER SECTION (Node 1:105 & 9:261)
+   ========================================================================== */
+.tcgc-youtube-section {
+    padding: 50px 0 70px;
+    background-color: var(--color-white);
+}
+
+.tcgc-youtube-card {
+    position: relative;
+    width: 100%;
+    max-width: 1264px;
+    height: 649px;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: var(--color-black);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tcgc-youtube-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.65) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tcgc-youtube-overlay {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+.tcgc-youtube-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 48px;
+    line-height: 54px;
+    color: var(--color-white);
+    -webkit-text-stroke: 0.5px var(--color-white);
+    text-transform: uppercase;
+}
+
+.tcgc-youtube-play-btn {
+    background: transparent;
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
+
+.tcgc-youtube-play-btn:hover {
+    transform: scale(1.08);
+}
+
+.tcgc-youtube-svg {
+    width: 137px;
+    height: 96px;
+}
+
+.tcgc-youtube-iframe-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: #000;
+}
+
+.tcgc-see-more-wrap {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.tcgc-see-more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 25px;
+    color: var(--color-dark);
+}
+
+.tcgc-see-more-link:hover {
+    color: var(--color-crimson);
+}
+
+/* ==========================================================================
+   CITYGATE MOBILE APP SECTION (Node 75:378)
+   ========================================================================== */
+.tcgc-app-section {
+    position: relative;
+    width: 100%;
+    min-height: 809px;
+    background: linear-gradient(122deg, rgba(217, 184, 87, 0.94) 0%, rgba(0, 0, 0, 1) 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.tcgc-app-gif-layer {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.14;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tcgc-app-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 13px 104px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.tcgc-app-mockup-col {
+    flex: 0 0 554px;
+    max-width: 554px;
+}
+
+.tcgc-phone-mockup {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
+}
+
+.tcgc-app-copy-col {
+    flex: 0 0 485px;
+    max-width: 485px;
+}
+
+.tcgc-app-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29.5px;
+    color: var(--color-white);
+    margin-bottom: 25px;
+}
+
+.tcgc-app-description {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 25px;
+    color: var(--color-white);
+    text-align: justify;
+    margin-bottom: 50px;
+}
+
+.tcgc-store-buttons {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+}
+
+.tcgc-store-btn {
+    width: 224px;
+    height: 52px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29.5px;
+    color: var(--color-white);
+    padding: 0 14px;
+}
+
+.tcgc-store-btn-gold {
+    background-color: var(--color-gold);
+}
+
+.tcgc-store-btn-gold:hover {
+    background-color: var(--color-gold-hover);
+    transform: translateY(-2px);
+}
+
+.tcgc-store-btn-glass {
+    background-color: rgba(217, 184, 87, 0.1);
+    border: 0.5px solid var(--color-white);
+}
+
+.tcgc-store-btn-glass:hover {
+    background-color: rgba(217, 184, 87, 0.25);
+    transform: translateY(-2px);
+}
+
+.tcgc-store-btn-outline {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    height: 54px;
+}
+
+.tcgc-store-btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.tcgc-store-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.tcgc-arrow-right {
+    font-size: 20px;
+    margin-left: 4px;
+}
+
+/* ==========================================================================
+   OUR MEETINGS SECTION (Node 79:385)
+   ========================================================================== */
+.tcgc-meetings-section {
+    width: 100%;
+    min-height: 710px;
+    background-color: var(--color-meetings-bg);
+    display: flex;
+    align-items: center;
+    padding: 90px 0;
+}
+
+.tcgc-meetings-inner {
+    width: 100%;
+    max-width: 1082px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.tcgc-meetings-schedule {
+    flex: 0 0 410px;
+}
+
+.tcgc-meetings-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 44.3px;
+    color: var(--color-gold);
+    margin-bottom: 25px;
+}
+
+.tcgc-schedule-rows {
+    display: flex;
+    flex-direction: column;
+}
+
+.tcgc-schedule-row {
+    display: grid;
+    grid-template-columns: 105px 195px 90px;
+    align-items: baseline;
+    font-family: var(--font-serif);
+    font-size: 18px;
+    line-height: 45px;
+    color: var(--color-dark);
+}
+
+.tcgc-gold-lora-italic {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-style: italic;
+    color: var(--color-gold);
+}
+
+.tcgc-lora-bold-italic {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-style: italic;
+}
+
+.tcgc-schedule-day {
+    font-weight: 700;
+}
+
+.tcgc-schedule-name {
+    font-weight: 400;
+    font-style: italic;
+}
+
+.tcgc-schedule-time {
+    font-weight: 400;
+    text-align: right;
+}
+
+.tcgc-meetings-visual {
+    flex: 0 0 526px;
+    max-width: 526px;
+}
+
+.tcgc-meetings-collage-img {
+    width: 526px;
+    height: 526px;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   UPCOMING EVENTS SECTION (Node 75:374)
+   ========================================================================== */
+.tcgc-events-section {
+    padding: 20px 0 80px;
+    background-color: var(--color-white);
+}
+
+.tcgc-events-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 64px;
+    line-height: 78.7px;
+    color: var(--color-crimson-dark);
+    -webkit-text-stroke: 2px var(--color-crimson-dark);
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+}
+
+.tcgc-events-grid {
+    max-width: 1213px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 399px);
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.tcgc-event-card {
+    width: 399px;
+    height: 334px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: block;
+    position: relative;
+}
+
+.tcgc-event-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.tcgc-event-card:hover .tcgc-event-card-img {
+    transform: scale(1.03);
+}
+
+/* ==========================================================================
+   GIVE ONLINE SECTION (Node 99:481)
+   ========================================================================== */
+.tcgc-give-section {
+    padding: 40px 0 100px;
+    background-color: var(--color-white);
+}
+
+.tcgc-give-inner {
+    max-width: 1237px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 38px;
+}
+
+.tcgc-give-left {
+    flex: 0 0 471px;
+}
+
+.tcgc-give-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 72px;
+    line-height: 80px;
+    color: var(--color-black);
+    margin-bottom: 25px;
+}
+
+.tcgc-give-subtext {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 24.75px;
+    color: var(--color-black);
+    margin-bottom: 25px;
+}
+
+.tcgc-btn-give-learn {
+    width: 239px;
+    height: 60px;
+    background-color: var(--color-gold);
+    border-radius: 8px;
+    color: var(--color-white);
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 15.2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.tcgc-btn-give-learn:hover {
+    background-color: var(--color-gold-hover);
+    transform: translateY(-2px);
+}
+
+.tcgc-give-form-card {
+    flex: 0 0 728px;
+    width: 728px;
+    min-height: 589px;
+    background-color: var(--color-give-card-bg);
+    padding: 66px 29px 50px;
+}
+
+.tcgc-give-form {
+    max-width: 670px;
+    margin: 0 auto;
+}
+
+.tcgc-give-row-2 {
+    display: grid;
+    grid-template-columns: 327px 327px;
+    justify-content: space-between;
+    margin-bottom: 38px;
+}
+
+.tcgc-give-field label {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    color: var(--color-give-label);
+    margin-bottom: 8px;
+    padding-left: 4px;
+}
+
+.tcgc-give-field input {
+    width: 100%;
+    height: 48px;
+    background-color: var(--color-white);
+    border-radius: 8px;
+    padding: 0 18px;
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--color-dark);
+}
+
+.tcgc-give-field-full {
+    margin-bottom: 45px;
+}
+
+.tcgc-give-field-phone {
+    margin-bottom: 62px;
+}
+
+.tcgc-give-phone-split {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.tcgc-give-code-input {
+    width: 80px !important;
+    text-align: center;
+    color: #999999 !important;
+}
+
+.tcgc-give-number-input {
+    width: 236px !important;
+}
+
+.tcgc-give-number-input::placeholder {
+    color: #B3B3B3;
+}
+
+.tcgc-give-submit-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+.tcgc-btn-give-now {
+    width: 213px;
+    height: 53px;
+    background-color: var(--color-gold);
+    border-radius: 16px;
+    color: var(--color-white);
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.tcgc-btn-give-now:hover {
+    background-color: var(--color-gold-hover);
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   CONFERENCE REGISTRATION PAGE (Node 116:483)
+   ========================================================================== */
+.tcgc-reg-hero {
+    position: relative;
+    width: 100%;
+    height: 799px;
+    background-size: cover;
+    background-position: center top;
+    background-color: #0b0b0b;
+}
+
+.tcgc-reg-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1;
+}
+
+.tcgc-reg-hero-content {
+    position: relative;
+    z-index: 5;
+    max-width: 978px;
+    margin: 73px auto 0;
+    text-align: center;
+    padding: 0 24px;
+}
+
+.tcgc-reg-hero-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 60px;
+    line-height: 64px;
+    color: var(--color-white);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.tcgc-reg-hero-subtitle {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 30px;
+    color: var(--color-white);
+    max-width: 748px;
+    margin: 0 auto;
+}
+
+.tcgc-reg-card-section {
+    position: relative;
+    z-index: 10;
+    margin-top: -296px;
+    padding-bottom: 208px;
+}
+
+.tcgc-reg-card {
+    width: 100%;
+    max-width: 1184px;
+    min-height: 2254px;
+    margin: 0 auto;
+    background-color: var(--color-reg-card-bg);
+    padding: 87px 127px 119px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.08);
+}
+
+.tcgc-reg-card-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 59px;
+    color: var(--color-crimson);
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.tcgc-reg-group {
+    max-width: 909px;
+    margin: 0 auto 55px;
+}
+
+.tcgc-reg-mode-group {
+    max-width: 929px;
+}
+
+.tcgc-reg-section-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 44.3px;
+    color: var(--color-gold);
+    margin-bottom: 25px;
+}
+
+.tcgc-reg-grid-2 {
+    display: grid;
+    grid-template-columns: 441px 441px;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.tcgc-reg-field label {
+    display: block;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 25px;
+    color: var(--color-dark);
+    margin-bottom: 13px;
+}
+
+.tcgc-req {
+    color: var(--color-crimson);
+    margin-left: 2px;
+}
+
+.tcgc-reg-input,
+.tcgc-reg-select {
+    width: 100%;
+    height: 63px;
+    background-color: var(--color-input-gray);
+    border-radius: 8px;
+    padding: 0 27px;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--color-dark);
+}
+
+.tcgc-reg-input::placeholder {
+    color: rgba(28, 28, 28, 0.25);
+}
+
+.tcgc-reg-phone-box {
+    width: 100%;
+    height: 63px;
+    background-color: var(--color-input-gray);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.tcgc-reg-phone-prefix {
+    width: 56px;
+    background: transparent;
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: rgba(28, 28, 28, 0.45);
+    text-align: center;
+}
+
+.tcgc-reg-phone-divider {
+    width: 1px;
+    height: 35px;
+    background-color: var(--color-black);
+    margin: 0 18px 0 8px;
+}
+
+.tcgc-reg-phone-input {
+    flex: 1;
+    background: transparent;
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--color-dark);
+}
+
+.tcgc-reg-phone-input::placeholder {
+    color: rgba(28, 28, 28, 0.25);
+}
+
+.tcgc-select-wrap {
+    position: relative;
+}
+
+.tcgc-reg-select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    color: rgba(28, 28, 28, 0.55);
+}
+
+.tcgc-reg-select:valid {
+    color: var(--color-dark);
+}
+
+.tcgc-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-right: 1.8px solid rgba(0, 0, 0, 0.35);
+    border-bottom: 1.8px solid rgba(0, 0, 0, 0.35);
+    transform: translateY(-65%) rotate(45deg);
+    pointer-events: none;
+}
+
+/* Radio Box in Registration (Node 138:275) */
+.tcgc-reg-radio-panel {
+    width: 100%;
+    min-height: 128px;
+    background-color: var(--color-input-gray);
+    border-radius: 8px;
+    padding: 19px 27px;
+}
+
+.tcgc-reg-radio-question {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 25px;
+    color: var(--color-dark);
+    margin-bottom: 27px;
+}
+
+.tcgc-reg-radio-options {
+    display: flex;
+    align-items: center;
+    gap: 64px;
+}
+
+.tcgc-custom-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--color-dark);
+}
+
+.tcgc-custom-radio input {
+    display: none;
+}
+
+.tcgc-radio-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #F7F7F7;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.tcgc-custom-radio input:checked + .tcgc-radio-circle::after {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--color-crimson);
+}
+
+/* 3 Attendance Mode Cards (Node 138:268) */
+.tcgc-mode-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 293px);
+    justify-content: space-between;
+    gap: 25px;
+    margin-top: 36px;
+}
+
+.tcgc-mode-card {
+    width: 293px;
+    height: 334px;
+    border-radius: 12px;
+    padding: 61px 28px 25px;
+    color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+}
+
+.tcgc-mode-gold {
+    background-color: var(--color-gold);
+}
+
+.tcgc-mode-orange {
+    background-color: var(--color-orange);
+}
+
+.tcgc-mode-crimson {
+    background-color: var(--color-crimson);
+}
+
+.tcgc-mode-card:hover {
+    transform: translateY(-4px);
+}
+
+.tcgc-mode-card.active {
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+    outline: 3px solid rgba(255, 255, 255, 0.9);
+    outline-offset: -6px;
+}
+
+.tcgc-mode-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.tcgc-mode-main-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29.5px;
+}
+
+.tcgc-mode-dot {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background-color: var(--color-white);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.tcgc-mode-card.active .tcgc-mode-dot::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background-color: var(--color-crimson);
+}
+
+.tcgc-mode-subtitle {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 29.5px;
+    margin-bottom: 16px;
+}
+
+.tcgc-mode-desc {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24.6px;
+}
+
+.tcgc-mode-footer-tag {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 24.6px;
+    text-transform: uppercase;
+}
+
+.tcgc-reg-submit-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 55px;
+}
+
+.tcgc-btn-complete-reg {
+    width: 643px;
+    height: 50px;
+    background-color: var(--color-gold);
+    border-radius: 8px;
+    color: var(--color-white);
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.tcgc-btn-complete-reg:hover {
+    background-color: var(--color-gold-hover);
+    transform: translateY(-2px);
+}
+
+/* Field Validation & Duplicate Registration Alert (Figma Aesthetic) */
+.tcgc-field-error {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    color: var(--color-crimson);
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+.tcgc-dup-alert {
+    background-color: rgba(152, 14, 3, 0.06);
+    border: 1.5px solid var(--color-crimson);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+}
+
+.tcgc-dup-alert-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--color-crimson);
+    margin-bottom: 8px;
+}
+
+.tcgc-dup-alert-desc {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-dark);
+    margin-bottom: 16px;
+}
+
+.tcgc-btn-dup-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--color-crimson);
+    color: var(--color-white);
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 8px;
+}
+
+.tcgc-btn-dup-view:hover {
+    background-color: #7a0b02;
+    transform: translateY(-1px);
+}
+
+/* Conditional Panels (Service Team Lunch Plan & Attendance Mode Feeding Options) */
+.tcgc-reg-conditional-panel {
+    width: 100%;
+    background-color: var(--color-input-gray);
+    border: 1px solid rgba(217, 184, 87, 0.45);
+    border-radius: 12px;
+    padding: 28px;
+    margin-top: 28px;
+}
+
+.tcgc-feeding-mode-panel {
+    margin-top: 32px;
+}
+
+.tcgc-conditional-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.tcgc-conditional-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--color-crimson);
+}
+
+.tcgc-conditional-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 13px;
+    background-color: var(--color-crimson);
+    color: var(--color-white);
+}
+
+.tcgc-badge-gold {
+    background-color: var(--color-gold);
+    color: var(--color-white);
+}
+
+.tcgc-inline-badges {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tcgc-conditional-desc {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-dark);
+    margin-bottom: 20px;
+}
+
+.tcgc-feeding-options-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tcgc-feeding-option-card {
+    background-color: #F7F7F7;
+    border: 1.5px solid rgba(28, 28, 28, 0.12);
+    border-radius: 10px;
+    padding: 18px 22px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tcgc-feeding-option-card:has(input[type="radio"]:checked) {
+    border-color: var(--color-gold);
+    background-color: var(--color-white);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.tcgc-radio-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+}
+
+.tcgc-radio-block .tcgc-radio-circle {
+    margin-top: 2px;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(28, 28, 28, 0.25);
+}
+
+.tcgc-radio-text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tcgc-radio-main-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    color: var(--color-dark);
+}
+
+.tcgc-radio-sub-label {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 21px;
+    color: rgba(28, 28, 28, 0.72);
+}
+
+.tcgc-days-inner-box {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(28, 28, 28, 0.12);
+}
+
+.tcgc-scope-radios {
+    gap: 36px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.tcgc-day-pills-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin: 14px 0;
+}
+
+.tcgc-day-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 10px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(28, 28, 28, 0.2);
+    background-color: #F7F7F7;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.tcgc-day-pill input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-crimson);
+    margin-bottom: 6px;
+    cursor: pointer;
+}
+
+.tcgc-day-pill.active {
+    border-color: var(--color-gold);
+    background-color: #FDFBF4;
+    box-shadow: 0 4px 12px rgba(217, 184, 87, 0.2);
+}
+
+.tcgc-day-pill-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-dark);
+}
+
+.tcgc-day-pill-sub {
+    font-family: var(--font-serif);
+    font-size: 12px;
+    color: rgba(28, 28, 28, 0.65);
+}
+
+.tcgc-days-summary-line {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-crimson);
+    margin: 8px 0 14px;
+}
+
+.tcgc-worker-price-card {
+    background-color: #FDFBF4;
+    border: 1.5px solid var(--color-gold);
+    border-radius: 10px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.tcgc-price-caption {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: rgba(28, 28, 28, 0.7);
+}
+
+.tcgc-price-amount {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--color-crimson);
+    margin-top: 2px;
+}
+
+.tcgc-price-right {
+    text-align: right;
+}
+
+.tcgc-price-rate {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-dark);
+}
+
+.tcgc-price-days {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    color: rgba(28, 28, 28, 0.75);
+}
+
+/* ==========================================================================
+   CONFERENCE REGISTRATION CONFIRMATION SLIP (Figma Aesthetic)
+   ========================================================================== */
+.tcgc-confirm-card {
+    min-height: auto;
+    max-width: 980px;
+    padding: 72px 88px 88px;
+}
+
+.tcgc-confirm-badge-wrap {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.tcgc-confirm-check-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background-color: var(--color-gold);
+    color: var(--color-white);
+    font-size: 34px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    box-shadow: 0 12px 28px rgba(217, 184, 87, 0.35);
+}
+
+.tcgc-confirm-subtitle {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: rgba(28, 28, 28, 0.75);
+}
+
+.tcgc-pass-box {
+    background-color: var(--color-white);
+    border: 2px dashed var(--color-gold);
+    border-radius: 12px;
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.tcgc-pass-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: rgba(28, 28, 28, 0.6);
+    margin-bottom: 12px;
+}
+
+.tcgc-pass-code {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 40px;
+    letter-spacing: 0.06em;
+    color: var(--color-crimson);
+    background-color: #FDFBF4;
+    border: 1.5px solid rgba(217, 184, 87, 0.5);
+    border-radius: 8px;
+    padding: 10px 28px;
+    display: inline-block;
+}
+
+.tcgc-pass-mode-pill-wrap {
+    margin-top: 16px;
+}
+
+.tcgc-pass-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-white);
+}
+
+.tcgc-pass-pill-gold {
+    background-color: var(--color-gold);
+}
+
+.tcgc-pass-pill-orange {
+    background-color: var(--color-orange);
+}
+
+.tcgc-pass-pill-crimson {
+    background-color: var(--color-crimson);
+}
+
+.tcgc-whatsapp-dispatch-card {
+    background-color: var(--color-white);
+    border: 2px solid var(--color-gold);
+    border-radius: 12px;
+    padding: 28px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.tcgc-whatsapp-dispatch-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--color-crimson);
+    margin-bottom: 10px;
+}
+
+.tcgc-whatsapp-dispatch-desc {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 25px;
+    color: var(--color-dark);
+    max-width: 680px;
+    margin: 0 auto 22px;
+}
+
+.tcgc-whatsapp-btn-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.tcgc-btn-whatsapp-primary,
+.tcgc-btn-whatsapp-secondary {
+    width: 100%;
+    max-width: 480px;
+    min-height: 50px;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--color-white);
+}
+
+.tcgc-btn-whatsapp-primary {
+    background-color: var(--color-gold);
+}
+
+.tcgc-btn-whatsapp-primary:hover {
+    background-color: var(--color-gold-hover);
+    transform: translateY(-2px);
+}
+
+.tcgc-btn-whatsapp-secondary {
+    background-color: var(--color-crimson);
+}
+
+.tcgc-btn-whatsapp-secondary:hover {
+    background-color: #7a0b02;
+    transform: translateY(-2px);
+}
+
+.tcgc-confirm-table-wrap {
+    margin-bottom: 40px;
+}
+
+.tcgc-confirm-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-white);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(28, 28, 28, 0.1);
+}
+
+.tcgc-confirm-table tr {
+    border-bottom: 1px solid rgba(28, 28, 28, 0.08);
+}
+
+.tcgc-confirm-table tr:last-child {
+    border-bottom: none;
+}
+
+.tcgc-confirm-table td {
+    padding: 16px 22px;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.tcgc-confirm-table td:first-child {
+    width: 38%;
+    color: rgba(28, 28, 28, 0.65);
+    font-weight: 500;
+}
+
+.tcgc-confirm-table td:last-child {
+    color: var(--color-dark);
+    font-weight: 600;
+}
+
+.tcgc-confirm-days-note {
+    font-size: 14px;
+    color: var(--color-crimson);
+    margin-top: 4px;
+}
+
+.tcgc-confirm-row-highlight {
+    background-color: rgba(217, 184, 87, 0.14);
+}
+
+.tcgc-confirm-amount {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--color-crimson);
+}
+
+.tcgc-confirm-days-sub {
+    font-size: 14px;
+    color: rgba(28, 28, 28, 0.7);
+    margin-left: 6px;
+}
+
+.tcgc-confirm-row-bank {
+    background-color: rgba(152, 14, 3, 0.04);
+}
+
+.tcgc-confirm-bank-note {
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(28, 28, 28, 0.75);
+    margin-top: 4px;
+}
+
+.tcgc-confirm-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tcgc-btn-confirm-action {
+    width: auto;
+    min-width: 240px;
+    padding: 0 28px;
+    height: 52px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+@media print {
+    .tcgc-header,
+    .tcgc-footer,
+    .tcgc-confirm-actions,
+    .tcgc-whatsapp-btn-group {
+        display: none !important;
+    }
+    .tcgc-reg-hero {
+        height: auto !important;
+        background: none !important;
+        color: #000 !important;
+    }
+    .tcgc-reg-card-section {
+        margin-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .tcgc-confirm-card {
+        box-shadow: none !important;
+        padding: 20px !important;
+    }
+}
+
+
+/* ==========================================================================
+   VIDEO & AUDIO STREAMING PAGES (Nodes 138:287 & 138:534)
+   ========================================================================== */
+.tcgc-stream-page {
+    padding: 154px 0 316px;
+    background-color: var(--color-white);
+}
+
+.tcgc-audio-page {
+    padding-bottom: 228px;
+}
+
+.tcgc-stream-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 48px;
+    line-height: 54px;
+    color: var(--color-gold);
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 60px;
+}
+
+.tcgc-stream-switch-wrap {
+    margin-top: 55px;
+    display: flex;
+    justify-content: center;
+}
+
+.tcgc-btn-stream-switch {
+    width: 358px;
+    height: 50px;
+    background-color: var(--color-gold);
+    border-radius: 8px;
+    color: var(--color-white);
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.tcgc-btn-stream-switch:hover {
+    background-color: var(--color-gold-hover);
+    transform: translateY(-2px);
+}
+
+/* @dcitygatechurch YouTube Channel Control Bar & Recent Broadcasts */
+.tcgc-yt-channel-bar {
+    max-width: 1264px;
+    margin: 0 auto 20px;
+    padding: 16px 24px;
+    background-color: #FDFBF4;
+    border: 1px solid rgba(217, 184, 87, 0.35);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.tcgc-yt-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    flex: 1 1 300px;
+}
+
+.tcgc-yt-live-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    background-color: rgba(217, 184, 87, 0.2);
+    color: #8a6d1b;
+    white-space: nowrap;
+}
+
+.tcgc-yt-live-badge.is-live {
+    background-color: rgba(152, 14, 3, 0.14);
+    color: var(--color-crimson);
+    border: 1px solid rgba(152, 14, 3, 0.3);
+}
+
+.tcgc-yt-video-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--color-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tcgc-yt-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tcgc-yt-source-switch {
+    display: inline-flex;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.06);
+    gap: 4px;
+}
+
+.tcgc-yt-source-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-dark);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tcgc-yt-source-btn.active {
+    background-color: var(--color-crimson);
+    color: var(--color-white);
+}
+
+.tcgc-yt-action-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    background-color: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    color: var(--color-dark);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.tcgc-yt-action-btn:hover {
+    border-color: var(--color-gold);
+    color: var(--color-crimson);
+}
+
+.tcgc-yt-open-link {
+    background-color: var(--color-crimson);
+    border-color: var(--color-crimson);
+    color: var(--color-white);
+}
+
+.tcgc-yt-open-link:hover {
+    background-color: #7a0b02;
+    color: var(--color-white);
+}
+
+.tcgc-spin {
+    display: inline-block;
+    animation: tcgcSpin 0.8s linear infinite;
+}
+
+@keyframes tcgcSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.tcgc-yt-channel-footer-meta {
+    max-width: 1264px;
+    margin: 14px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    color: rgba(28, 28, 28, 0.75);
+}
+
+.tcgc-yt-handle-link {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-crimson);
+}
+
+.tcgc-yt-handle-link:hover {
+    color: var(--color-gold);
+}
+
+.tcgc-yt-recent-section {
+    max-width: 1264px;
+    margin: 80px auto 0;
+    padding-top: 48px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.tcgc-yt-recent-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+}
+
+.tcgc-yt-recent-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 28px;
+    color: var(--color-dark);
+}
+
+.tcgc-yt-view-channel {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-crimson);
+}
+
+.tcgc-yt-view-channel:hover {
+    color: var(--color-gold);
+}
+
+.tcgc-yt-recent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.tcgc-yt-recent-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.tcgc-yt-recent-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-gold);
+}
+
+.tcgc-yt-recent-thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+}
+
+.tcgc-yt-recent-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.tcgc-yt-recent-card:hover .tcgc-yt-recent-thumb img {
+    transform: scale(1.05);
+}
+
+.tcgc-yt-recent-play-badge {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-crimson);
+    color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.tcgc-yt-recent-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    flex: 1;
+}
+
+.tcgc-yt-recent-card-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--color-dark);
+}
+
+.tcgc-yt-recent-date {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: rgba(28, 28, 28, 0.55);
+}
+
+/* Official Mixlr Live Embed Box on Audio Streaming Page */
+.tcgc-mixlr-embed-box {
+    width: 100%;
+    max-width: 571px;
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #14040A;
+    border: 1px solid rgba(217, 184, 87, 0.4);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.15);
+    padding: 12px;
+}
+
+.tcgc-mixlr-meta {
+    margin-top: 8px;
+    text-align: right;
+    font-family: var(--font-display);
+    font-size: 13px;
+    color: var(--color-gold);
+}
+
+/* Audio Broadcast Card (Node 138:633) */
+.tcgc-audio-card-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tcgc-audio-card {
+    position: relative;
+    width: 100%;
+    max-width: 571px;
+    aspect-ratio: 571 / 737;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.tcgc-audio-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tcgc-audio-hotspot {
+    position: absolute;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.tcgc-audio-hotspot:hover {
+    transform: scale(1.06);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.tcgc-hotspot-like {
+    left: 18.91%;
+    top: 63.09%;
+    width: 24.52%;
+    height: 7.87%;
+    border-radius: 30px;
+}
+
+.tcgc-like-badge {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gold);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.tcgc-hotspot-mute {
+    left: 31.00%;
+    top: 85.75%;
+    width: 10.16%;
+    height: 7.87%;
+}
+
+.tcgc-hotspot-play {
+    left: 43.43%;
+    top: 83.85%;
+    width: 13.31%;
+    height: 10.31%;
+}
+
+.tcgc-audio-status-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+}
+
+.tcgc-audio-card.playing .tcgc-audio-status-ring {
+    border-color: var(--color-gold);
+    animation: tcgcPulseRing 1.5s infinite;
+}
+
+@keyframes tcgcPulseRing {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.22); opacity: 0; }
+}
+
+.tcgc-audio-live-indicator {
+    margin-top: 14px;
+    min-height: 24px;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    color: var(--color-crimson);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   OUR MEETINGS BENTO & OUR MINISTRIES PAGE (Nodes 1:110 & 1:244)
+   ========================================================================== */
+.tcgc-bento-meetings-section {
+    padding: 40px 0 80px;
+}
+
+.tcgc-giant-outline-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 110px;
+    line-height: 1.1;
+    text-align: center;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--color-crimson-dark);
+    text-transform: uppercase;
+    margin-bottom: -18px;
+    position: relative;
+    z-index: 1;
+}
+
+.tcgc-bento-crimson-wrap {
+    background-color: var(--color-crimson-dark);
+    padding: 80px 88px;
+    position: relative;
+    z-index: 2;
+}
+
+.tcgc-bento-grid {
+    max-width: 1264px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 483px 1fr;
+    gap: 22px;
+}
+
+.tcgc-bento-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tcgc-bento-bottom-split {
+    display: grid;
+    grid-template-columns: 328px 1fr;
+    gap: 22px;
+}
+
+.tcgc-bento-card {
+    position: relative;
+    border: 4px solid var(--color-white);
+    border-radius: 8px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+    padding: 32px;
+}
+
+.tcgc-bento-tall {
+    height: 724px;
+}
+
+.tcgc-bento-wide {
+    height: 311px;
+}
+
+.tcgc-bento-half {
+    height: 393px;
+}
+
+.tcgc-bento-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 100%);
+}
+
+.tcgc-bento-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.tcgc-bento-content-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.tcgc-bento-content h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 1.3;
+    color: var(--color-white);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.tcgc-bento-content p {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 22px;
+    color: rgba(255, 255, 255, 0.72);
+    max-width: 334px;
+    margin-bottom: 24px;
+}
+
+.tcgc-btn-view-meeting {
+    width: 184px;
+    height: 48px;
+    background-color: #F6F6F6;
+    border-radius: 2px;
+    color: var(--color-black);
+    font-family: var(--font-serif);
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-shrink: 0;
+}
+
+.tcgc-btn-view-meeting:hover {
+    background-color: var(--color-gold);
+    color: var(--color-white);
+}
+
+.tcgc-ministries-section {
+    padding: 40px 0 120px;
+}
+
+.tcgc-ministries-main-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 72px;
+    line-height: 1.2;
+    color: #0E1216;
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.tcgc-ministries-peach-card {
+    max-width: 1264px;
+    margin: 0 auto;
+    background-color: rgba(255, 219, 204, 0.55);
+    border-radius: 20px;
+    padding: 96px 62px;
+    display: flex;
+    flex-direction: column;
+    gap: 72px;
+}
+
+.tcgc-ministry-row {
+    display: grid;
+    grid-template-columns: 560px 1fr;
+    align-items: center;
+    gap: 72px;
+}
+
+.tcgc-ministry-row-reverse {
+    grid-template-columns: 1fr 560px;
+}
+
+.tcgc-ministry-img {
+    width: 560px;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.tcgc-ministry-text-col h3 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 1.15;
+    color: #231F20;
+    margin-bottom: 20px;
+}
+
+.tcgc-ministry-text-col p {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 28px;
+    color: #0E1216;
+    margin-bottom: 28px;
+}
+
+.tcgc-btn-ministry {
+    width: 153px;
+    height: 46px;
+    background-color: var(--color-crimson-dark);
+    border-radius: 8px;
+    color: var(--color-white);
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tcgc-btn-ministry:hover {
+    background-color: var(--color-gold);
+}
+
+/* ==========================================================================
+   FOOTER (Node 1:320 / 116:493)
+   ========================================================================== */
+.tcgc-footer {
+    position: relative;
+    width: 100%;
+    min-height: 687px;
+    background-color: var(--color-crimson);
+    color: var(--color-white);
+    padding-top: 65px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.tcgc-footer-inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 88px;
+    position: relative;
+    z-index: 2;
+}
+
+.tcgc-footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 43px;
+}
+
+.tcgc-footer-logo {
+    width: 190px;
+    height: 101px;
+    object-fit: contain;
+}
+
+.tcgc-footer-socials {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.tcgc-social-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2.38px solid var(--color-white);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tcgc-social-circle:hover {
+    background-color: var(--color-gold);
+    border-color: var(--color-gold);
+}
+
+.tcgc-footer-divider {
+    width: 100%;
+    height: 3px;
+    background-color: rgba(217, 217, 217, 0.13);
+    margin-bottom: 62px;
+}
+
+.tcgc-footer-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.tcgc-footer-links-group {
+    display: flex;
+    gap: 90px;
+}
+
+.tcgc-footer-col-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 30px;
+    color: var(--color-white);
+    margin-bottom: 32px;
+}
+
+.tcgc-footer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+}
+
+.tcgc-footer-list a {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.tcgc-footer-list a:hover {
+    color: var(--color-gold);
+}
+
+.tcgc-footer-newsletter {
+    width: 526px;
+    max-width: 100%;
+}
+
+.tcgc-newsletter-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 41px;
+    color: var(--color-white);
+    -webkit-text-stroke: 0.2px var(--color-white);
+    margin-bottom: 16px;
+}
+
+.tcgc-newsletter-desc {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 25.6px;
+    color: rgba(255, 255, 255, 0.72);
+    margin-bottom: 39px;
+}
+
+.tcgc-newsletter-form {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 70px;
+}
+
+.tcgc-newsletter-input {
+    width: 362px;
+    height: 56px;
+    background-color: rgba(255, 255, 255, 0.21);
+    border: 0.5px solid var(--color-white);
+    padding: 0 29px;
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 14px;
+    color: var(--color-white);
+}
+
+.tcgc-newsletter-input::placeholder {
+    color: #CFCFCF;
+}
+
+.tcgc-newsletter-btn {
+    width: 148px;
+    height: 56px;
+    background-color: var(--color-gold);
+    color: var(--color-white);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+.tcgc-newsletter-btn:hover {
+    background-color: var(--color-gold-hover);
+}
+
+.tcgc-footer-app-label {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 25.6px;
+    color: rgba(255, 255, 255, 0.72);
+    margin-bottom: 20px;
+}
+
+.tcgc-footer-watermark {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 140px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.08);
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
+    margin-top: -28px;
+    padding-bottom: 6px;
+}
+
+/* ==========================================================================
+   RESPONSIVE ADAPTATION FOR LAPTOPS, TABLETS & MOBILE
+   ========================================================================== */
+
+/* Standard Laptop Viewports (993px - 1400px): Keep exact Figma multi-column layouts proportional */
+@media (max-width: 1400px) {
+    .tcgc-container,
+    .tcgc-header-container,
+    .tcgc-footer-inner {
+        padding-left: 48px;
+        padding-right: 48px;
+    }
+
+    .tcgc-nav-list {
+        gap: 44px;
+    }
+
+    .tcgc-welcome-inner {
+        padding-left: 48px;
+        padding-right: 48px;
+        gap: 40px;
+    }
+
+    .tcgc-welcome-image-wrap {
+        flex: 1 1 54%;
+        max-width: 649px;
+    }
+
+    .tcgc-welcome-content {
+        flex: 1 1 42%;
+        max-width: 480px;
+        margin-top: 64px;
+        margin-right: 0;
+    }
+
+    .tcgc-app-inner {
+        padding-left: 48px;
+        padding-right: 48px;
+        gap: 40px;
+    }
+
+    .tcgc-app-mockup-col {
+        flex: 1 1 50%;
+        max-width: 554px;
+    }
+
+    .tcgc-app-copy-col {
+        flex: 1 1 46%;
+        max-width: 485px;
+    }
+
+    .tcgc-store-btn {
+        width: auto;
+        flex: 1 1 200px;
+        font-size: 20px;
+    }
+
+    .tcgc-meetings-inner {
+        padding-left: 48px;
+        padding-right: 48px;
+        gap: 40px;
+    }
+
+    .tcgc-meetings-schedule {
+        flex: 1 1 400px;
+    }
+
+    .tcgc-meetings-visual {
+        flex: 1 1 480px;
+        max-width: 526px;
+    }
+
+    .tcgc-meetings-collage-img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
+    .tcgc-events-grid {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0 48px;
+        gap: 16px;
+    }
+
+    .tcgc-event-card {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 399 / 334;
+    }
+
+    .tcgc-give-inner {
+        padding: 0 48px;
+        gap: 32px;
+    }
+
+    .tcgc-give-left {
+        flex: 1 1 40%;
+        max-width: 471px;
+    }
+
+    .tcgc-give-heading {
+        font-size: 58px;
+        line-height: 1.12;
+    }
+
+    .tcgc-give-form-card {
+        flex: 1 1 58%;
+        width: auto;
+        max-width: 728px;
+    }
+
+    .tcgc-give-row-2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .tcgc-reg-card {
+        padding: 64px 56px 88px;
+        min-height: auto;
+    }
+
+    .tcgc-reg-grid-2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .tcgc-mode-cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .tcgc-mode-card {
+        width: 100%;
+        height: auto;
+        min-height: 320px;
+    }
+
+    .tcgc-bento-crimson-wrap {
+        padding: 60px 48px;
+    }
+
+    .tcgc-bento-grid {
+        grid-template-columns: 40% 1fr;
+    }
+
+    .tcgc-bento-bottom-split {
+        grid-template-columns: 44% 1fr;
+    }
+
+    .tcgc-ministries-peach-card {
+        padding: 64px 40px;
+    }
+
+    .tcgc-ministry-row {
+        grid-template-columns: 48% 1fr;
+        gap: 40px;
+    }
+
+    .tcgc-ministry-row-reverse {
+        grid-template-columns: 1fr 48%;
+        gap: 40px;
+    }
+
+    .tcgc-ministry-img {
+        width: 100%;
+        height: 320px;
+    }
+
+    .tcgc-footer-watermark {
+        font-size: 9.4vw;
+    }
+}
+
+/* Tablet & Mobile Navigation + Stacking (<= 992px) */
+@media (max-width: 992px) {
+    .tcgc-container,
+    .tcgc-header-container,
+    .tcgc-footer-inner,
+    .tcgc-welcome-inner,
+    .tcgc-app-inner,
+    .tcgc-meetings-inner,
+    .tcgc-events-grid,
+    .tcgc-give-inner {
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    /* Responsive Header & Mobile Drawer */
+    .tcgc-btn-contact-desktop {
+        display: none;
+    }
+
+    .tcgc-mobile-toggle {
+        display: inline-flex;
+    }
+
+    .tcgc-nav {
+        position: absolute;
+        top: 97px;
+        left: 0;
+        right: 0;
+        background-color: rgba(15, 15, 15, 0.97);
+        backdrop-filter: blur(12px);
+        padding: 28px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+        z-index: 50;
+    }
+
+    .tcgc-header-light .tcgc-nav {
+        background-color: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .tcgc-nav.is-open {
+        display: flex;
+    }
+
+    .tcgc-nav-list {
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .tcgc-nav-link {
+        font-size: 18px;
+        display: block;
+        padding: 6px 0;
+    }
+
+    .tcgc-btn-contact-mobile {
+        display: inline-flex;
+        width: 100%;
+        max-width: 260px;
+    }
+
+    /* Hero */
+    .tcgc-hero {
+        min-height: 680px;
+        padding-bottom: 64px;
+    }
+
+    .tcgc-hero-content {
+        margin-top: 110px;
+    }
+
+    .tcgc-hero-title {
+        font-size: 46px;
+        line-height: 1.15;
+    }
+
+    .tcgc-hero-actions {
+        margin-top: 64px;
+    }
+
+    /* Welcome Note */
+    .tcgc-welcome-inner,
+    .tcgc-app-inner,
+    .tcgc-meetings-inner,
+    .tcgc-give-inner,
+    .tcgc-footer-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tcgc-welcome-image-wrap,
+    .tcgc-welcome-content,
+    .tcgc-app-mockup-col,
+    .tcgc-app-copy-col,
+    .tcgc-meetings-schedule,
+    .tcgc-meetings-visual,
+    .tcgc-give-left,
+    .tcgc-give-form-card {
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: 680px;
+        margin-right: 0;
+        margin-top: 0;
+    }
+
+    .tcgc-welcome-cta-row {
+        justify-content: flex-start;
+    }
+
+    /* YouTube Live Stream Card */
+    .tcgc-youtube-card {
+        height: 440px;
+    }
+
+    .tcgc-youtube-heading {
+        font-size: 36px;
+        line-height: 1.2;
+    }
+
+    /* Mobile App Section */
+    .tcgc-app-section {
+        padding: 72px 0;
+        min-height: auto;
+    }
+
+    /* Events Grid (2 columns on tablet) */
+    .tcgc-events-heading {
+        font-size: 48px;
+        line-height: 1.2;
+    }
+
+    .tcgc-events-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    /* Registration Page */
+    .tcgc-reg-hero {
+        height: 620px;
+    }
+
+    .tcgc-reg-hero-title {
+        font-size: 44px;
+        line-height: 1.15;
+    }
+
+    .tcgc-reg-card-section {
+        margin-top: -200px;
+        padding-bottom: 100px;
+    }
+
+    .tcgc-reg-card {
+        padding: 48px 32px 64px;
+    }
+
+    .tcgc-reg-card-heading {
+        font-size: 36px;
+        line-height: 1.2;
+    }
+
+    .tcgc-reg-section-title {
+        font-size: 28px;
+        line-height: 1.25;
+    }
+
+    .tcgc-mode-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .tcgc-mode-card {
+        min-height: 240px;
+        padding: 36px 28px 24px;
+    }
+
+    .tcgc-btn-complete-reg {
+        width: 100%;
+    }
+
+    /* Streaming Pages */
+    .tcgc-stream-page {
+        padding: 80px 0 140px;
+    }
+
+    /* Bento & Ministries */
+    .tcgc-giant-outline-title {
+        font-size: 64px;
+        margin-bottom: -10px;
+    }
+
+    .tcgc-bento-crimson-wrap {
+        padding: 48px 28px;
+    }
+
+    .tcgc-bento-grid,
+    .tcgc-bento-bottom-split,
+    .tcgc-ministry-row,
+    .tcgc-ministry-row-reverse {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .tcgc-bento-tall,
+    .tcgc-bento-wide,
+    .tcgc-bento-half {
+        height: 360px;
+    }
+
+    .tcgc-ministry-row-reverse .tcgc-ministry-img-col {
+        order: -1;
+    }
+
+    .tcgc-ministries-main-title {
+        font-size: 48px;
+    }
+
+    /* Footer */
+    .tcgc-footer-links-group {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 72px;
+    }
+
+    .tcgc-footer-newsletter {
+        width: 100%;
+    }
+
+    .tcgc-newsletter-input {
+        flex: 1;
+        width: auto;
+    }
+}
+
+/* Mobile Viewports (<= 768px) */
+@media (max-width: 768px) {
+    .tcgc-container,
+    .tcgc-header-container,
+    .tcgc-footer-inner,
+    .tcgc-welcome-inner,
+    .tcgc-app-inner,
+    .tcgc-meetings-inner,
+    .tcgc-events-grid,
+    .tcgc-give-inner {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .tcgc-hero-subtitle {
+        font-size: 18px;
+    }
+
+    .tcgc-hero-title {
+        font-size: 36px;
+        line-height: 1.18;
+    }
+
+    .tcgc-hero-description,
+    .tcgc-reg-hero-subtitle {
+        font-size: 16px;
+        line-height: 26px;
+    }
+
+    .tcgc-hero-actions {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        margin: 44px auto 0;
+        gap: 14px;
+    }
+
+    .tcgc-btn-livestream,
+    .tcgc-btn-glass {
+        width: 100%;
+    }
+
+    .tcgc-welcome-section {
+        padding: 60px 0 32px;
+    }
+
+    .tcgc-welcome-text p,
+    .tcgc-app-description {
+        font-size: 16px;
+        text-align: left;
+    }
+
+    .tcgc-youtube-card {
+        height: 320px;
+    }
+
+    .tcgc-youtube-heading {
+        font-size: 26px;
+        line-height: 1.25;
+        padding: 0 16px;
+    }
+
+    .tcgc-youtube-svg {
+        width: 92px;
+        height: 65px;
+    }
+
+    .tcgc-store-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .tcgc-store-btn {
+        width: 100%;
+        flex: none;
+    }
+
+    /* Meetings Schedule */
+    .tcgc-meetings-section {
+        padding: 60px 0;
+        min-height: auto;
+    }
+
+    .tcgc-schedule-row {
+        grid-template-columns: 90px 1fr auto;
+        gap: 8px;
+        font-size: 15px;
+        line-height: 38px;
+    }
+
+    /* Events Grid (1 column on mobile) */
+    .tcgc-events-heading {
+        font-size: 36px;
+        -webkit-text-stroke: 1px var(--color-crimson-dark);
+    }
+
+    .tcgc-events-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Give Online */
+    .tcgc-give-heading {
+        font-size: 42px;
+    }
+
+    .tcgc-give-form-card {
+        padding: 36px 20px;
+    }
+
+    .tcgc-give-row-2,
+    .tcgc-reg-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .tcgc-give-number-input {
+        width: 100% !important;
+        flex: 1;
+    }
+
+    /* Registration */
+    .tcgc-reg-hero-title {
+        font-size: 34px;
+    }
+
+    .tcgc-reg-card {
+        padding: 36px 20px 48px;
+    }
+
+    .tcgc-reg-card-heading {
+        font-size: 28px;
+    }
+
+    .tcgc-reg-section-title {
+        font-size: 24px;
+    }
+
+    .tcgc-reg-input,
+    .tcgc-reg-select,
+    .tcgc-reg-phone-box {
+        height: 54px;
+        padding: 0 18px;
+        font-size: 16px;
+    }
+
+    .tcgc-reg-radio-options {
+        gap: 32px;
+    }
+
+    .tcgc-btn-complete-reg,
+    .tcgc-btn-stream-switch {
+        width: 100%;
+        font-size: 18px;
+    }
+
+    .tcgc-reg-conditional-panel {
+        padding: 20px 16px;
+    }
+
+    .tcgc-day-pills-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tcgc-price-right {
+        text-align: left;
+    }
+
+    .tcgc-confirm-card {
+        padding: 36px 20px 48px;
+    }
+
+    .tcgc-pass-code {
+        font-size: 26px;
+        padding: 8px 16px;
+    }
+
+    .tcgc-confirm-table td {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    .tcgc-btn-confirm-action {
+        width: 100%;
+    }
+
+    /* Bento & Ministries */
+    .tcgc-giant-outline-title {
+        font-size: 42px;
+        -webkit-text-stroke: 1.5px var(--color-crimson-dark);
+    }
+
+    .tcgc-bento-content-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tcgc-ministries-peach-card {
+        padding: 40px 20px;
+        gap: 48px;
+    }
+
+    .tcgc-ministry-text-col h3 {
+        font-size: 30px;
+    }
+
+    /* Footer */
+    .tcgc-footer-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .tcgc-footer-logo {
+        width: 150px;
+        height: auto;
+    }
+
+    .tcgc-footer-links-group {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .tcgc-newsletter-title {
+        font-size: 26px;
+        line-height: 1.3;
+    }
+
+    .tcgc-newsletter-form {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 44px;
+    }
+
+    .tcgc-newsletter-input,
+    .tcgc-newsletter-btn {
+        width: 100%;
+    }
+
+    .tcgc-yt-recent-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tcgc-footer-watermark {
+        font-size: 9.2vw;
+        margin-top: 24px;
+    }
+}
+
+

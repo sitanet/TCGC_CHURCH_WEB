@@ -2,19 +2,11 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from pathlib import Path
-from dotenv import load_dotenv
+
 
 def main():
     """Run administrative tasks."""
-    # Load environment variables from .env file
-    base_dir = Path(__file__).resolve().parent
-    load_dotenv(base_dir / ".env")
-
-    # Add apps directory to Python path
-    sys.path.insert(0, str(base_dir / "apps"))
-
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tcgc_config.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -26,5 +18,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

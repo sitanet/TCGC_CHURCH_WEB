@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Ministries & Meetings — The CityGate Church{% endblock %}
+
+{% block content %}
+<!-- LIGHT NAVBAR -->
+<header class="tcgc-header tcgc-header-light">
+    <div class="tcgc-header-container">
+        <a href="{% url 'home' %}" class="tcgc-logo-link">
+            <img src="{% static 'images/logo_dark.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
+        </a>
+        <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="tcgc-nav">
+            <ul class="tcgc-nav-list">
+                <li><a href="{% url 'ministries' %}" class="tcgc-nav-link tcgc-nav-link-active">About Us</a></li>
+                <li><a href="{% url 'video_streaming' %}" class="tcgc-nav-link">Resources/Media</a></li>
+                <li><a href="{% url 'registration' %}" class="tcgc-nav-link">Events</a></li>
+                <li><a href="#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
+            </ul>
+            <a href="{% url 'home' %}#give-online" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
+        </nav>
+        <a href="{% url 'home' %}#give-online" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
+    </div>
+</header>
+
+<!-- OUR MEETINGS BENTO SHOWCASE (Figma Node 1:110) -->
+<section class="tcgc-bento-meetings-section">
+    <div class="tcgc-container">
+        <h1 class="tcgc-giant-outline-title">OUR MEETINGS</h1>
+    </div>
+    <div class="tcgc-bento-crimson-wrap">
+        <div class="tcgc-bento-grid">
+            <!-- Left Tall Card: WORD & PRAYER (Node 1:114) -->
+            <div class="tcgc-bento-card tcgc-bento-tall" style="background-image: url('{% static 'images/ministry_worship.png' %}');">
+                <div class="tcgc-bento-gradient"></div>
+                <div class="tcgc-bento-content">
+                    <h3>WORD &amp; PRAYER</h3>
+                    <p>Word and Prayer is a unique gathering of saints labouring together in prayers.</p>
+                    <a href="{% url 'video_streaming' %}" class="tcgc-btn-view-meeting">
+                        <span>View Meeting</span>
+                        <span>&#8594;</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="tcgc-bento-right-col">
+                <!-- Top Wide Card: THE SCHOOL OF CHRIST (Node 1:126) -->
+                <div class="tcgc-bento-card tcgc-bento-wide" style="background-image: url('{% static 'images/ministry_teens.png' %}');">
+                    <div class="tcgc-bento-gradient"></div>
+                    <div class="tcgc-bento-content tcgc-bento-content-row">
+                        <div>
+                            <h3>The school of christ</h3>
+                            <p>Word and Prayer is a unique gathering of saints labouring together in prayers.</p>
+                        </div>
+                        <a href="{% url 'video_streaming' %}" class="tcgc-btn-view-meeting">
+                            <span>View Meeting</span>
+                            <span>&#8594;</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bottom Split Cards: MORNING DEW & FEAST OF GLORY (Nodes 1:138 & 1:150) -->
+                <div class="tcgc-bento-bottom-split">
+                    <div class="tcgc-bento-card tcgc-bento-half" style="background-image: url('{% static 'images/ministry_kbn.png' %}');">
+                        <div class="tcgc-bento-gradient"></div>
+                        <div class="tcgc-bento-content">
+                            <h3>morning dew</h3>
+                            <p>Word and Prayer is a unique gathering of saints labouring together in prayers.</p>
+                            <a href="{% url 'video_streaming' %}" class="tcgc-btn-view-meeting">
+                                <span>View Meeting</span>
+                                <span>&#8594;</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="tcgc-bento-card tcgc-bento-half" style="background-image: url('{% static 'images/ministry_kcc.png' %}');">
+                        <div class="tcgc-bento-gradient"></div>
+                        <div class="tcgc-bento-content">
+                            <h3>FEAST OF GLORY</h3>
+                            <p>Word and Prayer is a unique gathering of saints labouring together in prayers.</p>
+                            <a href="{% url 'video_streaming' %}" class="tcgc-btn-view-meeting">
+                                <span>View Meeting</span>
+                                <span>&#8594;</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- OUR MINISTRIES ZIG-ZAG EDITORIAL SECTION (Figma Node 1:244) -->
+<section class="tcgc-ministries-section" id="ministries-list">
+    <div class="tcgc-container">
+        <h2 class="tcgc-ministries-main-title">Our Ministries</h2>
+
+        <div class="tcgc-ministries-peach-card">
+            <!-- 1. Worship Ministry (Node 1:249) -->
+            <div class="tcgc-ministry-row">
+                <div class="tcgc-ministry-img-col">
+                    <img src="{% static 'images/ministry_worship.png' %}" alt="Worship Ministry" class="tcgc-ministry-img">
+                </div>
+                <div class="tcgc-ministry-text-col">
+                    <h3>Worship Ministry</h3>
+                    <p>This is the worship expression of the ministry, given to birthing fresh sounds, rhythms and edifying songs that position believers for an encounter in worship.</p>
+                    <a href="{% url 'registration' %}" class="tcgc-btn-ministry">Learn More</a>
+                </div>
+            </div>
+
+            <!-- 2. Children Ministry (Node 1:261) -->
+            <div class="tcgc-ministry-row tcgc-ministry-row-reverse">
+                <div class="tcgc-ministry-text-col">
+                    <h3>Children Ministry</h3>
+                    <p>This ministry is centered around creating a strong heritage for the next generation and nurturing them from cradle to adolescence</p>
+                    <a href="{% url 'registration' %}" class="tcgc-btn-ministry">Learn More</a>
+                </div>
+                <div class="tcgc-ministry-img-col">
+                    <img src="{% static 'images/ministry_children.png' %}" alt="Children Ministry" class="tcgc-ministry-img">
+                </div>
+            </div>
+
+            <!-- 3. Teens Ministry (Node 1:273) -->
+            <div class="tcgc-ministry-row">
+                <div class="tcgc-ministry-img-col">
+                    <img src="{% static 'images/ministry_teens.png' %}" alt="Teens Ministry" class="tcgc-ministry-img">
+                </div>
+                <div class="tcgc-ministry-text-col">
+                    <h3>Teens Ministry</h3>
+                    <p>We’ve designed our environment very intentionally to allow worship and teaching to come alive for even the tiniest in our House. Each child is assigned to a bloom room based on either age or stage of development.</p>
+                    <a href="{% url 'registration' %}" class="tcgc-btn-ministry">Learn More</a>
+                </div>
+            </div>
+
+            <!-- 4. Kingdom Business Network (KBN) (Node 1:285) -->
+            <div class="tcgc-ministry-row tcgc-ministry-row-reverse">
+                <div class="tcgc-ministry-text-col">
+                    <h3>Kingdom Business Network (KBN)</h3>
+                    <p>The is an association of kingdom entrepreneurs and professionals with a vision to exalt the name of Christ and advance the course of God's Kingdom through their lives, families and businesses.</p>
+                    <a href="{% url 'registration' %}" class="tcgc-btn-ministry">Learn More</a>
+                </div>
+                <div class="tcgc-ministry-img-col">
+                    <img src="{% static 'images/ministry_kbn.png' %}" alt="Kingdom Business Network (KBN)" class="tcgc-ministry-img">
+                </div>
+            </div>
+
+            <!-- 5. Kingdom Community Centres (KCC) (Node 1:296) -->
+            <div class="tcgc-ministry-row">
+                <div class="tcgc-ministry-img-col">
+                    <img src="{% static 'images/ministry_kcc.png' %}" alt="Kingdom Community Centres (KCC)" class="tcgc-ministry-img">
+                </div>
+                <div class="tcgc-ministry-text-col">
+                    <h3>Kingdom Community Centres (KCC)</h3>
+                    <p>This is a house-gathering of brethren in various communities to foster fellowship and advance communion among the saints.</p>
+                    <a href="{% url 'registration' %}" class="tcgc-btn-ministry">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

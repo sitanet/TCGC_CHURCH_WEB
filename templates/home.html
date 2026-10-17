@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}The CityGate Church — A New Testament Kingdom Apostolic Centre{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION (Node 1:2 / 21:266 Animated GIF) -->
+<section class="tcgc-hero" style="background-image: url('{% static 'images/hero_collage.gif' %}?v=5'), url('{% static 'images/hero_bg.png' %}');">
+    <div class="tcgc-hero-overlay"></div>
+
+    <!-- Header / Navbar (Node 1:56) -->
+    <header class="tcgc-header tcgc-header-dark">
+        <div class="tcgc-header-container">
+            <a href="{% url 'home' %}" class="tcgc-logo-link">
+                <img src="{% static 'images/logo_white.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
+            </a>
+            <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="tcgc-nav">
+                <ul class="tcgc-nav-list">
+                    <li><a href="{% url 'ministries' %}" class="tcgc-nav-link">About Us</a></li>
+                    <li><a href="{% url 'video_streaming' %}" class="tcgc-nav-link">Resources/Media</a></li>
+                    <li><a href="{% url 'registration' %}" class="tcgc-nav-link">Events</a></li>
+                    <li><a href="{% url 'ministries' %}#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
+                </ul>
+                <a href="#give-online" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
+            </nav>
+            <a href="#give-online" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
+        </div>
+    </header>
+
+    <!-- Hero Content (Node 9:213 & 1:81) -->
+    <div class="tcgc-hero-content">
+        <p class="tcgc-hero-subtitle">Welcome to The City Gate Church</p>
+        <h1 class="tcgc-hero-title">
+            A <span class="tcgc-gold-text">New Testament</span><br>
+            Kingdom Apostolic Centre
+        </h1>
+        <p class="tcgc-hero-description">
+            We are committed to pressing into God's promise for man and coming on to the fulness of His<br>
+            will, which is inheriting the life that is in Him (Eternal Life).
+        </p>
+
+        <div class="tcgc-hero-actions">
+            <!-- Prototype Link: 1:82 -> 138:519 (Scrolls to Live Stream or opens Watch Live) -->
+            <a href="#live-stream-section" class="tcgc-btn-livestream">
+                <img src="{% static 'images/signal_icon.png' %}" alt="" class="tcgc-signal-icon">
+                <span>Live Stream</span>
+            </a>
+            <a href="#welcome-note" class="tcgc-btn-glass">
+                <span>Learn More</span>
+                <span class="tcgc-arrow-long">&#8594;</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- WELCOME NOTE SECTION (Node 21:275) -->
+<section class="tcgc-welcome-section" id="welcome-note">
+    <div class="tcgc-welcome-inner">
+        <!-- Left: Pastors Tilted Frame Card (Node 9:240) -->
+        <div class="tcgc-welcome-image-wrap">
+            <img src="{% static 'images/pastors_card.png' %}" alt="Pst Dimeji & Pst (Mrs) Fisayo Elugbadebo" class="tcgc-pastors-card-img">
+        </div>
+
+        <!-- Right: Welcome Note Copy (Node 9:238) -->
+        <div class="tcgc-welcome-content">
+            <div class="tcgc-welcome-badge">
+                <span>WELCOME NOTE</span>
+            </div>
+            <div class="tcgc-welcome-text">
+                <p>
+                    We’re glad to have you join us here! We are a people committed to pressing into God’s promise for man and attaining the peak of Hi desire - men embodying the life of His Only Begotten Son, Jesus Christ and growing up into His fullness, which is achieved through the unveiling of the mysteries of Christ, the Father and God.
+                </p>
+                <p>
+                    Our mandate is to equip the saints and make them fully rooted in the will of God so they will not be tossed around by every wind of doctrine but be persuaded in their quest to arrive in God.
+                </p>
+                <p>
+                    We welcome you to join us in this lifetime experience of learning God and His ways. Kindly maximize the media resources in our archives and subscribe to our media channels for updates on upcoming events.<br>
+                    Stay Blessed.
+                </p>
+            </div>
+            <div class="tcgc-welcome-cta-row">
+                <a href="{% url 'ministries' %}" class="tcgc-btn-outline-gold">
+                    <span>Learn More</span>
+                    <span class="tcgc-arrow-long">&#8594;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decorative Gold Sweeping Wave (Node 1:94) -->
+    <div class="tcgc-gold-wave-wrap">
+        <img src="{% static 'images/gold_wave.svg' %}" alt="" class="tcgc-gold-wave">
+    </div>
+</section>
+
+<!-- LIVE STREAM YOUTUBE BANNER SECTION (Node 1:105 & 9:261 — Integrated with @dcitygatechurch) -->
+<section class="tcgc-youtube-section" id="live-stream-section">
+    <div class="tcgc-container">
+        <div class="tcgc-youtube-card"
+             id="home-video-player-card"
+             data-embed-url="{{ youtube_live_info.embed_url }}"
+             data-channel-embed-url="{{ youtube_live_info.channel_embed_url }}"
+             data-watch-url="{{ youtube_live_info.watch_url }}"
+             style="background-image: url('{{ youtube_live_info.thumbnail_url|default:youtube_live_info.thumbnail|default:'/static/images/tsc_youtube_bg.png' }}');">
+            <div class="tcgc-youtube-overlay" id="home-video-poster-overlay">
+                <h2 class="tcgc-youtube-heading">WATCH OUR LIVE<br>STREAM</h2>
+                <button type="button" class="tcgc-youtube-play-btn" id="trigger-home-youtube-embed" aria-label="Watch Live Stream">
+                    <img src="{% static 'images/youtube_icon.svg' %}" alt="Play Live Stream" class="tcgc-youtube-svg">
+                </button>
+            </div>
+            <!-- Embedded @dcitygatechurch YouTube Player Container -->
+            <div class="tcgc-youtube-iframe-wrap" id="home-youtube-iframe-container" style="display: none;">
+                <iframe
+                    id="tcgc-home-yt-iframe"
+                    width="100%"
+                    height="100%"
+                    src=""
+                    title="{{ youtube_live_info.video_title|default:'The CityGate Church Live Broadcast' }}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+
+        <!-- Prototype Link: 9:261 -> 138:287 (Video Streaming Page) -->
+        <div class="tcgc-see-more-wrap">
+            <a href="{% url 'video_streaming' %}" class="tcgc-see-more-link">
+                <span>See More</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="9" stroke="#1c1c1c" stroke-width="1.5"/>
+                    <path d="M8.5 10.5L12 14L15.5 10.5" stroke="#1c1c1c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- DOWNLOAD THE CITYGATE MOBILE APP SECTION (Node 75:378 with Animated GIF 33:276) -->
+<section class="tcgc-app-section" style="background-image: url('{% static 'images/app_section_bg.png' %}?v=2');">
+    <div class="tcgc-app-gif-layer" style="background-image: url('{% static 'images/app_showcase.gif' %}?v=5');"></div>
+    <div class="tcgc-app-inner">
+        <!-- Left: Angled Smartphone Mockup (Node 41:306) -->
+        <div class="tcgc-app-mockup-col">
+            <img src="{% static 'images/phone_mockup.png' %}" alt="CityGate Mobile App" class="tcgc-phone-mockup">
+        </div>
+
+        <!-- Right: App Copy & Store Buttons (Node 39:301) -->
+        <div class="tcgc-app-copy-col">
+            <h2 class="tcgc-app-title">
+                Download the <span class="tcgc-gold-lora-italic">CityGate Mobile</span> App
+            </h2>
+            <p class="tcgc-app-description">
+                Take CityGate with you wherever you go! Download the <strong class="tcgc-lora-bold-italic">CityGate Mobile App</strong> to stay connected, access church updates, and keep up with all that God is doing in our community.
+            </p>
+            <div class="tcgc-store-buttons">
+                <a href="https://play.google.com/store" target="_blank" rel="noopener" class="tcgc-store-btn tcgc-store-btn-gold">
+                    <img src="{% static 'images/playstore_icon.png' %}" alt="Playstore" class="tcgc-store-icon">
+                    <span>Playstore</span>
+                    <span class="tcgc-arrow-right">&#8594;</span>
+                </a>
+                <a href="https://apps.apple.com" target="_blank" rel="noopener" class="tcgc-store-btn tcgc-store-btn-glass">
+                    <img src="{% static 'images/appstore_icon.png' %}" alt="App Store" class="tcgc-store-icon">
+                    <span>App Store</span>
+                    <span class="tcgc-arrow-right">&#8594;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- OUR MEETINGS SECTION (Node 79:385) -->
+<section class="tcgc-meetings-section" id="our-meetings">
+    <div class="tcgc-meetings-inner">
+        <!-- Left: Schedule Table (Node 46:313) -->
+        <div class="tcgc-meetings-schedule">
+            <h2 class="tcgc-meetings-heading">OUR MEETINGS</h2>
+            <div class="tcgc-schedule-rows">
+                <div class="tcgc-schedule-row">
+                    <span class="tcgc-schedule-day">Sundays:</span>
+                    <span class="tcgc-schedule-name">The Morning Dew .</span>
+                    <span class="tcgc-schedule-time">- 8:00am</span>
+                </div>
+                <div class="tcgc-schedule-row">
+                    <span class="tcgc-schedule-day"></span>
+                    <span class="tcgc-schedule-name">Feast of Glory Service</span>
+                    <span class="tcgc-schedule-time">- 10:00am</span>
+                </div>
+                <div class="tcgc-schedule-row">
+                    <span class="tcgc-schedule-day">Tuesdays:</span>
+                    <span class="tcgc-schedule-name">Word and Prayer</span>
+                    <span class="tcgc-schedule-time">- 5:00pm</span>
+                </div>
+                <div class="tcgc-schedule-row">
+                    <span class="tcgc-schedule-day">Thursdays:</span>
+                    <span class="tcgc-schedule-name">The School of Christ</span>
+                    <span class="tcgc-schedule-time">- 5:30pm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Animated Rounded Collage GIF (Node 65:329) -->
+        <div class="tcgc-meetings-visual">
+            <img src="{% static 'images/meetings_collage.gif' %}?v=5" alt="Our Meetings" class="tcgc-meetings-collage-img">
+        </div>
+    </div>
+</section>
+
+<!-- UPCOMING EVENTS SECTION (Node 75:374) -->
+<section class="tcgc-events-section" id="upcoming-events">
+    <h2 class="tcgc-events-heading">UPCOMING EVENTS</h2>
+    <div class="tcgc-events-grid">
+        <!-- Card 1: Image & Glory Conference 2026 (Links to Registration 116:483) -->
+        <a href="{% url 'registration' %}" class="tcgc-event-card">
+            <img src="{% static 'images/event_card_1.png' %}" alt="Image & Glory Conference 2026" class="tcgc-event-card-img">
+        </a>
+        <!-- Card 2: The Shofar 2027 -->
+        <a href="{% url 'registration' %}" class="tcgc-event-card">
+            <img src="{% static 'images/event_card_2.png' %}" alt="The Shofar 2027" class="tcgc-event-card-img">
+        </a>
+        <!-- Card 3: Baba's Blessing 2027 -->
+        <a href="{% url 'registration' %}" class="tcgc-event-card">
+            <img src="{% static 'images/event_card_3.png' %}" alt="Baba's Blessing 2027" class="tcgc-event-card-img">
+        </a>
+    </div>
+</section>
+
+<!-- GIVE ONLINE SECTION (Node 99:481) -->
+<section class="tcgc-give-section" id="give-online">
+    <div class="tcgc-give-inner">
+        <!-- Left Column (Node 1:311) -->
+        <div class="tcgc-give-left">
+            <h2 class="tcgc-give-heading">GIVE ONLINE</h2>
+            <p class="tcgc-give-subtext">
+                We are building a new campus. Help bring heaven<br>
+                to earth and invest in the future.
+            </p>
+            <a href="#give-online-form" class="tcgc-btn-give-learn">
+                <span>Learn More</span>
+                <span class="tcgc-arrow-long">&#8594;</span>
+            </a>
+        </div>
+
+        <!-- Right Form Card (Node 99:479) -->
+        <div class="tcgc-give-form-card">
+            <form action="{% url 'home' %}" method="POST" id="give-online-form" class="tcgc-give-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="give_online">
+
+                <div class="tcgc-give-row-2">
+                    <div class="tcgc-give-field">
+                        <label for="give_first_name">First Name</label>
+                        <input type="text" id="give_first_name" name="first_name" required>
+                    </div>
+                    <div class="tcgc-give-field">
+                        <label for="give_last_name">Last Name</label>
+                        <input type="text" id="give_last_name" name="last_name" required>
+                    </div>
+                </div>
+
+                <div class="tcgc-give-field tcgc-give-field-full">
+                    <label for="give_email">Email Address</label>
+                    <input type="email" id="give_email" name="email" required>
+                </div>
+
+                <div class="tcgc-give-field tcgc-give-field-phone">
+                    <label for="give_phone">Phone number</label>
+                    <div class="tcgc-give-phone-split">
+                        <input type="text" name="phone_country_code" value="+234" class="tcgc-give-code-input" aria-label="Country Code">
+                        <input type="tel" id="give_phone" name="phone_number" placeholder="70 123 456 78" required class="tcgc-give-number-input">
+                    </div>
+                </div>
+
+                <div class="tcgc-give-submit-wrap">
+                    <button type="submit" class="tcgc-btn-give-now">Give Now!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

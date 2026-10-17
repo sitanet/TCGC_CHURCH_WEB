@@ -1,3 +1,0 @@
-"""
-Core template tags package.
-"""
