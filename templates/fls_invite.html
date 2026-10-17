@@ -1,0 +1,1157 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>{{ page_title }}</title>
+  
+  <!-- SEO & Social OpenGraph Meta Tags for Instant WhatsApp Previews -->
+  <meta name="description" content="Official invitation to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church. 23rd–29th November, 2026. Tap to view and customize your invitation card.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Official Invitation for {{ display_name }} | Image & Glory Conference '26">
+  <meta property="og:description" content="You are cordially invited to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church, Ibadan. Tap to view your customized invitation card.">
+  <meta property="og:image" content="{{ image_url }}">
+  <meta property="og:image:width" content="767">
+  <meta property="og:image:height" content="1024">
+  <meta property="og:url" content="{{ share_url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Official Invitation for {{ display_name }} | Image & Glory '26">
+  <meta name="twitter:description" content="Personalized Invitation to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church.">
+  <meta name="twitter:image" content="{{ image_url }}">
+  <meta name="theme-color" content="#811A19">
+  <link rel="icon" type="image/png" href="{% static 'images/tcgc_logo.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/tcgc_logo.png' %}">
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    @font-face {
+      font-family: 'ClashDisplay';
+      src: url("{% static 'fls/ClashDisplay-Regular.ttf' %}") format('truetype');
+      font-weight: 400 600;
+      font-display: swap;
+    }
+
+    :root {
+      --wine-deep: #2A040A;
+      --wine-dark: #430913;
+      --wine-primary: #78101E;
+      --wine-card: #BC1113;
+      --wine-accent: #E52E3E;
+      --gold-primary: #D4AF37;
+      --gold-light: #F3E5AB;
+      --gold-dark: #9A7B2C;
+      --dark-surface: #140508;
+      --dark-card: #1D0A0F;
+      --dark-border: rgba(212, 175, 55, 0.22);
+      --text-main: #FFFFFF;
+      --text-muted: #E2D3D6;
+      --text-sub: #A89599;
+      --parchment: #F4F2EF;
+      --whatsapp: #25D366;
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #3d0811 0%, #150205 60%, #0c0103 100%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+      padding-bottom: 90px;
+    }
+
+    /* Ambient glow elements */
+    .glow-sphere {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-1 {
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 550px;
+      height: 350px;
+      background: rgba(188, 17, 19, 0.35);
+    }
+    .glow-2 {
+      top: 500px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: rgba(212, 175, 55, 0.12);
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* Top Header & Branding */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .brand-logo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .church-logo-img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.45));
+      transition: transform 0.25s ease;
+    }
+
+    .brand-logo-link:hover .church-logo-img {
+      transform: scale(1.05);
+    }
+
+    .church-brand-text {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .church-brand-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 1.2px;
+      color: #FFF;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .church-brand-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: var(--gold-light);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 600px) {
+      .top-nav {
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+      }
+      .church-logo-img {
+        width: 44px;
+        height: 44px;
+      }
+      .church-brand-name {
+        font-size: 0.92rem;
+      }
+      .church-brand-tag {
+        font-size: 0.65rem;
+      }
+      .header-badge {
+        display: none;
+      }
+    }
+
+    /* Header & Branding */
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    h1.event-title {
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #FFF6DD 0%, #D4AF37 50%, #FFDF73 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      text-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+    }
+
+    .event-theme {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: #E6D0D4;
+      margin-bottom: 6px;
+    }
+
+    .event-theme span {
+      color: var(--gold-primary);
+      font-weight: 700;
+    }
+
+    .event-meta-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      margin-top: 14px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .event-meta-bar div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .event-meta-bar i {
+      color: var(--gold-primary);
+    }
+
+    /* Main Grid Layout */
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (min-width: 960px) {
+      .grid-container {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+
+    /* Card Preview Panel */
+    .card-panel {
+      background: linear-gradient(180deg, rgba(34, 11, 17, 0.75) 0%, rgba(18, 5, 8, 0.9) 100%);
+      border: 1px solid var(--dark-border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(120, 16, 30, 0.2);
+      backdrop-filter: blur(14px);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .panel-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title i {
+      color: var(--gold-primary);
+    }
+
+    /* View Switcher Tabs */
+    .view-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--wine-primary) 0%, var(--wine-dark) 100%);
+      color: #FFF;
+      box-shadow: 0 2px 10px rgba(188, 17, 19, 0.4);
+    }
+
+    /* Invitation Preview Card Box */
+    .invite-preview-box {
+      position: relative;
+      width: 100%;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(212, 175, 55, 0.25);
+      background: #000;
+      aspect-ratio: 1530 / 2152;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .invite-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.25s ease;
+    }
+
+    /* Live Canvas Preview overlay for instantaneous response */
+    #previewCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .recipient-banner {
+      margin-top: 18px;
+      background: rgba(212, 175, 55, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .recipient-info {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .recipient-info strong {
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      font-family: 'ClashDisplay', sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    /* Quick Action Buttons */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+      outline: none;
+      text-align: center;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #FFFFFF;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.35);
+    }
+    .btn-whatsapp:hover {
+      box-shadow: 0 6px 22px rgba(37, 211, 102, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #BC1113 0%, #78101E 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 15px rgba(188, 17, 19, 0.35);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #D41517 0%, #8D1424 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #E6CA65 0%, #C5A059 50%, #9A7B2C 100%);
+      color: #1A0800;
+      font-weight: 800;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+    .btn-gold:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFF;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* Right Customizer Panel */
+    .customizer-panel {
+      background: linear-gradient(180deg, rgba(38, 12, 18, 0.85) 0%, rgba(20, 6, 9, 0.95) 100%);
+      border: 1px solid var(--dark-border);
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(14px);
+    }
+
+    .customizer-intro {
+      margin-bottom: 22px;
+    }
+
+    .customizer-intro h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .customizer-intro p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+    }
+
+    .title-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .chip:hover, .chip.active {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: var(--gold-primary);
+      color: var(--gold-light);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold-primary);
+      font-size: 0.95rem;
+    }
+
+    .text-input {
+      width: 100%;
+      background: rgba(10, 2, 4, 0.85);
+      border: 1.5px solid rgba(212, 175, 55, 0.3);
+      border-radius: var(--radius-md);
+      padding: 13px 14px 13px 42px;
+      color: #FFF;
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+      background: rgba(15, 3, 6, 0.95);
+    }
+
+    .text-input::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+      text-transform: none;
+      font-weight: 400;
+    }
+
+    .helper-text {
+      font-size: 0.76rem;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    /* Fixed Floating Mobile Bar */
+    .mobile-float-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(22, 6, 9, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(212, 175, 55, 0.3);
+      padding: 10px 16px;
+      z-index: 999;
+      display: flex;
+      gap: 10px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    @media (min-width: 768px) {
+      .mobile-float-bar {
+        display: none;
+      }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #10B981;
+      color: #FFF;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 12px 24px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 0.82rem;
+      color: var(--text-sub);
+    }
+
+    footer a {
+      color: var(--gold-light);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-sphere glow-1"></div>
+  <div class="glow-sphere glow-2"></div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastMsg">Link copied to clipboard!</span>
+  </div>
+
+  <div class="wrapper">
+    <!-- Top Left Brand Navigation -->
+    <div class="top-nav">
+      <a href="/imgc26/invite/" class="brand-logo-link">
+        <img src="{% static 'images/tcgc_logo.png' %}" alt="The CityGate Church" class="church-logo-img">
+        <div class="church-brand-text">
+          <span class="church-brand-name">The CityGate Church</span>
+          <span class="church-brand-tag">Image &amp; Glory Conference '26</span>
+        </div>
+      </a>
+      <div class="header-badge">
+        <i class="fa-solid fa-church"></i> Official Portal
+      </div>
+    </div>
+
+    <!-- Header Section -->
+    <header>
+      <h1 class="event-title">Image & Glory Conference '26</h1>
+      <p class="event-theme">Theme: <span>A Call to Worship: Becoming God's House</span></p>
+      
+      <div class="event-meta-bar">
+        <div><i class="fa-regular fa-calendar-check"></i> 23rd – 29th November, 2026</div>
+        <div><i class="fa-solid fa-location-dot"></i> 120, UI/Ojoo Road, Ajibode Junction, Ibadan</div>
+        <div><i class="fa-solid fa-users"></i> All Are Cordially Invited</div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="grid-container">
+      
+      <!-- Left: Interactive Card Preview -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="fa-solid fa-envelope-open-text"></i>
+            <span id="previewHeaderTitle">Official Invitation Card</span>
+          </div>
+
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-primary); display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-certificate"></i> Live Preview
+          </div>
+        </div>
+
+        <!-- Invitation Box with Live Canvas -->
+        <div class="invite-preview-box" id="cardContainer">
+          <!-- Live Canvas for instant 60fps typing response -->
+          <canvas id="previewCanvas" width="767" height="1024"></canvas>
+        </div>
+
+        <!-- Recipient Banner -->
+        <div class="recipient-banner">
+          <div class="recipient-info">
+            <span id="bannerSubtitle">{% if display_name %}Prepared specially for:{% else %}Recipient:{% endif %}</span><br>
+            <strong id="bannerNameDisplay">{{ display_name|default:"SPECIAL GUEST" }}</strong>
+            {% if inviter %}
+              <div id="inviterDisplay" style="font-size: 0.78rem; color: #D4AF37; margin-top: 3px;">
+                <i class="fa-solid fa-heart" style="font-size: 0.7rem;"></i> Invited with love by: <strong id="displayInviterName">{{ inviter }}</strong>
+                <span id="displayPhoneWrap"{% if not phone %} style="display: none;"{% endif %}>&nbsp;•&nbsp; <a id="displayPhoneLink" href="tel:{{ phone }}" style="color: #FFF; text-decoration: underline;"><i class="fa-solid fa-phone" style="font-size: 0.7rem;"></i> <span id="displayPhoneText">{{ phone }}</span></a></span>
+              </div>
+            {% else %}
+              <div id="inviterDisplay" style="font-size: 0.78rem; color: #D4AF37; margin-top: 3px; display: none;">
+                <i class="fa-solid fa-heart" style="font-size: 0.7rem;"></i> Invited with love by: <strong id="displayInviterName"></strong>
+                <span id="displayPhoneWrap" style="display: none;">&nbsp;•&nbsp; <a id="displayPhoneLink" href="" style="color: #FFF; text-decoration: underline;"><i class="fa-solid fa-phone" style="font-size: 0.7rem;"></i> <span id="displayPhoneText"></span></a></span>
+              </div>
+            {% endif %}
+          </div>
+          <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;" onclick="copyCurrentLink()">
+            <i class="fa-solid fa-link"></i> Copy Link
+          </button>
+        </div>
+
+        <!-- Action Buttons (Desktop / Tablet) -->
+        <div class="action-grid">
+          <!-- WhatsApp Share -->
+          <a id="btnWhatsApp" href="{{ wa_share_url }}" target="_blank" class="btn btn-whatsapp">
+            <i class="fa-brands fa-whatsapp fa-lg"></i> Share on WhatsApp
+          </a>
+
+          <!-- Download HD Image -->
+          <a id="btnDownloadImage" href="/imgc26/invite/image/{% if display_name %}?name={{ display_name|urlencode }}&download=1{% else %}?download=1{% endif %}&v=20261013" class="btn btn-primary" download>
+            <i class="fa-solid fa-image"></i> Download HD Image
+          </a>
+
+          <!-- Download PDF -->
+          <a id="btnDownloadPdf" href="/imgc26/invite/pdf/{% if display_name %}?name={{ display_name|urlencode }}{% endif %}" class="btn btn-gold" download>
+            <i class="fa-solid fa-file-pdf"></i> Download PDF Card
+          </a>
+
+          <!-- Native Share if supported -->
+          <button id="btnNativeShare" class="btn btn-secondary" onclick="triggerNativeShare()">
+            <i class="fa-solid fa-share-nodes"></i> Share Link
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Invitation Creator / Customizer -->
+      <div class="customizer-panel">
+        <div class="customizer-intro">
+          <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Customize & Invite</h2>
+          <p>Personalize this invitation card for your spouse, friends, parents, pastor, or colleagues in seconds.</p>
+        </div>
+
+        <!-- Quick Title Selection Chips -->
+        <div class="form-group">
+          <label class="form-label">1. Quick Title Picker</label>
+          <div class="title-chips">
+            <button type="button" class="chip" onclick="applyTitle('MR & MRS ')">Mr & Mrs</button>
+            <button type="button" class="chip" onclick="applyTitle('PASTOR & MRS ')">Pastor & Mrs</button>
+            <button type="button" class="chip" onclick="applyTitle('DR & MRS ')">Dr & Mrs</button>
+            <button type="button" class="chip" onclick="applyTitle('CHIEF & MRS ')">Chief & Mrs</button>
+            <button type="button" class="chip" onclick="applyTitle('DEACON & MRS ')">Deacon & Mrs</button>
+            <button type="button" class="chip" onclick="applyTitle('BRO & SIS ')">Bro & Sis</button>
+            <button type="button" class="chip" onclick="applyTitle('SPECIAL GUEST')">Special Guest</button>
+            <button type="button" class="chip" onclick="clearName()" style="color: #FF8B94;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+          </div>
+        </div>
+
+        <!-- Name Input -->
+        <div class="form-group">
+          <label class="form-label" for="nameInput">2. Recipient's Name / Family Name</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-user"></i>
+            <input 
+              type="text" 
+              id="nameInput" 
+              class="text-input" 
+              placeholder="e.g. MR & MRS ADEBAYO, DR JOHNSON..." 
+              value="{{ name }}"
+              autocomplete="off"
+              spellcheck="false"
+              oninput="handleNameInput(this.value)"
+            >
+          </div>
+          <div class="helper-text">Type recipient's name to see it appear on the card in real time.</div>
+        </div>
+
+        <!-- Inviter Name (Optional) -->
+        <div class="form-group">
+          <label class="form-label" for="inviterInput">3. Invited By (Your Name - Optional)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-signature"></i>
+            <input 
+              type="text" 
+              id="inviterInput" 
+              class="text-input" 
+              style="text-transform: none;"
+              placeholder="e.g. Pastor Johnson, Sis Mary..." 
+              value="{{ inviter }}"
+              autocomplete="off"
+              oninput="handleInviterInput(this.value)"
+            >
+          </div>
+          <div class="helper-text">Included in the personalized WhatsApp message when sharing.</div>
+        </div>
+
+        <!-- Inviter Phone (Optional) -->
+        <div class="form-group">
+          <label class="form-label" for="phoneInput">4. Your Phone Number (Optional)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-phone"></i>
+            <input 
+              type="tel" 
+              id="phoneInput" 
+              class="text-input" 
+              style="text-transform: none;"
+              placeholder="e.g. 08012345678, +234..." 
+              value="{{ phone }}"
+              autocomplete="tel"
+              oninput="handlePhoneInput(this.value)"
+            >
+          </div>
+          <div class="helper-text">Included in the invitation so your guests can call or WhatsApp you directly.</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <img src="{% static 'images/tcgc_logo.png' %}" alt="The CityGate Church Logo" style="width: 20px; height: 20px; object-fit: contain;">
+        <span>© 2026 The CityGate Church. All rights reserved.</span>
+      </p>
+      <p style="margin-top: 6px;">
+        <a href="https://tcgc.thecitygatechurch.org/stream/" target="_blank"><i class="fa-solid fa-play"></i> Watch Stream</a> &nbsp;•&nbsp; 
+        <a href="https://play.google.com/store/apps/details?id=com.tcgc.tcgc" target="_blank"><i class="fa-brands fa-google-play"></i> Download App</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Mobile Fixed Bottom Action Bar -->
+  <div class="mobile-float-bar">
+    <a id="btnMobileWhatsApp" href="{{ wa_share_url }}" target="_blank" class="btn btn-whatsapp" style="flex: 1; padding: 11px;">
+      <i class="fa-brands fa-whatsapp fa-lg"></i> Share
+    </a>
+    <a id="btnMobileDownloadPdf" href="/imgc26/invite/pdf/?name={{ display_name|urlencode }}&v=20261013" class="btn btn-gold" style="flex: 1; padding: 11px;" download>
+      <i class="fa-solid fa-file-pdf"></i> PDF
+    </a>
+    <button class="btn btn-secondary" style="padding: 11px 14px;" onclick="copyCurrentLink()">
+      <i class="fa-solid fa-link"></i>
+    </button>
+  </div>
+
+  <!-- Interactive JavaScript Engine -->
+  <script>
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    const nameInput = document.getElementById('nameInput');
+    const inviterInput = document.getElementById('inviterInput');
+    const phoneInput = document.getElementById('phoneInput');
+    const bannerNameDisplay = document.getElementById('bannerNameDisplay');
+    const inviterDisplay = document.getElementById('inviterDisplay');
+    const displayInviterName = document.getElementById('displayInviterName');
+    const displayPhoneWrap = document.getElementById('displayPhoneWrap');
+    const displayPhoneLink = document.getElementById('displayPhoneLink');
+    const displayPhoneText = document.getElementById('displayPhoneText');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // Action buttons
+    const btnWhatsApp = document.getElementById('btnWhatsApp');
+    const btnMobileWhatsApp = document.getElementById('btnMobileWhatsApp');
+    const btnDownloadImage = document.getElementById('btnDownloadImage');
+    const btnDownloadPdf = document.getElementById('btnDownloadPdf');
+    const btnMobileDownloadPdf = document.getElementById('btnMobileDownloadPdf');
+
+    // Preload Base Template
+    const templateImg = new Image();
+    templateImg.crossOrigin = 'anonymous';
+    templateImg.src = "{% static 'fls/imgc_template_web.jpg' %}?v=20261013";
+
+    let fontLoaded = false;
+    // Load ClashDisplay WebFont
+    const clashFont = new FontFace('ClashDisplay', "url({% static 'fls/ClashDisplay-Semibold.ttf' %})");
+    clashFont.load().then(function(loadedFace) {
+      document.fonts.add(loadedFace);
+      fontLoaded = true;
+      renderLiveCard();
+    }).catch(function(e) {
+      console.warn('ClashDisplay font load error:', e);
+      fontLoaded = true;
+      renderLiveCard();
+    });
+
+    templateImg.onload = function() {
+      renderLiveCard();
+    };
+
+    let currentName = "{{ name|escapejs }}";
+    let currentInviter = "{{ inviter|escapejs }}";
+    let currentPhone = "{{ phone|escapejs }}";
+
+    function renderLiveCard() {
+      if (!templateImg.complete) return;
+      const w = canvas.width;  // 767
+      const h = canvas.height; // 1024
+
+      // Draw background template
+      ctx.drawImage(templateImg, 0, 0, w, h);
+
+      const rawText = (currentName || '').trim();
+      // If user hasn't typed anything yet, card stays clean or shows subtle placeholder only if desired
+      if (!rawText) {
+        return; // Leave invitation template card pristine and clean
+      }
+
+      const nameText = rawText.toUpperCase();
+
+      const scale = w / 767.0;
+      const cx = 385 * scale;
+      const cy = 474 * scale;
+      const yOffset = -20 * scale;
+      const maxW = 340 * scale;
+      let fontSize = Math.max(Math.round(24 * scale), 12);
+      const angle = -10.93 * Math.PI / 180;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+
+      ctx.fillStyle = '#811A19';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      ctx.font = `600 ${fontSize}px "ClashDisplay", sans-serif`;
+      let textMetrics = ctx.measureText(nameText);
+      let textW = textMetrics.width;
+
+      if (textW > maxW) {
+        const shrink = maxW / textW;
+        fontSize = Math.max(Math.round(fontSize * shrink), Math.round(12 * scale));
+        ctx.font = `600 ${fontSize}px "ClashDisplay", sans-serif`;
+      }
+
+      ctx.fillText(nameText, 0, yOffset);
+      ctx.restore();
+    }
+
+    function updateUrlsAndActions() {
+      const rawTrimmed = (currentName || '').trim();
+      const cleanName = rawTrimmed.toUpperCase();
+      const encName = encodeURIComponent(cleanName);
+      const encInviter = encodeURIComponent((currentInviter || '').trim());
+      const encPhone = encodeURIComponent((currentPhone || '').trim());
+
+      bannerNameDisplay.textContent = cleanName || 'SPECIAL GUEST';
+      const bannerSub = document.getElementById('bannerSubtitle');
+      if (bannerSub) {
+        bannerSub.textContent = cleanName ? 'Prepared specially for:' : 'Recipient:';
+      }
+
+      // Update Inviter & Phone display banner
+      if (inviterDisplay && displayInviterName) {
+        if (currentInviter.trim()) {
+          inviterDisplay.style.display = 'block';
+          displayInviterName.textContent = currentInviter.trim();
+          if (currentPhone.trim() && displayPhoneWrap && displayPhoneLink && displayPhoneText) {
+            displayPhoneWrap.style.display = 'inline';
+            displayPhoneLink.href = 'tel:' + currentPhone.trim();
+            displayPhoneText.textContent = currentPhone.trim();
+          } else if (displayPhoneWrap) {
+            displayPhoneWrap.style.display = 'none';
+          }
+        } else {
+          inviterDisplay.style.display = 'none';
+        }
+      }
+
+      // Update Download URLs
+      const imgUrl = cleanName
+        ? `/imgc26/invite/image/?name=${encName}&download=1&v=20261013`
+        : `/imgc26/invite/image/?download=1&v=20261013`;
+      const pdfUrl = cleanName
+        ? `/imgc26/invite/pdf/?name=${encName}&v=20261013`
+        : `/imgc26/invite/pdf/?v=20261013`;
+      btnDownloadImage.href = imgUrl;
+      btnDownloadPdf.href = pdfUrl;
+      btnMobileDownloadPdf.href = pdfUrl;
+
+      // Update Share URL (/imgc26/invite/)
+      let fullShareUrl = cleanName 
+        ? `${window.location.origin}/imgc26/invite/?name=${encName}`
+        : `${window.location.origin}/imgc26/invite/`;
+
+      const params = [];
+      if (cleanName) {
+        // already in url
+      }
+      if (currentInviter.trim()) {
+        params.push(`from=${encInviter}`);
+      }
+      if (currentPhone.trim()) {
+        params.push(`phone=${encPhone}`);
+      }
+      if (params.length > 0) {
+        fullShareUrl += (cleanName ? '&' : '?') + params.join('&');
+      }
+
+      // Update WhatsApp text
+      const salutation = cleanName ? `Dear ${cleanName},\n\n` : `Hello!\n\n`;
+      let waMsg = '';
+      if (currentInviter.trim()) {
+        const contactSuffix = currentPhone.trim() ? ` (${currentPhone.trim()})` : '';
+        waMsg = `${salutation}You are warmly invited by *${currentInviter.trim()}*${contactSuffix} to *Image & Glory Conference '26* (Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n📅 Date: 23rd–29th November, 2026\n📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n`;
+        if (currentPhone.trim()) {
+          waMsg += `📞 Enquiries / RSVP: ${currentPhone.trim()}\n`;
+        }
+        waMsg += `\nHere is your official personalized invitation card:\n${fullShareUrl}\n\nWe look forward to fellowshipping with you. God bless you!`;
+      } else {
+        waMsg = `${salutation}You are cordially invited to *Image & Glory Conference '26* (Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n📅 Date: 23rd–29th November, 2026\n📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n\nTap the link below to view and download your personalized invitation card:\n${fullShareUrl}\n\nGod bless you!`;
+      }
+
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+      btnWhatsApp.href = waUrl;
+      btnMobileWhatsApp.href = waUrl;
+
+      // Update browser URL state without reloading
+      if (history.replaceState) {
+        history.replaceState(null, '', fullShareUrl);
+      }
+    }
+
+    let inputTimeout = null;
+    function handleNameInput(val) {
+      currentName = val;
+      renderLiveCard();
+      clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(() => {
+        updateUrlsAndActions();
+      }, 150);
+    }
+
+    function handleInviterInput(val) {
+      currentInviter = val;
+      clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(() => {
+        updateUrlsAndActions();
+      }, 150);
+    }
+
+    function handlePhoneInput(val) {
+      currentPhone = val;
+      clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(() => {
+        updateUrlsAndActions();
+      }, 150);
+    }
+
+    function applyTitle(titlePrefix) {
+      let cur = nameInput.value.trim();
+      const titles = [
+        'MR & MRS ', 'PASTOR & MRS ', 'DR & MRS ', 'CHIEF & MRS ', 
+        'DEACON & MRS ', 'BRO & SIS ', 'SPECIAL GUEST'
+      ];
+      titles.forEach(t => {
+        if (cur.toUpperCase().startsWith(t)) {
+          cur = cur.substring(t.length).trim();
+        }
+      });
+
+      if (titlePrefix === 'SPECIAL GUEST') {
+        nameInput.value = 'SPECIAL GUEST';
+      } else {
+        nameInput.value = (titlePrefix + cur).trim();
+      }
+      handleNameInput(nameInput.value);
+    }
+
+    function clearName() {
+      nameInput.value = '';
+      handleNameInput('');
+      nameInput.focus();
+    }
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function copyCurrentLink() {
+      const cleanName = (currentName || '').trim().toUpperCase();
+      let shareUrl = cleanName
+        ? `${window.location.origin}/imgc26/invite/?name=${encodeURIComponent(cleanName)}`
+        : `${window.location.origin}/imgc26/invite/`;
+
+      const params = [];
+      if (currentInviter.trim()) {
+        params.push(`from=${encodeURIComponent(currentInviter.trim())}`);
+      }
+      if (currentPhone.trim()) {
+        params.push(`phone=${encodeURIComponent(currentPhone.trim())}`);
+      }
+      if (params.length > 0) {
+        shareUrl += (cleanName ? '&' : '?') + params.join('&');
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showToast('Invitation link copied to clipboard!');
+        }).catch(() => {
+          fallbackCopy(shareUrl);
+        });
+      } else {
+        fallbackCopy(shareUrl);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const input = document.createElement('input');
+      input.value = text;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      showToast('Invitation link copied to clipboard!');
+    }
+
+    function triggerNativeShare() {
+      const cleanName = (currentName || '').trim().toUpperCase();
+      let shareUrl = cleanName
+        ? `${window.location.origin}/imgc26/invite/?name=${encodeURIComponent(cleanName)}`
+        : `${window.location.origin}/imgc26/invite/`;
+
+      const params = [];
+      if (currentInviter.trim()) {
+        params.push(`from=${encodeURIComponent(currentInviter.trim())}`);
+      }
+      if (currentPhone.trim()) {
+        params.push(`phone=${encodeURIComponent(currentPhone.trim())}`);
+      }
+      if (params.length > 0) {
+        shareUrl += (cleanName ? '&' : '?') + params.join('&');
+      }
+
+      if (navigator.share) {
+        navigator.share({
+          title: cleanName ? `Official Invitation for ${cleanName} | Image & Glory Conference '26` : `Official Invitation | Image & Glory Conference '26`,
+          text: `You are cordially invited to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church!`,
+          url: shareUrl
+        }).catch(() => {});
+      } else {
+        copyCurrentLink();
+      }
+    }
+
+    // Initial render
+    renderLiveCard();
+  </script>
+</body>
+</html>

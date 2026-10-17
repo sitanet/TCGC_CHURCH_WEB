@@ -797,3 +797,217 @@ def subscribe_newsletter(request):
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'status': 'error', 'message': 'Please enter a valid email address.'}, status=400)
     return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+# ============================================================================
+# Image & Glory Conference 2026 (IMGC) - Personalized Invitation Generator
+# ============================================================================
+
+def _generate_fls_invite_image(name_text, high_res=False):
+    """
+    Renders the customized Image & Glory Conference '26 invitation card with the specified recipient name.
+    Matches font, slant alignment (10.93 degrees), and brand burgundy color (#811A19).
+    Auto-scales the font size for long names to fit perfectly within the designated name space.
+    """
+    import os
+    from PIL import Image, ImageDraw, ImageFont
+    from django.conf import settings
+
+    fls_dir = os.path.join(settings.BASE_DIR, 'static', 'fls')
+    template_name = 'imgc_template.jpg' if high_res else 'imgc_template_web.jpg'
+    template_path = os.path.join(fls_dir, template_name)
+    if not os.path.exists(template_path):
+        template_path = os.path.join(settings.BASE_DIR, 'staticfiles', 'fls', template_name)
+    if not os.path.exists(template_path):
+        template_name = 'fls_template.jpg' if high_res else 'fls_template_web.jpg'
+        template_path = os.path.join(fls_dir, template_name)
+
+    font_path = os.path.join(fls_dir, 'ClashDisplay-Semibold.ttf')
+    if not os.path.exists(font_path):
+        font_path = os.path.join(settings.BASE_DIR, 'staticfiles', 'fls', 'ClashDisplay-Semibold.ttf')
+
+    clean_name = (name_text or '').strip().upper()
+
+    img = Image.open(template_path).convert('RGB')
+    if not clean_name:
+        return img
+    w, h = img.size
+
+    # Reference resolution is 767 x 1024
+    scale = w / 767.0
+    cx = int(round(385 * scale))
+    cy = int(round(474 * scale))
+    y_offset = int(round(-20 * scale))
+    max_w = int(round(340 * scale))
+    base_fontsize = max(int(round(24 * scale)), 12)
+    angle = 10.93
+
+    try:
+        font = ImageFont.truetype(font_path, base_fontsize)
+    except Exception:
+        font = ImageFont.load_default()
+
+    scratch = Image.new('RGB', (10, 10))
+    sdraw = ImageDraw.Draw(scratch)
+    bbox = sdraw.textbbox((0, 0), clean_name, font=font)
+    text_w = bbox[2] - bbox[0]
+
+    if text_w > max_w:
+        shrink = max_w / float(text_w)
+        fontsize = max(int(base_fontsize * shrink), int(round(12 * scale)))
+        try:
+            font = ImageFont.truetype(font_path, fontsize)
+        except Exception:
+            pass
+
+    txt_layer = Image.new('RGBA', (w, h), (255, 255, 255, 0))
+    tdraw = ImageDraw.Draw(txt_layer)
+    tdraw.text((cx, cy + y_offset), clean_name, fill='#811A19', font=font, anchor='mm')
+
+    rotated = txt_layer.rotate(angle, resample=Image.Resampling.BICUBIC, center=(cx, cy))
+    img.paste(rotated, (0, 0), rotated)
+    return img
+
+
+def fls_invite_view(request):
+    """
+    Public web view for Image & Glory Conference '26 personalized invitation (/imgc/invite/).
+    Allows attendees and guests to view their personalized card, download HD image or PDF,
+    and generate custom invitations to share with friends and family via WhatsApp.
+    """
+    import urllib.parse
+    from django.shortcuts import render
+
+    raw_name = request.GET.get('name', '').strip()
+    inviter = request.GET.get('from', '').strip()
+    phone = request.GET.get('phone', '').strip()
+    tab = request.GET.get('tab', 'card').strip().lower()
+
+    display_name = raw_name.upper() if raw_name else ""
+    encoded_name = urllib.parse.quote(raw_name) if raw_name else ""
+    encoded_inviter = urllib.parse.quote(inviter) if inviter else ""
+    encoded_phone = urllib.parse.quote(phone) if phone else ""
+
+    host_url = request.build_absolute_uri('/')[:-1]
+    image_url = f"{host_url}/imgc26/invite/image/?name={encoded_name}&v=20261013" if encoded_name else f"{host_url}/imgc26/invite/image/?v=20261013"
+    pdf_url = f"{host_url}/imgc26/invite/pdf/?name={encoded_name}&v=20261013" if encoded_name else f"{host_url}/imgc26/invite/pdf/?v=20261013"
+
+    if encoded_name:
+        share_url = f"{host_url}/imgc26/invite/?name={encoded_name}"
+        if inviter:
+            share_url += f"&from={encoded_inviter}"
+        if phone:
+            share_url += f"&phone={encoded_phone}"
+    else:
+        share_url = f"{host_url}/imgc26/invite/"
+        params = []
+        if inviter:
+            params.append(f"from={encoded_inviter}")
+        if phone:
+            params.append(f"phone={encoded_phone}")
+        if params:
+            share_url += f"?{'&'.join(params)}"
+
+    salutation = f"Dear {display_name},\n\n" if display_name else "Hello!\n\n"
+
+    # Pre-formatted WhatsApp invitation message
+    if inviter:
+        contact_suffix = f" ({phone})" if phone else ""
+        wa_text = (
+            f"{salutation}"
+            f"You are warmly invited by *{inviter}*{contact_suffix} to *Image & Glory Conference '26* "
+            f"(Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n"
+            f"📅 Date: 23rd–29th November, 2026\n"
+            f"📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n"
+        )
+        if phone:
+            wa_text += f"📞 Enquiries / RSVP: {phone}\n"
+        wa_text += (
+            f"\nHere is your official personalized invitation card:\n"
+            f"{share_url}\n\n"
+            f"We look forward to fellowshipping with you. God bless you!"
+        )
+    else:
+        wa_text = (
+            f"{salutation}"
+            f"You are cordially invited to *Image & Glory Conference '26* "
+            f"(Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n"
+            f"📅 Date: 23rd–29th November, 2026\n"
+            f"📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n\n"
+            f"Tap the link below to view and download your personalized invitation card:\n"
+            f"{share_url}\n\n"
+            f"God bless you!"
+        )
+    wa_share_url = f"https://wa.me/?text={urllib.parse.quote(wa_text)}"
+
+    page_title = f"Invitation for {display_name} | Image & Glory Conference '26" if display_name else "Image & Glory Conference '26 | Official Invitation"
+
+    context = {
+        'name': raw_name,
+        'display_name': display_name,
+        'inviter': inviter,
+        'phone': phone,
+        'tab': tab,
+        'image_url': image_url,
+        'pdf_url': pdf_url,
+        'share_url': share_url,
+        'wa_share_url': wa_share_url,
+        'page_title': page_title,
+    }
+    return render(request, 'fls_invite.html', context)
+
+
+def fls_invite_image_api(request):
+    """
+    Returns the customized Image & Glory Conference invitation card as JPEG.
+    Query parameters:
+    - name: recipient name (blank/omitted renders clean card)
+    - download: 1 or true to force file download as attachment (high resolution)
+    """
+    import io
+    import re
+    from django.http import HttpResponse
+
+    name = request.GET.get('name', '').strip()
+    download = request.GET.get('download', '').lower() in ('1', 'true', 'yes')
+
+    img = _generate_fls_invite_image(name, high_res=download)
+    buf = io.BytesIO()
+    img.save(buf, format='JPEG', quality=95 if download else 90)
+    buf.seek(0)
+
+    response = HttpResponse(buf.getvalue(), content_type='image/jpeg')
+    if download:
+        clean_slug = re.sub(r'[^A-Za-z0-9_]+', '_', name.strip() or 'Invitation').strip('_')
+        filename = f"TCGC_Image_And_Glory_Conference_2026_Invitation_{clean_slug}.jpg"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    else:
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+
+    return response
+
+
+def fls_invite_pdf_api(request):
+    """
+    Returns the official customized Image & Glory Conference invitation card as PDF.
+    Query parameter:
+    - name: recipient name (blank/omitted renders clean card)
+    """
+    import io
+    import re
+    from django.http import HttpResponse
+
+    name = request.GET.get('name', '').strip()
+
+    im1 = _generate_fls_invite_image(name, high_res=True)
+
+    buf = io.BytesIO()
+    im1.save(buf, format='PDF', resolution=150.0)
+    buf.seek(0)
+
+    clean_slug = re.sub(r'[^A-Za-z0-9_]+', '_', name.strip() or 'Invitation').strip('_')
+    filename = f"TCGC_Image_And_Glory_Conference_2026_Invitation_{clean_slug}.pdf"
+
+    response = HttpResponse(buf.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response

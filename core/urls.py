@@ -13,6 +13,15 @@ urlpatterns = [
     path('registration/confirmation/<str:registration_code>/', RedirectView.as_view(pattern_name='registration_confirmation', permanent=True)),
     path('imgc/register/', RedirectView.as_view(pattern_name='registration', permanent=True)),
     path('events/imgc/', RedirectView.as_view(pattern_name='registration', permanent=True)),
+    # IMGC Personalized Invitation Routes
+    path('imgc/invite/', views.fls_invite_view, name='imgc_invite'),
+    path('imgc26/invite/', views.fls_invite_view, name='imgc26_invite'),
+    path('invite/', views.fls_invite_view, name='invite'),
+    path('imgc/invite/image/', views.fls_invite_image_api, name='imgc_invite_image'),
+    path('imgc/invite/pdf/', views.fls_invite_pdf_api, name='imgc_invite_pdf'),
+    path('imgc26/invite/image/', views.fls_invite_image_api, name='imgc26_invite_image'),
+    path('imgc26/invite/pdf/', views.fls_invite_pdf_api, name='imgc26_invite_pdf'),
+
     # Media & Pages
     path('watch-live/', views.video_streaming, name='video_streaming'),
     path('listen-live/', views.audio_streaming, name='audio_streaming'),

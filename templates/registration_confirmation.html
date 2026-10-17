@@ -75,6 +75,19 @@
             </div>
         </div>
 
+        <!-- Invite Friends & Family Callout Banner -->
+        <div class="tcgc-invite-callout-card" style="background: linear-gradient(135deg, rgba(188, 17, 19, 0.15) 0%, rgba(212, 175, 55, 0.12) 100%); border: 1px solid rgba(212, 175, 55, 0.45); border-radius: 16px; padding: 24px; margin: 24px 0; text-align: center;">
+            <div style="font-size: 32px; margin-bottom: 6px;">💌</div>
+            <h3 style="font-family: 'Cinzel', serif; font-size: 22px; color: #D4AF37; margin: 0 0 8px; font-weight: 700;">Invite Friends &amp; Family to IMGC '26</h3>
+            <p style="color: #E2D3D6; font-size: 14px; max-width: 520px; margin: 0 auto 16px; line-height: 1.5;">
+                Generate a personalized invitation card with your name and invite friends and family to join you at the conference.
+            </p>
+            <a href="{% url 'imgc_invite' %}?from={{ reg.first_name|urlencode }}+{{ reg.surname|urlencode }}&phone={{ reg.phone_number|urlencode }}" class="tcgc-btn-complete-reg" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #BC1113 0%, #78101E 100%); border: 1px solid #D4AF37; box-shadow: 0 6px 20px rgba(188, 17, 19, 0.4); padding: 12px 28px; text-decoration: none; border-radius: 999px; color: #FFF; font-weight: 600;">
+                <span>Generate Your Personalized Invite</span>
+                <span class="tcgc-arrow-long">&#8594;</span>
+            </a>
+        </div>
+
         <!-- Mandatory WhatsApp Dispatch Notice if Camping or Meal Subscribed -->
         {% if reg.requires_code_dispatch and whatsapp_url %}
         <div class="tcgc-whatsapp-dispatch-card">
@@ -175,13 +188,16 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="tcgc-confirm-actions">
+        <div class="tcgc-confirm-actions" style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 32px;">
+            <a href="{% url 'imgc_invite' %}?from={{ reg.first_name|urlencode }}+{{ reg.surname|urlencode }}&phone={{ reg.phone_number|urlencode }}" class="tcgc-btn-complete-reg tcgc-btn-confirm-action" style="background: linear-gradient(135deg, #BC1113 0%, #78101E 100%); border: 1px solid #D4AF37;">
+                <span>Generate Invite Card</span>
+                <span class="tcgc-arrow-long">&#8594;</span>
+            </a>
             <button type="button" onclick="window.print()" class="tcgc-btn-outline-gold tcgc-btn-confirm-action">
                 <span>Print / Save Slip</span>
             </button>
-            <a href="{% url 'registration' %}" class="tcgc-btn-complete-reg tcgc-btn-confirm-action">
+            <a href="{% url 'registration' %}" class="tcgc-btn-outline-gold tcgc-btn-confirm-action" style="background: rgba(255,255,255,0.04);">
                 <span>Register Another Person</span>
-                <span class="tcgc-arrow-long">&#8594;</span>
             </a>
         </div>
     </div>
