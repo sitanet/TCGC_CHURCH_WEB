@@ -7,11 +7,10 @@ env/
 venv/
 .venv/
 staticfiles/
-*.png
-*.json
-scratch*
-inspect*
-dump*
-crop*
+/figma_*
+/crop_*
+/dump_*
+/inspect_*
+/scratch_*
 .DS_Store
 *.log
