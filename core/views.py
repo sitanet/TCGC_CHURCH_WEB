@@ -80,6 +80,38 @@ def _generate_imgc_code(attendance_mode, feeding_subscription):
             return code
 
 
+def _forward_registration_to_backend(payload):
+    """
+    Forwards an IMGC registration payload to the main TCGC_BACKEND running on port 8000
+    or via the public endpoint, storing it in PostgreSQL imgc_registrations table.
+    """
+    import requests
+    endpoints = [
+        'http://127.0.0.1:8000/api/v1/imgc/register/',
+        'http://127.0.0.1:8000/imgc/register/',
+        'https://tcgc.thecitygatechurch.org/api/v1/imgc/register/',
+        'https://tcgc.thecitygatechurch.org/imgc/register/',
+    ]
+    headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'TCGC-Website-Sync/1.0',
+    }
+    for url in endpoints:
+        try:
+            resp = requests.post(url, json=payload, headers=headers, timeout=4)
+            if resp.status_code in [200, 201]:
+                return resp.json()
+            elif resp.status_code == 400:
+                try:
+                    return resp.json()
+                except Exception:
+                    pass
+        except Exception as e:
+            logger.debug(f"[BACKEND_SYNC_FAIL] {url}: {e}")
+            continue
+    return None
+
+
 def _send_imgc_confirmation_email_sync(registration_id):
     """
     Send an automated HTML confirmation email to the attendee upon registration (runs in background thread).
@@ -632,8 +664,7 @@ def registration(request):
                 days_count = len(days_list) if days_list else 5
             calculated_amount = Decimal(days_count) * feeding_config.service_team_daily_cost
 
-        # Generate unique IMGC code & determine WhatsApp dispatch requirements
-        registration_code = _generate_imgc_code(attendance_mode, feeding_subscription)
+        # Determine WhatsApp dispatch requirements
         requires_dispatch = False
         target_phone = None
 
@@ -652,36 +683,94 @@ def registration(request):
             ip_address = request.META.get('REMOTE_ADDR')
         user_agent = request.META.get('HTTP_USER_AGENT', '')
 
-        reg_obj = ConferenceRegistration.objects.create(
+        # Forward registration to TCGC_BACKEND (PostgreSQL imgc_registrations on port 8000)
+        backend_payload = {
+            'surname': surname,
+            'first_name': first_name,
+            'email': email,
+            'phone_country_code': phone_country_code,
+            'phone_number': phone_number,
+            'gender': gender,
+            'age_range': age_range,
+            'designation': designation,
+            'other_designation': other_designation,
+            'city': city,
+            'state': state,
+            'country': country,
+            'is_first_time': 'yes' if is_first_time else 'no',
+            'attendance_mode': attendance_mode,
+            'feeding_subscription': feeding_subscription,
+            'feeding_days': feeding_days,
+            'special_notes': special_notes,
+            'amount_paid': float(calculated_amount),
+        }
+
+        backend_res = _forward_registration_to_backend(backend_payload)
+
+        # Check if backend reported duplicate
+        if backend_res and not backend_res.get('success') and backend_res.get('existing_code'):
+            existing_code = backend_res.get('existing_code')
+            dup_msg = backend_res.get('message') or f"You have already registered for IMGC 2026! Your code is {existing_code}."
+            errors['duplicate'] = dup_msg
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json':
+                return JsonResponse({
+                    'status': 'error',
+                    'success': False,
+                    'message': dup_msg,
+                    'errors': errors,
+                    'existing_code': existing_code,
+                    'redirect_url': reverse('registration_confirmation', kwargs={'registration_code': existing_code}),
+                }, status=400)
+            return render(request, 'registration.html', {
+                'active_page': 'events',
+                'errors': errors,
+                'form_data': request.POST,
+                'existing_code': existing_code,
+                'camping_phone': CAMPING_DISPATCH_PHONE,
+                'lunch_phone': LUNCH_DISPATCH_PHONE,
+                'service_team_daily_cost': feeding_config.service_team_daily_cost,
+            })
+
+        # Official registration code from backend if available, or generate local code
+        if backend_res and backend_res.get('registration_code'):
+            registration_code = backend_res['registration_code']
+        else:
+            registration_code = _generate_imgc_code(attendance_mode, feeding_subscription)
+
+        # Save or update local mirror in SQLite ConferenceRegistration
+        reg_obj, _ = ConferenceRegistration.objects.update_or_create(
             registration_code=registration_code,
-            surname=surname,
-            first_name=first_name,
-            email=email,
-            phone_country_code=phone_country_code,
-            phone_number=phone_number,
-            gender=gender,
-            age_range=age_range,
-            designation=designation,
-            other_designation=other_designation,
-            city=city,
-            state=state,
-            country=country,
-            is_first_time=is_first_time,
-            first_time_attending=is_first_time,
-            attendance_mode=attendance_mode,
-            feeding_subscription=feeding_subscription,
-            feeding_days=feeding_days,
-            amount_paid=calculated_amount,
-            expectation=special_notes,
-            special_notes=special_notes,
-            requires_code_dispatch=requires_dispatch,
-            dispatch_phone_target=target_phone,
-            ip_address=ip_address,
-            user_agent=user_agent,
+            defaults={
+                'surname': surname,
+                'first_name': first_name,
+                'email': email,
+                'phone_country_code': phone_country_code,
+                'phone_number': phone_number,
+                'gender': gender,
+                'age_range': age_range,
+                'designation': designation,
+                'other_designation': other_designation,
+                'city': city,
+                'state': state,
+                'country': country,
+                'is_first_time': is_first_time,
+                'first_time_attending': is_first_time,
+                'attendance_mode': attendance_mode,
+                'feeding_subscription': feeding_subscription,
+                'feeding_days': feeding_days,
+                'amount_paid': calculated_amount,
+                'expectation': special_notes,
+                'special_notes': special_notes,
+                'requires_code_dispatch': requires_dispatch,
+                'dispatch_phone_target': target_phone,
+                'ip_address': ip_address,
+                'user_agent': user_agent,
+            }
         )
 
-        # Send automated confirmation email in background thread
-        _send_imgc_confirmation_email(reg_obj)
+        # Send automated confirmation email if backend was not reachable
+        if not backend_res or not backend_res.get('success'):
+            _send_imgc_confirmation_email(reg_obj)
 
         confirmation_url = reverse('registration_confirmation', kwargs={'registration_code': reg_obj.registration_code})
 
