@@ -48,11 +48,11 @@
 <!-- MAIN TESTIMONY CARD SECTION -->
 <section class="tcgc-reg-card-section" style="margin-top: -190px; padding-bottom: 120px;">
     <div class="tcgc-testimony-card">
-        <div class="text-center mb-4">
-            <div class="tcgc-form-logo-wrap mb-3">
-                <img src="{% static 'images/logo_dark.png' %}?v=2" alt="The CityGate Church" class="tcgc-form-logo" style="height: 62px; width: auto; object-fit: contain;">
+        <div class="tcgc-testimony-header">
+            <div class="tcgc-form-logo-wrap">
+                <img src="{% static 'images/logo_dark.png' %}?v=2" alt="The CityGate Church" class="tcgc-form-logo">
             </div>
-            <h2 class="tcgc-testimony-card-title mb-2">What Has God Done For You?</h2>
+            <h2 class="tcgc-testimony-card-title">What Has God Done For You?</h2>
             <p class="tcgc-testimony-card-desc">Every testimony is a weapon of victory. Your story will inspire faith in someone today.</p>
         </div>
 
@@ -297,13 +297,41 @@
     }
 }
 
+.tcgc-testimony-header {
+    text-align: center;
+    margin-bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.tcgc-form-logo-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.tcgc-form-logo {
+    height: 64px;
+    width: auto;
+    max-width: 220px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
 .tcgc-testimony-card-title {
     font-family: var(--font-display, 'Lora', serif);
     font-weight: 700;
     font-size: 32px;
     line-height: 1.25;
     color: var(--color-crimson, #980E03);
-    margin: 8px 0;
+    margin: 0 0 10px;
     text-align: center;
 }
 
