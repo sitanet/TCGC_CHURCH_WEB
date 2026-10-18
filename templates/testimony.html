@@ -5,7 +5,7 @@
 
 {% block content %}
 <!-- TESTIMONY HERO SECTION (Animated Background) -->
-<section class="tcgc-reg-hero" style="background-image: url('{% static 'images/reg_hero_bg_anim.webp' %}'), url('{% static 'images/reg_hero_bg.gif' %}');">
+<section class="tcgc-reg-hero" style="background-image: url('{% static 'images/reg_hero_bg_anim.webp' %}'), url('{% static 'images/reg_hero_bg.gif' %}'); height: 560px;">
     <div class="tcgc-reg-hero-overlay"></div>
 
     <!-- Header / Navbar -->
@@ -34,7 +34,7 @@
     </header>
 
     <!-- Hero Title & Subtitle -->
-    <div class="tcgc-reg-hero-content">
+    <div class="tcgc-reg-hero-content" style="margin-top: 50px;">
         <h1 class="tcgc-reg-hero-title">
             PRAISE REPORTS &amp;<br>
             TESTIMONIES
@@ -47,66 +47,66 @@
 </section>
 
 <!-- MAIN TESTIMONY CARD SECTION -->
-<section class="tcgc-reg-card-section">
-    <div class="tcgc-reg-card" style="max-width: 820px;">
+<section class="tcgc-reg-card-section" style="margin-top: -190px; padding-bottom: 120px;">
+    <div class="tcgc-testimony-card">
         <div class="text-center mb-4">
             <span class="tcgc-testimony-pill"><i class="bi bi-chat-heart-fill me-1"></i> SHARE YOUR PRAISE REPORT</span>
-            <h2 class="tcgc-reg-card-heading mt-2 mb-1" style="font-size: 28px;">What Has God Done For You?</h2>
-            <p class="text-muted" style="font-size: 14px;">Every testimony is a weapon of victory. Your story will inspire faith in someone today.</p>
+            <h2 class="tcgc-testimony-card-title mt-2 mb-2">What Has God Done For You?</h2>
+            <p class="tcgc-testimony-card-desc">Every testimony is a weapon of victory. Your story will inspire faith in someone today.</p>
         </div>
 
         {% if submitted or success_message %}
         <div class="tcgc-testimony-success-box">
             <div class="tcgc-success-icon-wrap">
-                <i class="bi bi-check2-circle"></i>
+                &#10003;
             </div>
             <h3 class="tcgc-success-title">Glory to God!</h3>
             <p class="tcgc-success-desc">{{ success_message|default:"Your testimony has been received with great joy and will be reviewed by the pastoral leadership." }}</p>
-            <div class="mt-4 d-flex justify-content-center gap-3">
+            <div class="mt-4" style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
                 <a href="{% url 'testimony' %}" class="tcgc-btn-gold-action">
-                    <i class="bi bi-plus-circle me-1"></i> Share Another Testimony
+                    <span>&#43;</span> Share Another Testimony
                 </a>
                 <a href="{% url 'home' %}" class="tcgc-btn-outline-action">
-                    <i class="bi bi-house me-1"></i> Return Home
+                    Return Home
                 </a>
             </div>
         </div>
         {% else %}
 
-        <form action="{% url 'testimony' %}" method="POST" id="testimony-form" class="tcgc-reg-form">
+        <form action="{% url 'testimony' %}" method="POST" id="testimony-form" class="tcgc-testimony-form">
             {% csrf_token %}
 
             <!-- 1. Personal Details -->
-            <div class="tcgc-reg-group">
+            <div class="tcgc-testimony-group">
                 <h3 class="tcgc-reg-section-title">1. Your Details</h3>
-                <div class="tcgc-reg-grid-2">
-                    <div class="tcgc-reg-field">
+                <div class="tcgc-testimony-grid-2">
+                    <div class="tcgc-testimony-field">
                         <label for="id_full_name">Full Name<span class="tcgc-req">*</span></label>
-                        <input type="text" id="id_full_name" name="full_name" value="{{ form_data.full_name|default:'' }}" placeholder="e.g. Sister Deborah Adeleke" required class="tcgc-reg-input">
+                        <input type="text" id="id_full_name" name="full_name" value="{{ form_data.full_name|default:'' }}" placeholder="e.g. Sister Deborah Adeleke" required class="tcgc-testimony-input">
                         {% if errors.full_name %}<p class="tcgc-field-error">{{ errors.full_name }}</p>{% endif %}
                     </div>
-                    <div class="tcgc-reg-field">
+                    <div class="tcgc-testimony-field">
                         <label for="id_phone">WhatsApp / Phone Number</label>
-                        <input type="tel" id="id_phone" name="phone_number" value="{{ form_data.phone_number|default:'' }}" placeholder="e.g. +234 801 234 5678" class="tcgc-reg-input">
+                        <input type="tel" id="id_phone" name="phone_number" value="{{ form_data.phone_number|default:'' }}" placeholder="e.g. +234 801 234 5678" class="tcgc-testimony-input">
                     </div>
                 </div>
 
-                <div class="tcgc-reg-grid-2">
-                    <div class="tcgc-reg-field">
-                        <label for="id_email">Email Address <small class="text-muted" style="font-weight: normal;">(Optional for confirmation)</small></label>
-                        <input type="email" id="id_email" name="email" value="{{ form_data.email|default:'' }}" placeholder="e.g. yourname@example.com" class="tcgc-reg-input">
+                <div class="tcgc-testimony-grid-2">
+                    <div class="tcgc-testimony-field">
+                        <label for="id_email">Email Address <span class="tcgc-optional-hint">(Optional)</span></label>
+                        <input type="email" id="id_email" name="email" value="{{ form_data.email|default:'' }}" placeholder="e.g. yourname@example.com" class="tcgc-testimony-input">
                     </div>
-                    <div class="tcgc-reg-field">
+                    <div class="tcgc-testimony-field">
                         <label for="id_city">City &amp; Country</label>
-                        <input type="text" id="id_city" name="city" value="{{ form_data.city|default:'' }}" placeholder="e.g. Ibadan, Nigeria" class="tcgc-reg-input">
+                        <input type="text" id="id_city" name="city" value="{{ form_data.city|default:'' }}" placeholder="e.g. Ibadan, Nigeria" class="tcgc-testimony-input">
                     </div>
                 </div>
             </div>
 
             <!-- 2. Testimony Category -->
-            <div class="tcgc-reg-group">
+            <div class="tcgc-testimony-group">
                 <h3 class="tcgc-reg-section-title">2. Category of Testimony</h3>
-                <p class="text-muted small mb-3">Choose the category that best describes your praise report:</p>
+                <p class="tcgc-section-hint">Choose the category that best describes your praise report:</p>
                 <div class="tcgc-cat-grid">
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="healing" {% if form_data.category == 'healing' %}checked{% endif %}>
@@ -168,26 +168,26 @@
             </div>
 
             <!-- 3. The Story -->
-            <div class="tcgc-reg-group">
+            <div class="tcgc-testimony-group">
                 <h3 class="tcgc-reg-section-title">3. Your Testimony Story</h3>
-                <div class="tcgc-reg-field mb-3">
+                <div class="tcgc-testimony-field" style="margin-bottom: 24px;">
                     <label for="id_title">Headline / Title of Testimony<span class="tcgc-req">*</span></label>
-                    <input type="text" id="id_title" name="title" value="{{ form_data.title|default:'' }}" placeholder="e.g. Healed of Chronic Pain during Sunday Service" required class="tcgc-reg-input">
+                    <input type="text" id="id_title" name="title" value="{{ form_data.title|default:'' }}" placeholder="e.g. Healed of Chronic Pain during Sunday Service" required class="tcgc-testimony-input">
                     {% if errors.title %}<p class="tcgc-field-error">{{ errors.title }}</p>{% endif %}
                 </div>
 
-                <div class="tcgc-reg-field">
+                <div class="tcgc-testimony-field">
                     <label for="id_content">Detailed Story (What God did, when, and how)<span class="tcgc-req">*</span></label>
-                    <textarea id="id_content" name="content" rows="6" placeholder="Please describe what happened, the intervention of God, and how your faith was rewarded..." required class="tcgc-reg-textarea">{{ form_data.content|default:'' }}</textarea>
-                    <small class="text-muted d-block mt-1">Please be as specific as possible so readers can give all glory to God.</small>
+                    <textarea id="id_content" name="content" rows="6" placeholder="Please describe what happened, the intervention of God, and how your faith was rewarded..." required class="tcgc-testimony-textarea">{{ form_data.content|default:'' }}</textarea>
+                    <small class="tcgc-field-hint">Please be as specific as possible so readers can give all glory to God.</small>
                     {% if errors.content %}<p class="tcgc-field-error">{{ errors.content }}</p>{% endif %}
                 </div>
             </div>
 
             <!-- 4. Sharing Preferences -->
-            <div class="tcgc-reg-group">
+            <div class="tcgc-testimony-group">
                 <h3 class="tcgc-reg-section-title">4. Sharing Preference</h3>
-                <p class="text-muted small mb-3">How would you like this testimony to be shared?</p>
+                <p class="tcgc-section-hint">How would you like this testimony to be shared?</p>
                 <div class="tcgc-share-options">
                     <label class="tcgc-share-pill">
                         <input type="radio" name="share_preference" value="public" {% if not form_data.share_preference or form_data.share_preference == 'public' %}checked{% endif %}>
@@ -225,8 +225,8 @@
             </div>
 
             <!-- Submit Button -->
-            <div class="tcgc-reg-submit-wrap mt-4">
-                <button type="submit" id="testimonySubmitBtn" class="tcgc-btn-submit">
+            <div class="tcgc-reg-submit-row" style="display: flex; justify-content: center; margin-top: 40px;">
+                <button type="submit" id="testimonySubmitBtn" class="tcgc-btn-complete-reg" style="max-width: 520px; width: 100%; border: none;">
                     <span>Submit Praise Report</span>
                     <span class="tcgc-arrow-long">&#8594;</span>
                 </button>
@@ -238,28 +238,33 @@
 
 <!-- APPROVED TESTIMONIES SHOWCASE SECTION (If Any) -->
 {% if featured_testimonies %}
-<section class="tcgc-testimony-showcase-section py-5">
-    <div class="container text-center mb-5">
+<section class="tcgc-testimony-showcase-section py-5" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
+    <div class="container text-center mb-5" style="max-width: 800px; margin: 0 auto;">
         <span class="tcgc-testimony-pill"><i class="bi bi-stars me-1"></i> PRAISE ARCHIVE</span>
-        <h2 class="tcgc-events-heading mt-2">RECENT ACTS OF GOD</h2>
-        <p class="text-muted" style="max-width: 600px; margin: 0 auto;">Read how God is moving powerfully among His people at The CityGate Church.</p>
+        <h2 class="tcgc-events-heading mt-2" style="font-family: var(--font-display, serif); font-size: 36px; color: var(--color-crimson, #980E03);">RECENT ACTS OF GOD</h2>
+        <p class="text-muted" style="max-width: 600px; margin: 0 auto; font-size: 15px;">Read how God is moving powerfully among His people at The CityGate Church.</p>
     </div>
-    <div class="container">
-        <div class="row g-4 justify-content-center">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="row g-4 justify-content-center" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
             {% for item in featured_testimonies %}
-            <div class="col-lg-4 col-md-6">
+            <div>
                 <div class="tcgc-testimony-feed-card h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                         <span class="tcgc-feed-cat">{{ item.get_category_display }}</span>
-                        <span class="text-muted small">{{ item.created_at|date:"M d, Y" }}</span>
+                        <span style="font-size: 12px; color: #64748B;">{{ item.created_at|date:"M d, Y" }}</span>
                     </div>
                     <h4 class="tcgc-feed-title">{{ item.title }}</h4>
                     <p class="tcgc-feed-body">{{ item.content|truncatechars:200 }}</p>
-                    <div class="tcgc-feed-author mt-auto pt-3 border-top">
-                        <span class="tcgc-author-avatar"><i class="bi bi-person-fill"></i></span>
+                    <div class="tcgc-feed-author" style="margin-top: auto; padding-top: 14px; border-top: 1px solid #F1F5F9;">
+                        <span class="tcgc-author-avatar">&#128100;</span>
                         <div class="tcgc-author-meta">
-                            <strong>{{ item.display_author }}</strong>
-                            {% if item.city %}<small class="d-block text-muted">{{ item.city }}</small>{% endif %}
+                            {% if item.share_preference == 'anonymous' %}
+                                <strong>A Grateful Saint</strong>
+                                <small style="color: #64748B; font-size: 11px;">Anonymous</small>
+                            {% else %}
+                                <strong>{{ item.full_name }}</strong>
+                                {% if item.city %}<small style="color: #64748B; font-size: 11px;">{{ item.city }}</small>{% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -271,29 +276,170 @@
 {% endif %}
 
 <style>
-/* Custom Testimony Form Styles */
-.tcgc-testimony-pill {
-    display: inline-block;
-    padding: 6px 16px;
-    background: #FDF2F4;
-    color: #8B1E2E;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border: 1px solid rgba(139, 30, 46, 0.2);
+/* ==========================================================================
+   TESTIMONY FORM DEDICATED ALIGNMENT & STYLING
+   ========================================================================== */
+.tcgc-testimony-card {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    padding: 60px 64px 72px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+    border-radius: 12px;
 }
 
+@media (max-width: 992px) {
+    .tcgc-testimony-card {
+        padding: 44px 36px 56px;
+    }
+}
+
+@media (max-width: 600px) {
+    .tcgc-testimony-card {
+        padding: 32px 18px 44px;
+        box-shadow: none;
+        border-radius: 0;
+    }
+}
+
+.tcgc-testimony-card-title {
+    font-family: var(--font-display, 'Lora', serif);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 1.25;
+    color: var(--color-crimson, #980E03);
+    margin: 8px 0;
+    text-align: center;
+}
+
+.tcgc-testimony-card-desc {
+    font-family: var(--font-serif, 'Lora', serif);
+    font-size: 15px;
+    color: #64748B;
+    margin: 0 auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+.tcgc-testimony-group {
+    width: 100%;
+    margin-bottom: 44px;
+}
+
+.tcgc-section-hint {
+    font-size: 13.5px;
+    color: #64748B;
+    margin-bottom: 14px;
+}
+
+/* 2-Column Responsive Grid */
+.tcgc-testimony-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .tcgc-testimony-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+}
+
+.tcgc-testimony-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tcgc-testimony-field label {
+    display: block;
+    font-family: var(--font-serif, 'Lora', serif);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--color-dark, #1C1C1C);
+    margin-bottom: 8px;
+}
+
+.tcgc-optional-hint {
+    font-size: 13px;
+    font-weight: normal;
+    color: #94A3B8;
+}
+
+.tcgc-field-hint {
+    font-size: 13px;
+    color: #94A3B8;
+    margin-top: 6px;
+    display: block;
+}
+
+.tcgc-testimony-input,
+.tcgc-testimony-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-input-gray, #F7F7F7);
+    border: 1.5px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0 18px;
+    font-size: 16px;
+    color: var(--color-dark, #1C1C1C);
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+    outline: none;
+}
+
+.tcgc-testimony-input {
+    height: 56px;
+}
+
+.tcgc-testimony-textarea {
+    min-height: 160px;
+    padding: 16px 18px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.tcgc-testimony-input:focus,
+.tcgc-testimony-textarea:focus {
+    background-color: #FFFFFF;
+    border-color: #8B1E2E;
+    box-shadow: 0 0 0 3px rgba(139, 30, 46, 0.12);
+}
+
+.tcgc-testimony-input::placeholder,
+.tcgc-testimony-textarea::placeholder {
+    color: rgba(28, 28, 28, 0.35);
+}
+
+/* Category Grid */
 .tcgc-cat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 576px) {
+    .tcgc-cat-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
 }
 
 .tcgc-cat-card {
     cursor: pointer;
     margin: 0;
+    user-select: none;
 }
 
 .tcgc-cat-card input {
@@ -309,17 +455,21 @@
     border: 1.5px solid #E2E8F0;
     border-radius: 10px;
     transition: all 0.2s ease;
+    min-height: 52px;
+    box-sizing: border-box;
 }
 
 .tcgc-cat-icon {
     font-size: 18px;
     line-height: 1;
+    flex-shrink: 0;
 }
 
 .tcgc-cat-name {
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 600;
     color: #334155;
+    line-height: 1.3;
 }
 
 .tcgc-cat-card input:checked + .tcgc-cat-content {
@@ -333,15 +483,19 @@
     font-weight: 700;
 }
 
+/* Sharing Preferences */
 .tcgc-share-options {
     display: grid;
     grid-template-columns: 1fr;
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .tcgc-share-pill {
     cursor: pointer;
     margin: 0;
+    user-select: none;
 }
 
 .tcgc-share-pill input {
@@ -349,18 +503,19 @@
 }
 
 .tcgc-share-card {
-    padding: 16px 18px;
+    padding: 16px 20px;
     background: #F8FAFC;
     border: 1.5px solid #E2E8F0;
-    border-radius: 12px;
+    border-radius: 10px;
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .tcgc-share-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 14px;
+    gap: 12px;
+    font-size: 15px;
     color: #1E293B;
     margin-bottom: 4px;
 }
@@ -372,6 +527,7 @@
     border: 2px solid #CBD5E1;
     display: inline-block;
     position: relative;
+    flex-shrink: 0;
     transition: all 0.2s;
 }
 
@@ -398,38 +554,60 @@
 }
 
 .tcgc-share-desc {
-    margin: 0 0 0 28px;
-    font-size: 12.5px;
+    margin: 0 0 0 30px;
+    font-size: 13px;
     color: #64748B;
-    line-height: 1.4;
+    line-height: 1.45;
+}
+
+/* Badge Pill */
+.tcgc-testimony-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    background: #FDF2F4;
+    color: #8B1E2E;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid rgba(139, 30, 46, 0.2);
 }
 
 /* Success Box */
 .tcgc-testimony-success-box {
     text-align: center;
-    padding: 40px 20px;
+    padding: 48px 24px;
     background: #F0FDF4;
     border: 1.5px solid #86EFAC;
     border-radius: 16px;
 }
 
 .tcgc-success-icon-wrap {
-    font-size: 56px;
-    color: #16A34A;
-    line-height: 1;
-    margin-bottom: 16px;
+    width: 64px;
+    height: 64px;
+    line-height: 64px;
+    background: #22C55E;
+    color: #FFFFFF;
+    border-radius: 50%;
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tcgc-success-title {
-    font-family: 'Cinzel', serif;
-    font-size: 26px;
-    font-weight: 800;
+    font-family: var(--font-display, serif);
+    font-size: 28px;
+    font-weight: 700;
     color: #166534;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .tcgc-success-desc {
-    font-size: 15px;
+    font-size: 15.5px;
     color: #15803D;
     max-width: 520px;
     margin: 0 auto;
@@ -439,7 +617,7 @@
 .tcgc-btn-gold-action {
     background: #8B1E2E;
     color: #FFFFFF;
-    padding: 12px 24px;
+    padding: 12px 28px;
     border-radius: 30px;
     font-weight: 700;
     font-size: 14px;
@@ -457,25 +635,32 @@
 .tcgc-btn-outline-action {
     background: #FFFFFF;
     color: #334155;
-    padding: 12px 24px;
+    padding: 12px 28px;
     border-radius: 30px;
     font-weight: 600;
     font-size: 14px;
     text-decoration: none;
     border: 1px solid #CBD5E1;
     display: inline-block;
+    transition: all 0.2s;
+}
+
+.tcgc-btn-outline-action:hover {
+    background: #F8FAFC;
+    color: #0F172A;
 }
 
 /* Feed Cards */
 .tcgc-testimony-feed-card {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
-    border-radius: 16px;
+    border-radius: 14px;
     padding: 24px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 16px rgba(0,0,0,0.04);
     transition: transform 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
 }
 
 .tcgc-testimony-feed-card:hover {
@@ -524,6 +709,7 @@
     align-items: center;
     justify-content: center;
     font-size: 18px;
+    flex-shrink: 0;
 }
 
 .tcgc-author-meta strong {
@@ -542,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('testimonySubmitBtn');
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '<span>Submitting Praise Report...</span><i class="bi bi-arrow-repeat spin ms-2"></i>';
+            btn.innerHTML = '<span>Submitting Praise Report...</span>';
         }
     });
 });
