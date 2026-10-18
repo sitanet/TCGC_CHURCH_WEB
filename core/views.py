@@ -1002,7 +1002,7 @@ def fls_invite_view(request):
         wa_text = (
             f"{salutation}"
             f"You are warmly invited by *{inviter}*{contact_suffix} to *Image & Glory Conference '26* "
-            f"(Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n"
+            f"(Theme: *The Rise of True Worshippers (Building God's House and place of rest)*) at The CityGate Church!\n\n"
             f"📅 Date: 23rd–29th November, 2026\n"
             f"📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n"
         )
@@ -1017,7 +1017,7 @@ def fls_invite_view(request):
         wa_text = (
             f"{salutation}"
             f"You are cordially invited to *Image & Glory Conference '26* "
-            f"(Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n"
+            f"(Theme: *The Rise of True Worshippers (Building God's House and place of rest)*) at The CityGate Church!\n\n"
             f"📅 Date: 23rd–29th November, 2026\n"
             f"📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n\n"
             f"Tap the link below to view and download your personalized invitation card:\n"

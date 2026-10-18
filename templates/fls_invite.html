@@ -6,17 +6,17 @@
   <title>{{ page_title }}</title>
   
   <!-- SEO & Social OpenGraph Meta Tags for Instant WhatsApp Previews -->
-  <meta name="description" content="Official invitation to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church. 23rd–29th November, 2026. Tap to view and customize your invitation card.">
+  <meta name="description" content="Official invitation to Image & Glory Conference '26 (Theme: The Rise of True Worshippers (Building God's House and place of rest)) at The CityGate Church. 23rd–29th November, 2026. Tap to view and customize your invitation card.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Official Invitation for {{ display_name }} | Image & Glory Conference '26">
-  <meta property="og:description" content="You are cordially invited to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church, Ibadan. Tap to view your customized invitation card.">
+  <meta property="og:description" content="You are cordially invited to Image & Glory Conference '26 (Theme: The Rise of True Worshippers (Building God's House and place of rest)) at The CityGate Church, Ibadan. Tap to view your customized invitation card.">
   <meta property="og:image" content="{{ image_url }}">
   <meta property="og:image:width" content="767">
   <meta property="og:image:height" content="1024">
   <meta property="og:url" content="{{ share_url }}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Official Invitation for {{ display_name }} | Image & Glory '26">
-  <meta name="twitter:description" content="Personalized Invitation to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church.">
+  <meta name="twitter:description" content="Personalized Invitation to Image & Glory Conference '26 (Theme: The Rise of True Worshippers (Building God's House and place of rest)) at The CityGate Church.">
   <meta name="twitter:image" content="{{ image_url }}">
   <meta name="theme-color" content="#811A19">
   <link rel="icon" type="image/png" href="{% static 'images/tcgc_logo.png' %}">
@@ -659,7 +659,7 @@
     <!-- Header Section -->
     <header>
       <h1 class="event-title">Image & Glory Conference '26</h1>
-      <p class="event-theme">Theme: <span>A Call to Worship: Becoming God's House</span></p>
+      <p class="event-theme">Theme: <span>The Rise of True Worshippers (Building God's House and place of rest)</span></p>
       
       <div class="event-meta-bar">
         <div><i class="fa-regular fa-calendar-check"></i> 23rd – 29th November, 2026</div>
@@ -1005,13 +1005,13 @@
       let waMsg = '';
       if (currentInviter.trim()) {
         const contactSuffix = currentPhone.trim() ? ` (${currentPhone.trim()})` : '';
-        waMsg = `${salutation}You are warmly invited by *${currentInviter.trim()}*${contactSuffix} to *Image & Glory Conference '26* (Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n📅 Date: 23rd–29th November, 2026\n📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n`;
+        waMsg = `${salutation}You are warmly invited by *${currentInviter.trim()}*${contactSuffix} to *Image & Glory Conference '26* (Theme: *The Rise of True Worshippers (Building God's House and place of rest)*) at The CityGate Church!\n\n📅 Date: 23rd–29th November, 2026\n📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n`;
         if (currentPhone.trim()) {
           waMsg += `📞 Enquiries / RSVP: ${currentPhone.trim()}\n`;
         }
         waMsg += `\nHere is your official personalized invitation card:\n${fullShareUrl}\n\nWe look forward to fellowshipping with you. God bless you!`;
       } else {
-        waMsg = `${salutation}You are cordially invited to *Image & Glory Conference '26* (Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n📅 Date: 23rd–29th November, 2026\n📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n\nTap the link below to view and download your personalized invitation card:\n${fullShareUrl}\n\nGod bless you!`;
+        waMsg = `${salutation}You are cordially invited to *Image & Glory Conference '26* (Theme: *The Rise of True Worshippers (Building God's House and place of rest)*) at The CityGate Church!\n\n📅 Date: 23rd–29th November, 2026\n📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n\nTap the link below to view and download your personalized invitation card:\n${fullShareUrl}\n\nGod bless you!`;
       }
 
       const waUrl = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
@@ -1142,7 +1142,7 @@
       if (navigator.share) {
         navigator.share({
           title: cleanName ? `Official Invitation for ${cleanName} | Image & Glory Conference '26` : `Official Invitation | Image & Glory Conference '26`,
-          text: `You are cordially invited to Image & Glory Conference '26 (Theme: A Call to Worship: Becoming God's House) at The CityGate Church!`,
+          text: `You are cordially invited to Image & Glory Conference '26 (Theme: The Rise of True Worshippers (Building God's House and place of rest)) at The CityGate Church!`,
           url: shareUrl
         }).catch(() => {});
       } else {
