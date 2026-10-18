@@ -49,7 +49,7 @@
 <section class="tcgc-reg-card-section" style="margin-top: -190px; padding-bottom: 120px;">
     <div class="tcgc-testimony-card">
         <div class="text-center mb-4">
-            <span class="tcgc-testimony-pill"><i class="bi bi-chat-heart-fill me-1"></i> SHARE YOUR TESTIMONY</span>
+            <span class="tcgc-testimony-pill">SHARE YOUR TESTIMONY</span>
             <h2 class="tcgc-testimony-card-title mt-2 mb-2">What Has God Done For You?</h2>
             <p class="tcgc-testimony-card-desc">Every testimony is a weapon of victory. Your story will inspire faith in someone today.</p>
         </div>
@@ -110,56 +110,48 @@
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="healing" {% if form_data.category == 'healing' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">🩺</span>
                             <span class="tcgc-cat-name">Healing &amp; Miracle</span>
                         </div>
                     </label>
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="breakthrough" {% if form_data.category == 'breakthrough' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">💰</span>
                             <span class="tcgc-cat-name">Financial Breakthrough</span>
                         </div>
                     </label>
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="salvation" {% if form_data.category == 'salvation' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">✝️</span>
                             <span class="tcgc-cat-name">Salvation &amp; Growth</span>
                         </div>
                     </label>
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="family" {% if form_data.category == 'family' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">🏡</span>
                             <span class="tcgc-cat-name">Family &amp; Marriage</span>
                         </div>
                     </label>
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="career" {% if form_data.category == 'career' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">🎓</span>
                             <span class="tcgc-cat-name">Career &amp; Academics</span>
                         </div>
                     </label>
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="deliverance" {% if form_data.category == 'deliverance' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">🛡️</span>
                             <span class="tcgc-cat-name">Deliverance &amp; Victory</span>
                         </div>
                     </label>
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="childbirth" {% if form_data.category == 'childbirth' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">👶</span>
                             <span class="tcgc-cat-name">Fruit of the Womb</span>
                         </div>
                     </label>
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="general" {% if not form_data.category or form_data.category == 'general' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
-                            <span class="tcgc-cat-icon">🙌</span>
                             <span class="tcgc-cat-name">General Thanksgiving</span>
                         </div>
                     </label>
@@ -239,7 +231,7 @@
 {% if featured_testimonies %}
 <section class="tcgc-testimony-showcase-section py-5" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
     <div class="container text-center mb-5" style="max-width: 800px; margin: 0 auto;">
-        <span class="tcgc-testimony-pill"><i class="bi bi-stars me-1"></i> TESTIMONY ARCHIVE</span>
+        <span class="tcgc-testimony-pill">TESTIMONY ARCHIVE</span>
         <h2 class="tcgc-events-heading mt-2" style="font-family: var(--font-display, serif); font-size: 36px; color: var(--color-crimson, #980E03);">RECENT ACTS OF GOD</h2>
         <p class="text-muted" style="max-width: 600px; margin: 0 auto; font-size: 15px;">Read how God is moving powerfully among His people at The CityGate Church.</p>
     </div>
@@ -448,24 +440,19 @@
 .tcgc-cat-content {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
+    justify-content: center;
+    text-align: center;
+    padding: 14px 16px;
     background: #F8FAFC;
     border: 1.5px solid #E2E8F0;
     border-radius: 10px;
     transition: all 0.2s ease;
-    min-height: 52px;
+    min-height: 50px;
     box-sizing: border-box;
 }
 
-.tcgc-cat-icon {
-    font-size: 18px;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
 .tcgc-cat-name {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 600;
     color: #334155;
     line-height: 1.3;
