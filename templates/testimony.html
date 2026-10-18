@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Praise Reports & Testimonies — The CityGate Church{% endblock %}
+{% block title %}Testimonies — The CityGate Church{% endblock %}
 
 {% block content %}
 <!-- TESTIMONY HERO SECTION (Animated Background) -->
@@ -36,7 +36,6 @@
     <!-- Hero Title & Subtitle -->
     <div class="tcgc-reg-hero-content" style="margin-top: 50px;">
         <h1 class="tcgc-reg-hero-title">
-            PRAISE REPORTS &amp;<br>
             TESTIMONIES
         </h1>
         <p class="tcgc-reg-hero-subtitle">
@@ -50,7 +49,7 @@
 <section class="tcgc-reg-card-section" style="margin-top: -190px; padding-bottom: 120px;">
     <div class="tcgc-testimony-card">
         <div class="text-center mb-4">
-            <span class="tcgc-testimony-pill"><i class="bi bi-chat-heart-fill me-1"></i> SHARE YOUR PRAISE REPORT</span>
+            <span class="tcgc-testimony-pill"><i class="bi bi-chat-heart-fill me-1"></i> SHARE YOUR TESTIMONY</span>
             <h2 class="tcgc-testimony-card-title mt-2 mb-2">What Has God Done For You?</h2>
             <p class="tcgc-testimony-card-desc">Every testimony is a weapon of victory. Your story will inspire faith in someone today.</p>
         </div>
@@ -106,7 +105,7 @@
             <!-- 2. Testimony Category -->
             <div class="tcgc-testimony-group">
                 <h3 class="tcgc-reg-section-title">2. Category of Testimony</h3>
-                <p class="tcgc-section-hint">Choose the category that best describes your praise report:</p>
+                <p class="tcgc-section-hint">Choose the category that best describes your testimony:</p>
                 <div class="tcgc-cat-grid">
                     <label class="tcgc-cat-card">
                         <input type="radio" name="category" value="healing" {% if form_data.category == 'healing' %}checked{% endif %}>
@@ -161,7 +160,7 @@
                         <input type="radio" name="category" value="general" {% if not form_data.category or form_data.category == 'general' %}checked{% endif %}>
                         <div class="tcgc-cat-content">
                             <span class="tcgc-cat-icon">🙌</span>
-                            <span class="tcgc-cat-name">General Praise</span>
+                            <span class="tcgc-cat-name">General Thanksgiving</span>
                         </div>
                     </label>
                 </div>
@@ -227,7 +226,7 @@
             <!-- Submit Button -->
             <div class="tcgc-reg-submit-row" style="display: flex; justify-content: center; margin-top: 40px;">
                 <button type="submit" id="testimonySubmitBtn" class="tcgc-btn-complete-reg" style="max-width: 520px; width: 100%; border: none;">
-                    <span>Submit Praise Report</span>
+                    <span>Submit Testimony</span>
                     <span class="tcgc-arrow-long">&#8594;</span>
                 </button>
             </div>
@@ -240,7 +239,7 @@
 {% if featured_testimonies %}
 <section class="tcgc-testimony-showcase-section py-5" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
     <div class="container text-center mb-5" style="max-width: 800px; margin: 0 auto;">
-        <span class="tcgc-testimony-pill"><i class="bi bi-stars me-1"></i> PRAISE ARCHIVE</span>
+        <span class="tcgc-testimony-pill"><i class="bi bi-stars me-1"></i> TESTIMONY ARCHIVE</span>
         <h2 class="tcgc-events-heading mt-2" style="font-family: var(--font-display, serif); font-size: 36px; color: var(--color-crimson, #980E03);">RECENT ACTS OF GOD</h2>
         <p class="text-muted" style="max-width: 600px; margin: 0 auto; font-size: 15px;">Read how God is moving powerfully among His people at The CityGate Church.</p>
     </div>
@@ -728,7 +727,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('testimonySubmitBtn');
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '<span>Submitting Praise Report...</span>';
+            btn.innerHTML = '<span>Submitting Testimony...</span>';
         }
     });
 });
