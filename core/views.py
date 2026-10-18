@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import ConferenceRegistration, IMGCFeedingConfig, OnlineGiving, NewsletterSubscriber
+from .models import ConferenceRegistration, IMGCFeedingConfig, OnlineGiving, NewsletterSubscriber, Testimony
 
 logger = logging.getLogger(__name__)
 
@@ -1097,3 +1097,140 @@ def fls_invite_pdf_api(request):
     response = HttpResponse(buf.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
+
+
+# ============================================================================
+# PRAISE REPORTS & TESTIMONIES VIEW
+# ============================================================================
+
+def testimony_view(request):
+    """
+    Public Praise Reports & Testimonies Page.
+    Allows church members and visitors to share what God has done.
+    Saves directly to PostgreSQL tcgc_db and synchronizes with TCGC_BACKEND dashboard.
+    """
+    import requests
+
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        phone_number = request.POST.get('phone_number', '').strip()
+        city = request.POST.get('city', '').strip()
+        state = request.POST.get('state', '').strip()
+        country = request.POST.get('country', 'Nigeria').strip() or 'Nigeria'
+        category = request.POST.get('category', 'general').strip()
+        title = request.POST.get('title', '').strip()
+        content = request.POST.get('content', '').strip()
+        share_preference = request.POST.get('share_preference', 'public').strip()
+
+        errors = {}
+        if not full_name:
+            errors['full_name'] = 'Please enter your full name.'
+        if not title:
+            errors['title'] = 'Please provide a title or headline for your testimony.'
+        if not content:
+            errors['content'] = 'Please write your testimony story.'
+        elif len(content) < 15:
+            errors['content'] = 'Please provide a more detailed testimony story (at least 15 characters).'
+
+        if errors:
+            first_err = next(iter(errors.values()))
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json':
+                return JsonResponse({'status': 'error', 'success': False, 'errors': errors, 'message': first_err}, status=400)
+            return render(request, 'testimony.html', {
+                'active_page': 'testimony',
+                'errors': errors,
+                'form_data': request.POST,
+                'category_choices': Testimony.CATEGORY_CHOICES,
+                'share_choices': Testimony.SHARE_CHOICES,
+            })
+
+        # Client IP
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip_address = x_forwarded_for.split(',')[0].strip()
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+
+        # Forward to TCGC_BACKEND API
+        backend_payload = {
+            'full_name': full_name,
+            'email': email,
+            'phone_number': phone_number,
+            'city': city,
+            'state': state,
+            'country': country,
+            'category': category,
+            'title': title,
+            'content': content,
+            'share_preference': share_preference,
+        }
+        endpoints = [
+            'http://127.0.0.1:8000/api/v1/testimony/submit/',
+            'https://tcgc.thecitygatechurch.org/api/v1/testimony/submit/',
+        ]
+        backend_synced = False
+        for url in endpoints:
+            try:
+                r = requests.post(url, json=backend_payload, headers={'Content-Type': 'application/json'}, timeout=4)
+                if r.status_code in [200, 201]:
+                    backend_synced = True
+                    break
+            except Exception as e:
+                logger.debug(f"[TESTIMONY_FORWARD_FAIL] {url}: {e}")
+                continue
+
+        # If not synced via backend endpoint, save directly via model
+        if not backend_synced:
+            try:
+                Testimony.objects.create(
+                    full_name=full_name,
+                    email=email or None,
+                    phone_number=phone_number or None,
+                    city=city or None,
+                    state=state or None,
+                    country=country,
+                    category=category,
+                    title=title,
+                    content=content,
+                    share_preference=share_preference,
+                    status='pending',
+                    ip_address=ip_address,
+                )
+            except Exception as e:
+                logger.error(f"[TESTIMONY_LOCAL_SAVE_ERROR] {e}")
+
+        success_msg = "Glory to God! Your testimony has been received with great joy and will be reviewed by the pastoral leadership."
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json':
+            return JsonResponse({
+                'status': 'success',
+                'success': True,
+                'message': success_msg,
+            })
+
+        messages.success(request, success_msg)
+        return render(request, 'testimony.html', {
+            'active_page': 'testimony',
+            'submitted': True,
+            'success_message': success_msg,
+            'category_choices': Testimony.CATEGORY_CHOICES,
+            'share_choices': Testimony.SHARE_CHOICES,
+        })
+
+    # GET request
+    featured_testimonies = []
+    try:
+        featured_testimonies = Testimony.objects.filter(status='approved').order_by('-is_featured', '-created_at')[:6]
+    except Exception:
+        featured_testimonies = []
+
+    return render(request, 'testimony.html', {
+        'active_page': 'testimony',
+        'form_data': {},
+        'errors': {},
+        'featured_testimonies': featured_testimonies,
+        'category_choices': Testimony.CATEGORY_CHOICES,
+        'share_choices': Testimony.SHARE_CHOICES,
+    })
+

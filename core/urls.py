@@ -22,6 +22,10 @@ urlpatterns = [
     path('imgc26/invite/image/', views.fls_invite_image_api, name='imgc26_invite_image'),
     path('imgc26/invite/pdf/', views.fls_invite_pdf_api, name='imgc26_invite_pdf'),
 
+    # Testimonies & Praise Reports
+    path('testimony/', views.testimony_view, name='testimony'),
+    path('testimonies/', views.testimony_view, name='testimonies'),
+
     # Media & Pages
     path('watch-live/', views.video_streaming, name='video_streaming'),
     path('listen-live/', views.audio_streaming, name='audio_streaming'),

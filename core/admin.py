@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ConferenceRegistration, IMGCFeedingConfig, OnlineGiving, NewsletterSubscriber
+from .models import ConferenceRegistration, IMGCFeedingConfig, OnlineGiving, NewsletterSubscriber, Testimony
 
 
 @admin.register(ConferenceRegistration)
@@ -48,3 +48,11 @@ class OnlineGivingAdmin(admin.ModelAdmin):
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
     list_display = ('email', 'created_at')
     search_fields = ('email',)
+
+
+@admin.register(Testimony)
+class TestimonyAdmin(admin.ModelAdmin):
+    list_display = ('title', 'full_name', 'category', 'share_preference', 'status', 'is_featured', 'created_at')
+    list_filter = ('status', 'category', 'share_preference', 'is_featured', 'created_at')
+    search_fields = ('title', 'full_name', 'email', 'phone_number', 'content', 'city')
+

@@ -317,3 +317,61 @@ class NewsletterSubscriber(models.Model):
 
     def __str__(self):
         return self.email
+
+
+class Testimony(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved / Published'),
+        ('archived', 'Archived / Private'),
+    ]
+
+    CATEGORY_CHOICES = [
+        ('healing', 'Healing & Miracle'),
+        ('breakthrough', 'Financial Breakthrough / Provision'),
+        ('salvation', 'Salvation & Spiritual Growth'),
+        ('family', 'Family & Marriage Restoration'),
+        ('career', 'Academic, Job & Career Promotion'),
+        ('deliverance', 'Deliverance & Protection'),
+        ('childbirth', 'Fruit of the Womb & Child Dedication'),
+        ('general', 'Thanksgiving & Other Praises'),
+    ]
+
+    SHARE_CHOICES = [
+        ('public', 'Share with My Name (Public)'),
+        ('anonymous', 'Share Anonymously (Hide My Name)'),
+        ('private', 'Private (Pastoral Team Only)'),
+    ]
+
+    full_name = models.CharField(max_length=150)
+    email = models.EmailField(blank=True, null=True)
+    phone_number = models.CharField(max_length=35, blank=True, null=True, help_text="WhatsApp or Mobile Phone")
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, default='Nigeria')
+    category = models.CharField(max_length=40, choices=CATEGORY_CHOICES, default='general')
+    title = models.CharField(max_length=200, help_text="Headline or brief title of your testimony")
+    content = models.TextField(help_text="Detailed story of what God has done")
+    share_preference = models.CharField(max_length=20, choices=SHARE_CHOICES, default='public')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    is_featured = models.BooleanField(default=False)
+    admin_notes = models.TextField(blank=True, null=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'testimonies'
+        managed = False
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.full_name} ({self.get_category_display()})"
+
+    @property
+    def display_author(self):
+        if self.share_preference == 'anonymous':
+            return "Anonymous"
+        return self.full_name
+
