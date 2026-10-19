@@ -4,6 +4,65 @@
 {% block title %}Watch Live — The CityGate Church{% endblock %}
 
 {% block content %}
+{% if is_app %}
+<style>
+    body {
+        background-color: #0B0205 !important;
+        color: #FFFFFF !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .tcgc-stream-page-app {
+        padding: 8px 12px 32px !important;
+        background-color: #0B0205 !important;
+        min-height: 100vh;
+    }
+    .tcgc-stream-page-app .tcgc-stream-heading,
+    .tcgc-stream-page-app .tcgc-stream-switch-wrap {
+        display: none !important;
+    }
+    .tcgc-stream-page-app .tcgc-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+    .tcgc-stream-page-app .tcgc-yt-channel-bar {
+        background: rgba(22, 7, 13, 0.85) !important;
+        border: 1px solid rgba(212, 175, 55, 0.25) !important;
+        margin-bottom: 12px !important;
+        padding: 10px 14px !important;
+        border-radius: 14px !important;
+    }
+    .tcgc-stream-page-app .tcgc-yt-video-title {
+        color: #ffffff !important;
+    }
+    .tcgc-stream-page-app .tcgc-youtube-card {
+        border-radius: 16px !important;
+        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        overflow: hidden;
+    }
+    .tcgc-stream-page-app .tcgc-yt-recent-section {
+        margin-top: 28px !important;
+        padding-top: 20px !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    .tcgc-stream-page-app .tcgc-yt-recent-title {
+        color: #D4AF37 !important;
+        font-size: 13px !important;
+    }
+    .tcgc-stream-page-app .tcgc-yt-recent-card {
+        background: #16070D !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 12px !important;
+        color: #FFFFFF !important;
+    }
+    .tcgc-stream-page-app .tcgc-yt-recent-card-title {
+        color: #FFFFFF !important;
+    }
+    .tcgc-stream-page-app .tcgc-yt-channel-footer-meta {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+</style>
+{% else %}
 <!-- LIGHT NAVBAR (Node 138:353) -->
 <header class="tcgc-header tcgc-header-light">
     <div class="tcgc-header-container">
@@ -29,9 +88,10 @@
         <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
     </div>
 </header>
+{% endif %}
 
 <!-- WATCH LIVE SECTION (Node 138:287 — Integrated with @dcitygatechurch YouTube Channel) -->
-<main class="tcgc-stream-page">
+<main class="tcgc-stream-page {% if is_app %}tcgc-stream-page-app{% endif %}">
     <div class="tcgc-container">
         <h1 class="tcgc-stream-heading">WATCH LIVE!!</h1>
 
@@ -139,4 +199,10 @@
         {% endif %}
     </div>
 </main>
+{% endblock %}
+
+{% block footer %}
+{% if not is_app %}
+    {{ block.super }}
+{% endif %}
 {% endblock %}

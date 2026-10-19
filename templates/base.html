@@ -32,6 +32,7 @@
 
     {% block content %}{% endblock %}
 
+    {% block footer %}
     <!-- Exact Figma Footer (Node 1:320 / 116:493) -->
     <footer class="tcgc-footer" id="contact-footer">
         <div class="tcgc-footer-inner">
@@ -122,6 +123,7 @@
         <!-- Giant Subtle Watermark Text -->
         <div class="tcgc-footer-watermark" aria-hidden="true">TheCityGateChurch</div>
     </footer>
+    {% endblock %}
 
     <script src="{% static 'js/main.js' %}?v=7"></script>
 </body>

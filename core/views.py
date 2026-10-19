@@ -852,11 +852,18 @@ def registration_confirmation(request, registration_code):
 
 
 def video_streaming(request):
+    is_app = (
+        request.GET.get('app') in ['1', 'true'] or
+        request.GET.get('embed') in ['1', 'true'] or
+        request.GET.get('mobile') in ['1', 'true'] or
+        'watchlive_mobile' in request.path
+    )
     youtube_live_info = get_youtube_live_info()
     return render(request, 'video_streaming.html', {
         'active_page': 'media',
         'youtube_live_info': youtube_live_info,
         'youtube_live_json': json.dumps(youtube_live_info),
+        'is_app': is_app,
     })
 
 

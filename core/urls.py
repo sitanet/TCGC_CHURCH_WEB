@@ -28,6 +28,9 @@ urlpatterns = [
 
     # Media & Pages
     path('watch-live/', views.video_streaming, name='video_streaming'),
+    path('tcgc/watchlive_mobile/', views.video_streaming, name='watchlive_mobile'),
+    path('watchlive_mobile/', views.video_streaming, name='watchlive_mobile_short'),
+    path('stream/', views.video_streaming, name='stream_alias'),
     path('listen-live/', views.audio_streaming, name='audio_streaming'),
     path('ministries/', views.ministries, name='ministries'),
     path('subscribe/', views.subscribe_newsletter, name='subscribe_newsletter'),
