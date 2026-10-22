@@ -1180,7 +1180,7 @@ def api_generate_attending_video(request):
 
         font_path = os.path.join(settings.BASE_DIR, 'static', 'fls', 'ClashDisplay-Semibold.ttf')
         try:
-            font = ImageFont.truetype(font_path, 26)
+            font = ImageFont.truetype(font_path, 24)
         except Exception:
             font = ImageFont.load_default()
 
@@ -1224,7 +1224,7 @@ def api_generate_attending_video(request):
                 draw_txt.text((300, 50), name, font=font, fill=(160, 21, 36), anchor='mm')
                 rot_txt = txt_layer.rotate(-angle_deg, resample=Image.BICUBIC, expand=True)
                 rw, rh = rot_txt.size
-                pil_img.paste(rot_txt, (int(538 - rw / 2), int(891 - rh / 2)), rot_txt)
+                pil_img.paste(rot_txt, (int(538 - rw / 2), int(896 - rh / 2)), rot_txt)
                 composite = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
 
             writer.write(composite)
