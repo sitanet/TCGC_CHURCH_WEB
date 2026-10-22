@@ -1184,7 +1184,24 @@
       initCamera();
     });
 
-    // Recording logic (Client-side MediaRecorder)
+    // Recording logic (Direct High-Speed Composited MediaRecorder)
+    let directCompositedVideoBlob = null;
+    let directVideoExtension = 'mp4';
+
+    function getSupportedMimeType() {
+      const types = [
+        'video/mp4;codecs=avc1,mp4a.40.2',
+        'video/mp4',
+        'video/webm;codecs=vp8,opus',
+        'video/webm;codecs=vp9,opus',
+        'video/webm'
+      ];
+      for (const t of types) {
+        if (MediaRecorder.isTypeSupported(t)) return t;
+      }
+      return '';
+    }
+
     btnRecordToggle.addEventListener('click', () => {
       if (!isRecording) {
         startRecording();
@@ -1197,19 +1214,36 @@
       if (!mediaStream) return;
       recordedChunks = [];
       recordDurationSec = 0;
+      directCompositedVideoBlob = null;
 
-      let mimeType = 'video/webm;codecs=vp9,opus';
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'video/webm';
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
-          mimeType = 'video/mp4';
+      // 1. Capture live rendered canvas at 25 FPS (silky smooth, broadcast standard, eliminates mobile GPU lag)
+      const canvasStream = canvas.captureStream(25);
+
+      // 2. Attach live microphone audio track directly from user's camera stream!
+      const audioTracks = mediaStream.getAudioTracks();
+      if (audioTracks && audioTracks.length > 0) {
+        try {
+          canvasStream.addTrack(audioTracks[0].clone());
+        } catch (e) {
+          canvasStream.addTrack(audioTracks[0]);
         }
       }
 
+      const mimeType = getSupportedMimeType();
+      const options = {
+        videoBitsPerSecond: 2500000, // 2.5 Mbps: crisp HD quality, smooth mobile encoding
+        audioBitsPerSecond: 128000   // 128 kbps crystal clear stereo audio
+      };
+      if (mimeType) options.mimeType = mimeType;
+
       try {
-        mediaRecorder = new MediaRecorder(mediaStream, { mimeType: mimeType });
+        mediaRecorder = new MediaRecorder(canvasStream, options);
       } catch (e) {
-        mediaRecorder = new MediaRecorder(mediaStream);
+        try {
+          mediaRecorder = new MediaRecorder(canvasStream, { mimeType: mimeType || undefined });
+        } catch (e2) {
+          mediaRecorder = new MediaRecorder(canvasStream);
+        }
       }
 
       mediaRecorder.ondataavailable = (e) => {
@@ -1217,17 +1251,21 @@
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
-        const videoUrl = URL.createObjectURL(blob);
+        const actualMime = mediaRecorder.mimeType || 'video/webm';
+        directVideoExtension = actualMime.includes('mp4') ? 'mp4' : 'webm';
+        directCompositedVideoBlob = new Blob(recordedChunks, { type: actualMime });
+        const videoUrl = URL.createObjectURL(directCompositedVideoBlob);
+
+        // Preview finished composited video with audio
         userVideoEl.srcObject = null;
         userVideoEl.src = videoUrl;
         userVideoEl.muted = false;
-        userVideoEl.play();
+        userVideoEl.play().catch(() => {});
         currentMode = 'video';
-        document.getElementById('previewStatusText').textContent = 'Recorded Video Loaded';
+        document.getElementById('previewStatusText').textContent = 'Video DP Ready (With Full Audio)!';
       };
 
-      mediaRecorder.start(100);
+      mediaRecorder.start(250);
       isRecording = true;
       btnRecordToggle.classList.add('recording');
       recordIcon.className = 'fa-solid fa-square';
@@ -1265,11 +1303,12 @@
     });
 
     function loadVideoFile(file) {
+      directCompositedVideoBlob = null;
       const url = URL.createObjectURL(file);
       userVideoEl.srcObject = null;
       userVideoEl.src = url;
       userVideoEl.muted = false;
-      userVideoEl.play();
+      userVideoEl.play().catch(() => {});
       currentMode = 'video';
       transformState.mirror = false;
       chkMirror.checked = false;
@@ -1288,6 +1327,7 @@
     });
 
     function loadPhotoFile(file) {
+      directCompositedVideoBlob = null;
       const reader = new FileReader();
       reader.onload = (e) => {
         userPhotoEl.src = e.target.result;
@@ -1301,25 +1341,30 @@
 
     // Sliders & Transform
     sliderZoom.addEventListener('input', (e) => {
+      directCompositedVideoBlob = null;
       transformState.scale = parseFloat(e.target.value);
       document.getElementById('valZoom').textContent = `${transformState.scale.toFixed(2)}x`;
     });
 
     sliderPanX.addEventListener('input', (e) => {
+      directCompositedVideoBlob = null;
       transformState.panX = parseInt(e.target.value);
       document.getElementById('valPanX').textContent = `${transformState.panX}px`;
     });
 
     sliderPanY.addEventListener('input', (e) => {
+      directCompositedVideoBlob = null;
       transformState.panY = parseInt(e.target.value);
       document.getElementById('valPanY').textContent = `${transformState.panY}px`;
     });
 
     chkMirror.addEventListener('change', (e) => {
+      directCompositedVideoBlob = null;
       transformState.mirror = e.target.checked;
     });
 
     btnResetView.addEventListener('click', () => {
+      directCompositedVideoBlob = null;
       transformState.scale = 1.0;
       transformState.panX = 0;
       transformState.panY = 0;
@@ -1335,7 +1380,7 @@
     btnTogglePlay.addEventListener('click', () => {
       if (currentMode === 'video' || currentMode === 'sample') {
         if (userVideoEl.paused) {
-          userVideoEl.play();
+          userVideoEl.play().catch(() => {});
           playIcon.className = 'fa-solid fa-pause';
         } else {
           userVideoEl.pause();
@@ -1370,7 +1415,7 @@
       }, 'image/jpeg', 0.95);
     });
 
-    // 1-Click Download Video DP (Canvas CaptureStream Recording)
+    // 1-Click Download Video DP (Direct Composited Recording + Web Audio Mix)
     const btnDownloadVideo = document.getElementById('btnDownloadVideo');
     const exportProgressBox = document.getElementById('exportProgressBox');
     const exportProgressBar = document.getElementById('exportProgressBar');
@@ -1388,37 +1433,63 @@
         return;
       }
 
+      const name = (attendeeNameInput.value.trim() || 'Attendee').replace(/[^a-zA-Z0-9_-]/g, '_');
+
+      // If recorded live from camera, download instantly with 100% audio and zero lag!
+      if (directCompositedVideoBlob) {
+        const filename = `TCGC_IMGC26_Attending_Video_${name}.${directVideoExtension}`;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(directCompositedVideoBlob);
+        link.download = filename;
+        link.click();
+        return;
+      }
+
       exportProgressBox.style.display = 'block';
       exportProgressBar.style.width = '0%';
       exportPercent.textContent = '0%';
-      exportStatusLabel.textContent = 'Rendering Video DP...';
+      exportStatusLabel.textContent = 'Rendering Video DP (With Audio)...';
 
-      // Capture Canvas Stream
-      const fps = 30;
+      // 1. Capture stream at 25 fps (smoother encoding, zero mobile dropped frames)
+      const fps = 25;
       const canvasStream = canvas.captureStream(fps);
 
-      // If audio is present from video, mix it in
-      if (userVideoEl.captureStream) {
-        try {
-          const videoStream = userVideoEl.captureStream();
-          const audioTracks = videoStream.getAudioTracks();
-          if (audioTracks.length > 0) {
-            canvasStream.addTrack(audioTracks[0]);
-          }
-        } catch (e) {}
-      }
-
-      let mimeType = 'video/mp4';
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'video/webm;codecs=vp9';
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
-          mimeType = 'video/webm';
+      // 2. Mix in audio using Web Audio API + captureStream fallback
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+        }
+        if (!userVideoEl._audioSourceNode) {
+          userVideoEl._audioSourceNode = audioCtx.createMediaElementSource(userVideoEl);
+          userVideoEl._audioDestNode = audioCtx.createMediaStreamDestination();
+          userVideoEl._audioSourceNode.connect(userVideoEl._audioDestNode);
+          userVideoEl._audioSourceNode.connect(audioCtx.destination);
+        }
+        const aTracks = userVideoEl._audioDestNode.stream.getAudioTracks();
+        if (aTracks.length > 0) {
+          canvasStream.addTrack(aTracks[0].clone());
+        }
+      } catch (e) {
+        if (userVideoEl.captureStream) {
+          try {
+            const vStream = userVideoEl.captureStream();
+            const aTracks = vStream.getAudioTracks();
+            if (aTracks.length > 0) canvasStream.addTrack(aTracks[0].clone());
+          } catch (err) {}
         }
       }
 
+      const mimeType = getSupportedMimeType();
+      const options = {
+        videoBitsPerSecond: 2500000,
+        audioBitsPerSecond: 128000
+      };
+      if (mimeType) options.mimeType = mimeType;
+
       let recorder;
       try {
-        recorder = new MediaRecorder(canvasStream, { mimeType: mimeType });
+        recorder = new MediaRecorder(canvasStream, options);
       } catch (err) {
         recorder = new MediaRecorder(canvasStream);
       }
@@ -1428,21 +1499,21 @@
         if (e.data && e.data.size > 0) chunks.push(e.data);
       };
 
-      // Restart video from beginning to capture full loop
       userVideoEl.currentTime = 0;
-      userVideoEl.play();
+      userVideoEl.muted = false;
+      await userVideoEl.play().catch(() => {});
 
-      const durationSec = Math.min(Math.max(userVideoEl.duration || 5, 3), 10);
+      const durationSec = Math.min(Math.max(userVideoEl.duration || 5, 3), 12);
       let elapsed = 0;
 
-      recorder.start(100);
+      recorder.start(250);
 
       const progressInterval = setInterval(() => {
-        elapsed += 0.2;
+        elapsed += 0.25;
         const pct = Math.min(Math.round((elapsed / durationSec) * 100), 95);
         exportProgressBar.style.width = `${pct}%`;
         exportPercent.textContent = `${pct}%`;
-      }, 200);
+      }, 250);
 
       setTimeout(() => {
         clearInterval(progressInterval);
@@ -1451,9 +1522,8 @@
         exportStatusLabel.textContent = 'Export Complete! Saving...';
 
         recorder.onstop = () => {
-          const extension = recorder.mimeType.includes('mp4') ? 'mp4' : 'webm';
-          const blob = new Blob(chunks, { type: recorder.mimeType });
-          const name = (attendeeNameInput.value.trim() || 'Attendee').replace(/[^a-zA-Z0-9_-]/g, '_');
+          const extension = (recorder.mimeType && recorder.mimeType.includes('mp4')) ? 'mp4' : 'webm';
+          const blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
           const filename = `TCGC_IMGC26_Attending_Video_${name}.${extension}`;
 
           const link = document.createElement('a');
@@ -1463,7 +1533,7 @@
 
           setTimeout(() => {
             exportProgressBox.style.display = 'none';
-          }, 3000);
+          }, 2500);
         };
 
         recorder.stop();
@@ -1477,7 +1547,7 @@
       const namePart = name ? `I, ${name}, ` : 'I ';
       const msg = encodeURIComponent(
         `👑 *${namePart}will be attending Image & Glory Conference '26!*\n\n` +
-        `📖 *Theme:* A Call to Worship: Becoming God's House\n` +
+        `📖 *Theme:* The Rise of True Worshippers (Building God's House and place of rest)\n` +
         `📅 *Date:* 23rd – 29th November, 2026\n` +
         `🏛️ *Venue:* The CityGate Church, Ibadan\n\n` +
         `Create your own personalized Video & Picture DP here:\n` +

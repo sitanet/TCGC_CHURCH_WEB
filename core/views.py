@@ -1232,8 +1232,33 @@ def api_generate_attending_video(request):
         cap.release()
         writer.release()
 
-        with open(temp_out_path, 'rb') as f:
+        # If ffmpeg is available on system, multiplex original audio track from uploaded file
+        final_video_path = temp_out_path
+        audio_out_path = tempfile.mktemp(suffix='.mp4')
+        try:
+            import subprocess
+            cmd = [
+                'ffmpeg', '-y',
+                '-i', temp_out_path,
+                '-i', temp_in_path,
+                '-c:v', 'copy',
+                '-c:a', 'aac',
+                '-map', '0:v:0',
+                '-map', '1:a:0?',
+                '-shortest',
+                audio_out_path
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=25)
+            if res.returncode == 0 and os.path.exists(audio_out_path) and os.path.getsize(audio_out_path) > 1000:
+                final_video_path = audio_out_path
+        except Exception:
+            final_video_path = temp_out_path
+
+        with open(final_video_path, 'rb') as f:
             video_bytes = f.read()
+
+        if os.path.exists(audio_out_path):
+            os.remove(audio_out_path)
 
         response = HttpResponse(video_bytes, content_type='video/mp4')
         clean_name = re.sub(r'[^A-Za-z0-9_]+', '_', name or 'Attendee').strip('_')
