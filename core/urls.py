@@ -28,7 +28,9 @@ urlpatterns = [
 
     # NEW: "I Will Be Attending" Video & Picture DP Maker Routes
     path('imgc/attending/', views.attending_dp_view, name='attending_dp'),
+    path('imgc/attending', views.attending_dp_view, name='attending_dp_noslash'),
     path('attending/', views.attending_dp_view, name='attending_dp_short'),
+    path('attending', views.attending_dp_view, name='attending_dp_short_noslash'),
     path('api/generate-attending-video/', views.api_generate_attending_video, name='api_generate_attending_video'),
 
     # Media & Pages
