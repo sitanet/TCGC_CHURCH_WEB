@@ -1016,6 +1016,14 @@
 
     // Animation Loop
     function renderCanvas() {
+      // If we are previewing the direct composited recording, draw userVideoEl covering full canvas (prevents inception)
+      if (currentMode === 'recorded_composite' && userVideoEl.readyState >= 2) {
+        ctx.clearRect(0, 0, FRAME_CONFIG.canvasWidth, FRAME_CONFIG.canvasHeight);
+        ctx.drawImage(userVideoEl, 0, 0, FRAME_CONFIG.canvasWidth, FRAME_CONFIG.canvasHeight);
+        requestAnimationFrame(renderCanvas);
+        return;
+      }
+
       // Clear Canvas
       ctx.clearRect(0, 0, FRAME_CONFIG.canvasWidth, FRAME_CONFIG.canvasHeight);
 
@@ -1187,6 +1195,7 @@
     // Recording logic (Direct High-Speed Composited MediaRecorder)
     let directCompositedVideoBlob = null;
     let directVideoExtension = 'mp4';
+    let actualRecordedDurationSec = 0;
 
     function getSupportedMimeType() {
       const types = [
@@ -1202,8 +1211,11 @@
       return '';
     }
 
-    btnRecordToggle.addEventListener('click', () => {
+    btnRecordToggle.addEventListener('click', async () => {
       if (!isRecording) {
+        if (!mediaStream || !mediaStream.active) {
+          await initCamera();
+        }
         startRecording();
       } else {
         stopRecording();
@@ -1214,7 +1226,9 @@
       if (!mediaStream) return;
       recordedChunks = [];
       recordDurationSec = 0;
+      actualRecordedDurationSec = 0;
       directCompositedVideoBlob = null;
+      currentMode = 'cam';
 
       // 1. Capture live rendered canvas at 25 FPS (silky smooth, broadcast standard, eliminates mobile GPU lag)
       const canvasStream = canvas.captureStream(25);
@@ -1260,8 +1274,9 @@
         userVideoEl.srcObject = null;
         userVideoEl.src = videoUrl;
         userVideoEl.muted = false;
+        userVideoEl.loop = true;
         userVideoEl.play().catch(() => {});
-        currentMode = 'video';
+        currentMode = 'recorded_composite';
         document.getElementById('previewStatusText').textContent = 'Video DP Ready (With Full Audio)!';
       };
 
@@ -1282,6 +1297,7 @@
     function stopRecording() {
       if (!isRecording) return;
       isRecording = false;
+      actualRecordedDurationSec = Math.max(recordDurationSec, 3);
       clearInterval(recordTimerInterval);
       btnRecordToggle.classList.remove('recording');
       recordIcon.className = 'fa-solid fa-circle';
@@ -1378,7 +1394,7 @@
 
     // Playback Controls
     btnTogglePlay.addEventListener('click', () => {
-      if (currentMode === 'video' || currentMode === 'sample') {
+      if (currentMode === 'video' || currentMode === 'sample' || currentMode === 'recorded_composite') {
         if (userVideoEl.paused) {
           userVideoEl.play().catch(() => {});
           playIcon.className = 'fa-solid fa-pause';
@@ -1390,7 +1406,7 @@
     });
 
     btnToggleMute.addEventListener('click', () => {
-      if (currentMode === 'video' || currentMode === 'sample') {
+      if (currentMode === 'video' || currentMode === 'sample' || currentMode === 'recorded_composite') {
         userVideoEl.muted = !userVideoEl.muted;
         muteIcon.className = userVideoEl.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
       }
@@ -1500,23 +1516,31 @@
       };
 
       userVideoEl.currentTime = 0;
+      userVideoEl.loop = false;
       userVideoEl.muted = false;
       await userVideoEl.play().catch(() => {});
 
-      const durationSec = Math.min(Math.max(userVideoEl.duration || 5, 3), 12);
-      let elapsed = 0;
+      // Calculate accurate target export duration (never cut off at 3 seconds)
+      let targetDuration = 10;
+      if (actualRecordedDurationSec && actualRecordedDurationSec > 0) {
+        targetDuration = actualRecordedDurationSec;
+      } else if (isFinite(userVideoEl.duration) && !isNaN(userVideoEl.duration) && userVideoEl.duration > 0) {
+        targetDuration = userVideoEl.duration;
+      }
+      targetDuration = Math.max(3, Math.min(targetDuration, 30));
 
+      let elapsed = 0;
       recorder.start(250);
 
-      const progressInterval = setInterval(() => {
-        elapsed += 0.25;
-        const pct = Math.min(Math.round((elapsed / durationSec) * 100), 95);
-        exportProgressBar.style.width = `${pct}%`;
-        exportPercent.textContent = `${pct}%`;
-      }, 250);
-
-      setTimeout(() => {
+      let isFinished = false;
+      const finishExport = () => {
+        if (isFinished) return;
+        isFinished = true;
         clearInterval(progressInterval);
+        clearTimeout(safetyTimeout);
+        userVideoEl.loop = true;
+        userVideoEl.onended = null;
+
         exportProgressBar.style.width = '100%';
         exportPercent.textContent = '100%';
         exportStatusLabel.textContent = 'Export Complete! Saving...';
@@ -1536,8 +1560,21 @@
           }, 2500);
         };
 
-        recorder.stop();
-      }, durationSec * 1000);
+        try {
+          if (recorder.state !== 'inactive') recorder.stop();
+        } catch (e) {}
+      };
+
+      userVideoEl.onended = finishExport;
+
+      const progressInterval = setInterval(() => {
+        elapsed += 0.25;
+        const pct = Math.min(Math.round((elapsed / targetDuration) * 100), 98);
+        exportProgressBar.style.width = `${pct}%`;
+        exportPercent.textContent = `${pct}%`;
+      }, 250);
+
+      const safetyTimeout = setTimeout(finishExport, (targetDuration + 0.3) * 1000);
     });
 
     // WhatsApp Status 1-Tap Share
