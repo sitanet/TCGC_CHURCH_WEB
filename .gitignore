@@ -12,5 +12,9 @@ staticfiles/
 /dump_*
 /inspect_*
 /scratch_*
+db.sqlite3
+/scratch_video/
+static/fls/attending_sample.mp4
+static/scratch/
 .DS_Store
 *.log

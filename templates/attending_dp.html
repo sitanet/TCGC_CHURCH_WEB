@@ -1,0 +1,1394 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>{{ page_title }}</title>
+
+  <!-- OpenGraph / Social Meta Tags -->
+  <meta name="description" content="Create your personalized 'I Will Be Attending' Video & Picture DP for Image & Glory Conference '26 at The CityGate Church.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="I Will Be Attending Image & Glory Conference '26">
+  <meta property="og:description" content="Create your customized Video & Picture DP for Image & Glory Conference '26. Download and post on WhatsApp Status & Instagram!">
+  <meta property="og:image" content="{% static 'fls/attending_overlay_web.png' %}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#78101E">
+  <link rel="icon" type="image/png" href="{% static 'images/logo_white.png' %}">
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    @font-face {
+      font-family: 'ClashDisplay';
+      src: url("{% static 'fls/ClashDisplay-Semibold.ttf' %}") format('truetype');
+      font-weight: 600;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'ClashDisplayRegular';
+      src: url("{% static 'fls/ClashDisplay-Regular.ttf' %}") format('truetype');
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    :root {
+      --wine-deep: #1A0205;
+      --wine-dark: #38070F;
+      --wine-primary: #78101E;
+      --wine-accent: #C71B2D;
+      --gold-primary: #D4AF37;
+      --gold-light: #F7E7B4;
+      --gold-dark: #9A7B2C;
+      --dark-surface: #0E0204;
+      --dark-card: #180509;
+      --dark-card-border: rgba(212, 175, 55, 0.22);
+      --text-main: #FFFFFF;
+      --text-muted: #E2D3D6;
+      --text-sub: #A89599;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% -10%, #430913 0%, #150205 55%, #0a0103 100%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      padding-bottom: 70px;
+    }
+
+    /* Ambient glow */
+    .glow-sphere {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-top {
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 380px;
+      background: rgba(199, 27, 45, 0.25);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    /* Nav Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+    .brand-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+    .brand-text h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 17px;
+      letter-spacing: 1.2px;
+      color: var(--gold-light);
+    }
+    .brand-text p {
+      font-size: 11px;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-nav {
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-nav-outline {
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: var(--gold-light);
+      background: rgba(212, 175, 55, 0.05);
+    }
+    .btn-nav-outline:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--gold-primary);
+    }
+
+    /* Page Header */
+    .header-banner {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .conf-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: var(--gold-light);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .conf-badge i {
+      color: var(--gold-primary);
+    }
+    .main-title {
+      font-family: 'ClashDisplay', sans-serif;
+      font-size: 38px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #FFFFFF 30%, #F7E7B4 80%, #D4AF37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .main-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    /* Main Studio Grid */
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    @media (max-width: 991px) {
+      .studio-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-title {
+        font-size: 28px;
+      }
+    }
+
+    /* Left: Live Preview Card */
+    .preview-card {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-card-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: sticky;
+      top: 20px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      aspect-ratio: 3 / 4;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    #dpCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* Preview toolbar below canvas */
+    .preview-toolbar {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      font-size: 13px;
+    }
+    .preview-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold-light);
+      font-weight: 500;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #25D366;
+      animation: pulseDot 1.5s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-icon-sm {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-icon-sm:hover {
+      background: rgba(212, 175, 55, 0.25);
+      border-color: var(--gold-primary);
+    }
+
+    /* Right: Studio Controls */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .control-card {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-card-border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gold-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card-title i {
+      color: var(--gold-primary);
+    }
+
+    /* Input Fields */
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      color: #FFFFFF;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+    }
+
+    /* Media Selector Tabs */
+    .tabs-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 4px;
+      border-radius: var(--radius-md);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      padding: 10px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .tab-btn i {
+      font-size: 15px;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--wine-primary), var(--wine-accent));
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(120, 16, 30, 0.5);
+    }
+
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Camera Recording View */
+    .cam-box {
+      position: relative;
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 14px;
+    }
+    #camVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cam-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-sub);
+      font-size: 13px;
+      padding: 20px;
+      text-align: center;
+    }
+    .cam-placeholder i {
+      font-size: 36px;
+      color: var(--gold-primary);
+    }
+
+    .cam-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-record {
+      background: #E52E3E;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(229, 46, 62, 0.45);
+      transition: all 0.25s;
+    }
+    .btn-record:hover {
+      transform: scale(1.03);
+      background: #ff3b4d;
+    }
+    .btn-record.recording {
+      background: #111;
+      border: 2px solid #E52E3E;
+      animation: recordBlink 1s infinite alternate;
+    }
+    @keyframes recordBlink {
+      from { box-shadow: 0 0 10px rgba(229, 46, 62, 0.5); }
+      to { box-shadow: 0 0 25px rgba(229, 46, 62, 0.9); }
+    }
+
+    .btn-switch-cam {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* File Drop Zone */
+    .drop-zone {
+      border: 2px dashed rgba(212, 175, 55, 0.35);
+      border-radius: var(--radius-md);
+      padding: 30px 16px;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.25);
+      transition: all 0.2s;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--gold-primary);
+      background: rgba(212, 175, 55, 0.08);
+    }
+    .drop-zone i {
+      font-size: 32px;
+      color: var(--gold-primary);
+      margin-bottom: 10px;
+    }
+    .drop-zone p {
+      font-size: 14px;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    .drop-zone span {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+    .file-input-hidden {
+      display: none;
+    }
+
+    /* Adjustment Sliders */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .slider-label {
+      font-size: 13px;
+      color: var(--text-sub);
+      width: 80px;
+      font-weight: 500;
+    }
+    .slider-input {
+      flex: 1;
+      accent-color: var(--gold-primary);
+    }
+    .slider-val {
+      font-size: 12px;
+      color: var(--gold-light);
+      font-weight: 600;
+      width: 40px;
+      text-align: right;
+    }
+
+    /* Download Action Buttons */
+    .download-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (max-width: 500px) {
+      .download-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn-action {
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      width: 100%;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #E5C358 0%, #D4AF37 50%, #9A7B2C 100%);
+      color: #0E0204;
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+    }
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.55);
+    }
+    .btn-wine {
+      background: linear-gradient(135deg, #9C1425 0%, #78101E 50%, #430913 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 6px 20px rgba(120, 16, 30, 0.35);
+    }
+    .btn-wine:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(120, 16, 30, 0.55);
+    }
+    .btn-whatsapp {
+      background: #25D366;
+      color: #FFFFFF;
+      grid-column: 1 / -1;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+    }
+    .btn-whatsapp:hover {
+      background: #20bd5a;
+      transform: translateY(-2px);
+    }
+
+    /* Recording / Export Overlay */
+    .export-progress-wrap {
+      display: none;
+      margin-top: 14px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+    }
+    .export-progress-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .export-progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #D4AF37, #E52E3E);
+      transition: width 0.1s linear;
+    }
+
+    /* Helpful tips banner */
+    .tip-box {
+      margin-top: 20px;
+      background: rgba(212, 175, 55, 0.08);
+      border-left: 3px solid var(--gold-primary);
+      padding: 12px 16px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .tip-box strong {
+      color: var(--gold-light);
+    }
+
+    /* Hidden elements for processing */
+    #userVideoEl, #userAudioEl {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-sphere glow-top"></div>
+
+  <div class="container">
+    <!-- Top Navigation -->
+    <header class="top-bar">
+      <a href="{% url 'home' %}" class="brand-group">
+        <img src="{% static 'images/logo_white.png' %}" alt="The CityGate Church" class="brand-logo">
+        <div class="brand-text">
+          <h1>THE CITYGATE CHURCH</h1>
+          <p>IMAGE & GLORY CONFERENCE '26</p>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <a href="{% url 'registration' %}" class="btn-nav btn-nav-outline">
+          <i class="fa-solid fa-ticket"></i> Register
+        </a>
+        <a href="{% url 'imgc_invite' %}" class="btn-nav btn-nav-outline">
+          <i class="fa-solid fa-envelope-open-text"></i> Invite
+        </a>
+      </div>
+    </header>
+
+    <!-- Header Banner -->
+    <div class="header-banner">
+      <div class="conf-badge">
+        <i class="fa-solid fa-crown"></i> OFFICIAL CONFERENCE DP MAKER
+      </div>
+      <h1 class="main-title">I WILL BE ATTENDING</h1>
+      <p class="main-subtitle">
+        Record a live selfie video or upload your picture to generate your personalized Image & Glory Conference '26 WhatsApp & Instagram DP!
+      </p>
+    </div>
+
+    <!-- Main Workspace Grid -->
+    <div class="studio-grid">
+      <!-- LEFT: Live Canvas Preview -->
+      <div class="preview-card">
+        <div class="canvas-wrapper">
+          <canvas id="dpCanvas" width="1080" height="1440"></canvas>
+        </div>
+
+        <div class="preview-toolbar">
+          <div class="preview-status">
+            <span class="status-dot"></span>
+            <span id="previewStatusText">Live Preview Active</span>
+          </div>
+          <div class="preview-actions">
+            <button type="button" class="btn-icon-sm" id="btnTogglePlay" title="Play / Pause">
+              <i class="fa-solid fa-pause" id="playIcon"></i>
+            </button>
+            <button type="button" class="btn-icon-sm" id="btnToggleMute" title="Mute / Unmute">
+              <i class="fa-solid fa-volume-high" id="muteIcon"></i>
+            </button>
+            <button type="button" class="btn-icon-sm" id="btnResetView" title="Reset Framing">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="tip-box" style="width: 100%; max-width: 440px;">
+          <strong><i class="fa-solid fa-lightbulb"></i> Pro Tip:</strong>
+          Smile and say: <em>"I will be attending Image & Glory Conference 2026! See you there!"</em>
+        </div>
+      </div>
+
+      <!-- RIGHT: Attendee Studio Controls -->
+      <div class="controls-panel">
+        <!-- 1. Attendee Name -->
+        <div class="control-card">
+          <div class="card-title">
+            <i class="fa-solid fa-user-check"></i> 1. Your Information
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="attendeeNameInput">Full Name / Title</label>
+            <input type="text" id="attendeeNameInput" class="form-input" placeholder="e.g. Pastor David Adeleke" value="{{ initial_name|default:'' }}">
+          </div>
+        </div>
+
+        <!-- 2. Choose Media -->
+        <div class="control-card">
+          <div class="card-title">
+            <i class="fa-solid fa-photo-film"></i> 2. Choose Video or Picture
+          </div>
+
+          <div class="tabs-nav">
+            <button type="button" class="tab-btn active" data-tab="tab-record">
+              <i class="fa-solid fa-video"></i> Record Video
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-upload-video">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Upload Video
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-upload-photo">
+              <i class="fa-solid fa-image"></i> Upload Photo
+            </button>
+          </div>
+
+          <!-- TAB 1: Live Webcam / Phone Camera -->
+          <div class="tab-content active" id="tab-record">
+            <div class="cam-box" id="camBox">
+              <div class="cam-placeholder" id="camPlaceholder">
+                <i class="fa-solid fa-camera"></i>
+                <p>Click "Start Camera" to enable front / selfie camera</p>
+                <button type="button" class="btn-action btn-gold" id="btnStartCam" style="width: auto; padding: 8px 18px;">
+                  <i class="fa-solid fa-power-off"></i> Start Camera
+                </button>
+              </div>
+              <video id="camVideo" playsinline autoplay muted style="display: none;"></video>
+            </div>
+
+            <div class="cam-controls" id="camActionControls" style="display: none;">
+              <button type="button" class="btn-record" id="btnRecordToggle">
+                <i class="fa-solid fa-circle" id="recordIcon"></i>
+                <span id="recordBtnText">Record (5-10s)</span>
+              </button>
+              <button type="button" class="btn-switch-cam" id="btnSwitchCam" title="Flip Camera">
+                <i class="fa-solid fa-camera-rotate"></i> Flip
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 2: Upload Video File -->
+          <div class="tab-content" id="tab-upload-video">
+            <div class="drop-zone" id="dropZoneVideo">
+              <i class="fa-solid fa-file-video"></i>
+              <p>Click or Drag a Video here</p>
+              <span>MP4, MOV, or WebM (Max 50MB)</span>
+              <input type="file" id="inputVideoFile" class="file-input-hidden" accept="video/mp4,video/quicktime,video/webm">
+            </div>
+          </div>
+
+          <!-- TAB 3: Upload Photo (Static DP) -->
+          <div class="tab-content" id="tab-upload-photo">
+            <div class="drop-zone" id="dropZonePhoto">
+              <i class="fa-solid fa-file-image"></i>
+              <p>Click or Drag your Portrait Photo</p>
+              <span>JPG, PNG, or WEBP (Max 15MB)</span>
+              <input type="file" id="inputPhotoFile" class="file-input-hidden" accept="image/jpeg,image/png,image/webp">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Adjust Framing -->
+        <div class="control-card">
+          <div class="card-title">
+            <i class="fa-solid fa-sliders"></i> 3. Framing & Position
+          </div>
+
+          <div class="slider-row">
+            <span class="slider-label">Zoom</span>
+            <input type="range" id="sliderZoom" class="slider-input" min="0.5" max="2.5" step="0.05" value="1.0">
+            <span class="slider-val" id="valZoom">1.0x</span>
+          </div>
+
+          <div class="slider-row">
+            <span class="slider-label">Move X</span>
+            <input type="range" id="sliderPanX" class="slider-input" min="-300" max="300" step="2" value="0">
+            <span class="slider-val" id="valPanX">0px</span>
+          </div>
+
+          <div class="slider-row">
+            <span class="slider-label">Move Y</span>
+            <input type="range" id="sliderPanY" class="slider-input" min="-300" max="300" step="2" value="0">
+            <span class="slider-val" id="valPanY">0px</span>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gold-light); cursor: pointer;">
+              <input type="checkbox" id="chkMirror" style="accent-color: var(--gold-primary); width: 16px; height: 16px;">
+              <span>Mirror / Selfie Flip</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. Download & Share -->
+        <div class="control-card">
+          <div class="card-title">
+            <i class="fa-solid fa-download"></i> 4. Download & Share
+          </div>
+
+          <div class="download-grid">
+            <button type="button" class="btn-action btn-gold" id="btnDownloadVideo">
+              <i class="fa-solid fa-film"></i> Download Video DP
+            </button>
+
+            <button type="button" class="btn-action btn-wine" id="btnDownloadPicture">
+              <i class="fa-solid fa-camera-retro"></i> Download Picture DP
+            </button>
+
+            <button type="button" class="btn-action btn-whatsapp" id="btnShareWhatsApp">
+              <i class="fa-brands fa-whatsapp"></i> Post to WhatsApp Status
+            </button>
+          </div>
+
+          <div class="export-progress-wrap" id="exportProgressBox">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--gold-light);">
+              <span id="exportStatusLabel">Processing Video...</span>
+              <span id="exportPercent">0%</span>
+            </div>
+            <div class="export-progress-bar">
+              <div class="export-progress-fill" id="exportProgressBar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Working Elements -->
+  <video id="userVideoEl" playsinline loop></video>
+  <img id="userPhotoEl" style="display: none;" alt="User Upload">
+  <img id="overlayImg" src="{% static 'fls/attending_overlay.png' %}" style="display: none;" alt="Overlay Frame">
+
+  <script>
+    // Configuration & Coordinate Map for 1080x1440 Conference Frame
+    const FRAME_CONFIG = {
+      canvasWidth: 1080,
+      canvasHeight: 1440,
+      cutout: {
+        centerX: 543.0,
+        centerY: 523.35,
+        width: 507.0,
+        height: 634.2,
+        angleDeg: 4.288,
+        angleRad: 4.288 * Math.PI / 180,
+        radius: 12
+      },
+      nameBox: {
+        x: 538.0,
+        y: 898.1,
+        angleDeg: 4.288,
+        angleRad: 4.288 * Math.PI / 180,
+        maxWidth: 480,
+        fontSize: 38
+      }
+    };
+
+    // State Variables
+    let currentMode = 'placeholder'; // 'placeholder', 'cam', 'video', 'photo'
+    let mediaStream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+    let recordTimerInterval = null;
+    let recordDurationSec = 0;
+    let facingMode = 'user'; // 'user' or 'environment'
+    let isPlaying = true;
+    let isMuted = true;
+
+    // Transform State
+    let transformState = {
+      scale: 1.0,
+      panX: 0,
+      panY: 0,
+      mirror: false
+    };
+
+    // Elements
+    const canvas = document.getElementById('dpCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlayImg = document.getElementById('overlayImg');
+    const userVideoEl = document.getElementById('userVideoEl');
+    const userPhotoEl = document.getElementById('userPhotoEl');
+    const camVideo = document.getElementById('camVideo');
+    const attendeeNameInput = document.getElementById('attendeeNameInput');
+
+    // Controls
+    const sliderZoom = document.getElementById('sliderZoom');
+    const sliderPanX = document.getElementById('sliderPanX');
+    const sliderPanY = document.getElementById('sliderPanY');
+    const chkMirror = document.getElementById('chkMirror');
+    const btnTogglePlay = document.getElementById('btnTogglePlay');
+    const btnToggleMute = document.getElementById('btnToggleMute');
+    const btnResetView = document.getElementById('btnResetView');
+    const playIcon = document.getElementById('playIcon');
+    const muteIcon = document.getElementById('muteIcon');
+
+    // Initial state: clean placeholder (no example cabbage video)
+    userVideoEl.src = "";
+
+    // Animation Loop
+    function renderCanvas() {
+      // Clear Canvas
+      ctx.clearRect(0, 0, FRAME_CONFIG.canvasWidth, FRAME_CONFIG.canvasHeight);
+
+      // 1. Draw Background / User Media inside Cutout
+      const c = FRAME_CONFIG.cutout;
+      ctx.save();
+
+      // Translate to cutout center and rotate to match the stamp's tilt
+      ctx.translate(c.centerX, c.centerY);
+      ctx.rotate(c.angleRad);
+
+      const halfW = c.width / 2;
+      const halfH = c.height / 2;
+
+      // Rounded rectangle clipping path
+      ctx.beginPath();
+      ctx.roundRect(-halfW, -halfH, c.width, c.height, c.radius);
+      ctx.clip();
+
+      // Dark backing
+      ctx.fillStyle = '#0E0204';
+      ctx.fillRect(-halfW, -halfH, c.width, c.height);
+
+      let mediaSource = null;
+      let mw = 0, mh = 0;
+
+      if (currentMode === 'placeholder') {
+        // Icon
+        ctx.fillStyle = '#D4AF37';
+        ctx.font = '900 48px "Font Awesome 6 Free"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('\uf030', 0, -36);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('Your Video / Picture Here', 0, 24);
+
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.85)';
+        ctx.font = '500 14px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('Tap "Start Camera" or "Upload Video" below', 0, 54);
+      } else if (currentMode === 'cam' && camVideo.readyState >= 2) {
+        mediaSource = camVideo;
+        mw = camVideo.videoWidth;
+        mh = camVideo.videoHeight;
+      } else if (currentMode === 'video' && userVideoEl.readyState >= 2) {
+        mediaSource = userVideoEl;
+        mw = userVideoEl.videoWidth;
+        mh = userVideoEl.videoHeight;
+      } else if (currentMode === 'photo' && userPhotoEl.complete && userPhotoEl.naturalWidth > 0) {
+        mediaSource = userPhotoEl;
+        mw = userPhotoEl.naturalWidth;
+        mh = userPhotoEl.naturalHeight;
+      }
+
+      if (mediaSource && mw > 0 && mh > 0) {
+        ctx.save();
+        ctx.translate(transformState.panX, transformState.panY);
+
+        if (transformState.mirror) {
+          ctx.scale(-1, 1);
+        }
+
+        // Aspect fill scaling
+        const baseScale = Math.max(c.width / mw, c.height / mh);
+        const finalScale = baseScale * transformState.scale;
+        const dw = mw * finalScale;
+        const dh = mh * finalScale;
+
+        ctx.drawImage(mediaSource, -dw / 2, -dh / 2, dw, dh);
+        ctx.restore();
+      }
+
+      ctx.restore(); // Restore unclipped
+
+      // 2. Draw Official Overlay Frame
+      if (overlayImg.complete && overlayImg.naturalWidth > 0) {
+        ctx.drawImage(overlayImg, 0, 0, FRAME_CONFIG.canvasWidth, FRAME_CONFIG.canvasHeight);
+      }
+
+      // 3. Draw Attendee Name in the slot (rotated to align with the stamp)
+      const nameText = attendeeNameInput.value.trim().toUpperCase();
+      if (nameText) {
+        ctx.save();
+        ctx.translate(FRAME_CONFIG.nameBox.x, FRAME_CONFIG.nameBox.y);
+        ctx.rotate(FRAME_CONFIG.nameBox.angleRad);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        let fontSize = FRAME_CONFIG.nameBox.fontSize;
+        ctx.font = `800 ${fontSize}px 'Montserrat', 'ClashDisplay', sans-serif`;
+        const textMetrics = ctx.measureText(nameText);
+        if (textMetrics.width > FRAME_CONFIG.nameBox.maxWidth) {
+          fontSize = Math.floor(fontSize * (FRAME_CONFIG.nameBox.maxWidth / textMetrics.width));
+          ctx.font = `800 ${Math.max(fontSize, 18)}px 'Montserrat', 'ClashDisplay', sans-serif`;
+        }
+
+        ctx.fillStyle = '#A01524'; // Red matching flyer text
+        ctx.fillText(nameText, 0, 0);
+        ctx.restore();
+      }
+
+      requestAnimationFrame(renderCanvas);
+    }
+
+    // Start render loop once fonts & images load
+    overlayImg.onload = () => requestAnimationFrame(renderCanvas);
+    if (overlayImg.complete) requestAnimationFrame(renderCanvas);
+
+    // Tab Switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        btn.classList.add('active');
+        const tabId = btn.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+
+        if (tabId === 'tab-record') {
+          // If camera was running, use cam
+          if (mediaStream) currentMode = 'cam';
+        } else if (tabId === 'tab-upload-video') {
+          if (userVideoEl.src) currentMode = 'video';
+        } else if (tabId === 'tab-upload-photo') {
+          if (userPhotoEl.src) currentMode = 'photo';
+        }
+      });
+    });
+
+    // Camera Recording Setup
+    const btnStartCam = document.getElementById('btnStartCam');
+    const camPlaceholder = document.getElementById('camPlaceholder');
+    const camActionControls = document.getElementById('camActionControls');
+    const btnRecordToggle = document.getElementById('btnRecordToggle');
+    const recordIcon = document.getElementById('recordIcon');
+    const recordBtnText = document.getElementById('recordBtnText');
+    const btnSwitchCam = document.getElementById('btnSwitchCam');
+
+    async function initCamera() {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+      }
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: facingMode, width: { ideal: 1080 }, height: { ideal: 1440 } },
+          audio: true
+        });
+        camVideo.srcObject = mediaStream;
+        camVideo.style.display = 'block';
+        camPlaceholder.style.display = 'none';
+        camActionControls.style.display = 'flex';
+        currentMode = 'cam';
+        transformState.mirror = (facingMode === 'user');
+        chkMirror.checked = transformState.mirror;
+      } catch (err) {
+        alert('Could not access camera: ' + err.message + '\nPlease check browser permissions or upload a video instead.');
+      }
+    }
+
+    btnStartCam.addEventListener('click', initCamera);
+
+    btnSwitchCam.addEventListener('click', () => {
+      facingMode = (facingMode === 'user') ? 'environment' : 'user';
+      initCamera();
+    });
+
+    // Recording logic (Client-side MediaRecorder)
+    btnRecordToggle.addEventListener('click', () => {
+      if (!isRecording) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    function startRecording() {
+      if (!mediaStream) return;
+      recordedChunks = [];
+      recordDurationSec = 0;
+
+      let mimeType = 'video/webm;codecs=vp9,opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/mp4';
+        }
+      }
+
+      try {
+        mediaRecorder = new MediaRecorder(mediaStream, { mimeType: mimeType });
+      } catch (e) {
+        mediaRecorder = new MediaRecorder(mediaStream);
+      }
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
+        const videoUrl = URL.createObjectURL(blob);
+        userVideoEl.srcObject = null;
+        userVideoEl.src = videoUrl;
+        userVideoEl.muted = false;
+        userVideoEl.play();
+        currentMode = 'video';
+        document.getElementById('previewStatusText').textContent = 'Recorded Video Loaded';
+      };
+
+      mediaRecorder.start(100);
+      isRecording = true;
+      btnRecordToggle.classList.add('recording');
+      recordIcon.className = 'fa-solid fa-square';
+
+      recordTimerInterval = setInterval(() => {
+        recordDurationSec++;
+        recordBtnText.textContent = `Stop (${recordDurationSec}s)`;
+        if (recordDurationSec >= 15) {
+          stopRecording();
+        }
+      }, 1000);
+    }
+
+    function stopRecording() {
+      if (!isRecording) return;
+      isRecording = false;
+      clearInterval(recordTimerInterval);
+      btnRecordToggle.classList.remove('recording');
+      recordIcon.className = 'fa-solid fa-circle';
+      recordBtnText.textContent = 'Record Again';
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+
+    // Video Upload Handlers
+    const dropZoneVideo = document.getElementById('dropZoneVideo');
+    const inputVideoFile = document.getElementById('inputVideoFile');
+
+    dropZoneVideo.addEventListener('click', () => inputVideoFile.click());
+    inputVideoFile.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        loadVideoFile(e.target.files[0]);
+      }
+    });
+
+    function loadVideoFile(file) {
+      const url = URL.createObjectURL(file);
+      userVideoEl.srcObject = null;
+      userVideoEl.src = url;
+      userVideoEl.muted = false;
+      userVideoEl.play();
+      currentMode = 'video';
+      transformState.mirror = false;
+      chkMirror.checked = false;
+      document.getElementById('previewStatusText').textContent = 'Video Uploaded';
+    }
+
+    // Photo Upload Handlers
+    const dropZonePhoto = document.getElementById('dropZonePhoto');
+    const inputPhotoFile = document.getElementById('inputPhotoFile');
+
+    dropZonePhoto.addEventListener('click', () => inputPhotoFile.click());
+    inputPhotoFile.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        loadPhotoFile(e.target.files[0]);
+      }
+    });
+
+    function loadPhotoFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        userPhotoEl.src = e.target.result;
+        userPhotoEl.onload = () => {
+          currentMode = 'photo';
+          document.getElementById('previewStatusText').textContent = 'Photo DP Active';
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Sliders & Transform
+    sliderZoom.addEventListener('input', (e) => {
+      transformState.scale = parseFloat(e.target.value);
+      document.getElementById('valZoom').textContent = `${transformState.scale.toFixed(2)}x`;
+    });
+
+    sliderPanX.addEventListener('input', (e) => {
+      transformState.panX = parseInt(e.target.value);
+      document.getElementById('valPanX').textContent = `${transformState.panX}px`;
+    });
+
+    sliderPanY.addEventListener('input', (e) => {
+      transformState.panY = parseInt(e.target.value);
+      document.getElementById('valPanY').textContent = `${transformState.panY}px`;
+    });
+
+    chkMirror.addEventListener('change', (e) => {
+      transformState.mirror = e.target.checked;
+    });
+
+    btnResetView.addEventListener('click', () => {
+      transformState.scale = 1.0;
+      transformState.panX = 0;
+      transformState.panY = 0;
+      sliderZoom.value = 1.0;
+      sliderPanX.value = 0;
+      sliderPanY.value = 0;
+      document.getElementById('valZoom').textContent = '1.0x';
+      document.getElementById('valPanX').textContent = '0px';
+      document.getElementById('valPanY').textContent = '0px';
+    });
+
+    // Playback Controls
+    btnTogglePlay.addEventListener('click', () => {
+      if (currentMode === 'video' || currentMode === 'sample') {
+        if (userVideoEl.paused) {
+          userVideoEl.play();
+          playIcon.className = 'fa-solid fa-pause';
+        } else {
+          userVideoEl.pause();
+          playIcon.className = 'fa-solid fa-play';
+        }
+      }
+    });
+
+    btnToggleMute.addEventListener('click', () => {
+      if (currentMode === 'video' || currentMode === 'sample') {
+        userVideoEl.muted = !userVideoEl.muted;
+        muteIcon.className = userVideoEl.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+      }
+    });
+
+    // 1-Click Download Picture DP (High-Res JPG)
+    const btnDownloadPicture = document.getElementById('btnDownloadPicture');
+    btnDownloadPicture.addEventListener('click', () => {
+      if (currentMode === 'placeholder') {
+        alert('Please record a video or upload your photo first!');
+        return;
+      }
+      const name = (attendeeNameInput.value.trim() || 'Attendee').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `TCGC_IMGC26_Attending_DP_${name}.jpg`;
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      }, 'image/jpeg', 0.95);
+    });
+
+    // 1-Click Download Video DP (Canvas CaptureStream Recording)
+    const btnDownloadVideo = document.getElementById('btnDownloadVideo');
+    const exportProgressBox = document.getElementById('exportProgressBox');
+    const exportProgressBar = document.getElementById('exportProgressBar');
+    const exportPercent = document.getElementById('exportPercent');
+    const exportStatusLabel = document.getElementById('exportStatusLabel');
+
+    btnDownloadVideo.addEventListener('click', async () => {
+      if (currentMode === 'placeholder') {
+        alert('Please record a video or upload a video clip first!');
+        return;
+      }
+      if (currentMode === 'photo') {
+        alert('You uploaded a photo. To download a Video DP, please record or upload a video clip! Downloading Picture DP instead...');
+        btnDownloadPicture.click();
+        return;
+      }
+
+      exportProgressBox.style.display = 'block';
+      exportProgressBar.style.width = '0%';
+      exportPercent.textContent = '0%';
+      exportStatusLabel.textContent = 'Rendering Video DP...';
+
+      // Capture Canvas Stream
+      const fps = 30;
+      const canvasStream = canvas.captureStream(fps);
+
+      // If audio is present from video, mix it in
+      if (userVideoEl.captureStream) {
+        try {
+          const videoStream = userVideoEl.captureStream();
+          const audioTracks = videoStream.getAudioTracks();
+          if (audioTracks.length > 0) {
+            canvasStream.addTrack(audioTracks[0]);
+          }
+        } catch (e) {}
+      }
+
+      let mimeType = 'video/mp4';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm;codecs=vp9';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/webm';
+        }
+      }
+
+      let recorder;
+      try {
+        recorder = new MediaRecorder(canvasStream, { mimeType: mimeType });
+      } catch (err) {
+        recorder = new MediaRecorder(canvasStream);
+      }
+
+      const chunks = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) chunks.push(e.data);
+      };
+
+      // Restart video from beginning to capture full loop
+      userVideoEl.currentTime = 0;
+      userVideoEl.play();
+
+      const durationSec = Math.min(Math.max(userVideoEl.duration || 5, 3), 10);
+      let elapsed = 0;
+
+      recorder.start(100);
+
+      const progressInterval = setInterval(() => {
+        elapsed += 0.2;
+        const pct = Math.min(Math.round((elapsed / durationSec) * 100), 95);
+        exportProgressBar.style.width = `${pct}%`;
+        exportPercent.textContent = `${pct}%`;
+      }, 200);
+
+      setTimeout(() => {
+        clearInterval(progressInterval);
+        exportProgressBar.style.width = '100%';
+        exportPercent.textContent = '100%';
+        exportStatusLabel.textContent = 'Export Complete! Saving...';
+
+        recorder.onstop = () => {
+          const extension = recorder.mimeType.includes('mp4') ? 'mp4' : 'webm';
+          const blob = new Blob(chunks, { type: recorder.mimeType });
+          const name = (attendeeNameInput.value.trim() || 'Attendee').replace(/[^a-zA-Z0-9_-]/g, '_');
+          const filename = `TCGC_IMGC26_Attending_Video_${name}.${extension}`;
+
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          link.click();
+
+          setTimeout(() => {
+            exportProgressBox.style.display = 'none';
+          }, 3000);
+        };
+
+        recorder.stop();
+      }, durationSec * 1000);
+    });
+
+    // WhatsApp Status 1-Tap Share
+    const btnShareWhatsApp = document.getElementById('btnShareWhatsApp');
+    btnShareWhatsApp.addEventListener('click', () => {
+      const name = attendeeNameInput.value.trim();
+      const namePart = name ? `I, ${name}, ` : 'I ';
+      const msg = encodeURIComponent(
+        `👑 *${namePart}will be attending Image & Glory Conference '26!*\n\n` +
+        `📖 *Theme:* A Call to Worship: Becoming God's House\n` +
+        `📅 *Date:* 23rd – 29th November, 2026\n` +
+        `🏛️ *Venue:* The CityGate Church, Ibadan\n\n` +
+        `Create your own personalized Video & Picture DP here:\n` +
+        window.location.href
+      );
+      window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+    });
+  </script>
+</body>
+</html>

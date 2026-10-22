@@ -852,18 +852,11 @@ def registration_confirmation(request, registration_code):
 
 
 def video_streaming(request):
-    is_app = (
-        request.GET.get('app') in ['1', 'true'] or
-        request.GET.get('embed') in ['1', 'true'] or
-        request.GET.get('mobile') in ['1', 'true'] or
-        'watchlive_mobile' in request.path
-    )
     youtube_live_info = get_youtube_live_info()
     return render(request, 'video_streaming.html', {
         'active_page': 'media',
         'youtube_live_info': youtube_live_info,
         'youtube_live_json': json.dumps(youtube_live_info),
-        'is_app': is_app,
     })
 
 
@@ -1009,7 +1002,7 @@ def fls_invite_view(request):
         wa_text = (
             f"{salutation}"
             f"You are warmly invited by *{inviter}*{contact_suffix} to *Image & Glory Conference '26* "
-            f"(Theme: *The Rise of True Worshippers (Building God's House and place of rest)*) at The CityGate Church!\n\n"
+            f"(Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n"
             f"📅 Date: 23rd–29th November, 2026\n"
             f"📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n"
         )
@@ -1024,7 +1017,7 @@ def fls_invite_view(request):
         wa_text = (
             f"{salutation}"
             f"You are cordially invited to *Image & Glory Conference '26* "
-            f"(Theme: *The Rise of True Worshippers (Building God's House and place of rest)*) at The CityGate Church!\n\n"
+            f"(Theme: *A Call to Worship: Becoming God's House*) at The CityGate Church!\n\n"
             f"📅 Date: 23rd–29th November, 2026\n"
             f"📍 Venue: 120, UI/Ojoo Road, Ajibode Junction, Ibadan\n\n"
             f"Tap the link below to view and download your personalized invitation card:\n"
@@ -1107,6 +1100,156 @@ def fls_invite_pdf_api(request):
 
 
 # ============================================================================
+# "I Will Be Attending IMGC '26" Video & Picture DP Maker
+# ============================================================================
+
+def attending_dp_view(request):
+    """
+    Renders the dedicated "I Will Be Attending IMGC '26" DP & Video Maker page.
+    Distinct from the invite card, this allows attendees to record/upload a video
+    or picture, frame it in the official conference template, and download their DP/Video.
+    """
+    name = request.GET.get('name', '').strip()
+    context = {
+        'page_title': "I Will Be Attending | Image & Glory Conference '26",
+        'initial_name': name,
+        'canonical_url': request.build_absolute_uri('/imgc/attending/'),
+        'share_url': request.build_absolute_uri('/imgc/attending/'),
+        'conference_theme': "A Call to Worship: Becoming God's House",
+        'conference_dates': "23rd – 29th November, 2026",
+        'venue': "The CityGate Church, Ibadan",
+    }
+    return render(request, 'attending_dp.html', context)
+
+
+def api_generate_attending_video(request):
+    """
+    Server-side fallback: composites an uploaded user video with the official attending overlay
+    and name using OpenCV and PIL, streaming back a 1080x1440 MP4.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'}, status=405)
+
+    video_file = request.FILES.get('video')
+    if not video_file:
+        return JsonResponse({'error': 'No video file uploaded'}, status=400)
+
+    import tempfile
+    import cv2
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+
+    name = request.POST.get('name', '').strip().upper()
+    try:
+        scale_val = float(request.POST.get('scale', 1.0))
+    except Exception:
+        scale_val = 1.0
+    try:
+        pan_x = int(float(request.POST.get('pan_x', 0)))
+    except Exception:
+        pan_x = 0
+    try:
+        pan_y = int(float(request.POST.get('pan_y', 0)))
+    except Exception:
+        pan_y = 0
+    mirror = request.POST.get('mirror', 'false').lower() in ('true', '1')
+
+    # Save uploaded video to temp file
+    with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as temp_in:
+        for chunk in video_file.chunks():
+            temp_in.write(chunk)
+        temp_in_path = temp_in.name
+
+    temp_out_path = tempfile.mktemp(suffix='.mp4')
+
+    try:
+        overlay_path = os.path.join(settings.BASE_DIR, 'static', 'fls', 'attending_overlay.png')
+        overlay = cv2.imread(overlay_path, cv2.IMREAD_UNCHANGED)
+        h_out, w_out, _ = overlay.shape
+
+        win_cx, win_cy = 543.0, 523.35
+        win_w, win_h = 507, 634
+        angle_deg = 4.288
+        alpha = overlay[:, :, 3] / 255.0
+        fg = overlay[:, :, :3]
+
+        cap = cv2.VideoCapture(temp_in_path)
+        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        writer = cv2.VideoWriter(temp_out_path, fourcc, fps, (w_out, h_out))
+
+        font_path = os.path.join(settings.BASE_DIR, 'static', 'fls', 'ClashDisplay-Semibold.ttf')
+        try:
+            font = ImageFont.truetype(font_path, 38)
+        except Exception:
+            font = ImageFont.load_default()
+
+        frame_count = 0
+        max_frames = int(fps * 15) # limit to 15 seconds max
+
+        while cap.isOpened() and frame_count < max_frames:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame_count += 1
+
+            if mirror:
+                frame = cv2.flip(frame, 1)
+
+            uf_h, uf_w, _ = frame.shape
+            base_scale = max(win_w / uf_w, win_h / uf_h)
+            final_scale = base_scale * scale_val
+            nw, nh = int(uf_w * final_scale), int(uf_h * final_scale)
+            scaled = cv2.resize(frame, (nw, nh))
+
+            # Crop scaled frame to (win_w, win_h) around center + pan
+            cx = (nw - win_w) // 2 - pan_x
+            cy = (nh - win_h) // 2 - pan_y
+            cx = max(0, min(cx, nw - win_w))
+            cy = max(0, min(cy, nh - win_h))
+            cropped = scaled[cy:cy+win_h, cx:cx+win_w]
+
+            # Place cropped into a canvas and rotate by 4.288 degrees to match stamp
+            M_rot = cv2.getRotationMatrix2D((win_w / 2, win_h / 2), -angle_deg, 1.0)
+            M_rot[0, 2] += (win_cx - win_w / 2)
+            M_rot[1, 2] += (win_cy - win_h / 2)
+            canvas_frame = cv2.warpAffine(cropped, M_rot, (w_out, h_out), flags=cv2.INTER_LINEAR)
+
+            composite = (fg * alpha[:, :, np.newaxis] + canvas_frame * (1.0 - alpha[:, :, np.newaxis])).astype(np.uint8)
+
+            if name:
+                pil_img = Image.fromarray(cv2.cvtColor(composite, cv2.COLOR_BGR2RGB))
+                txt_layer = Image.new('RGBA', (600, 100), (0, 0, 0, 0))
+                draw_txt = ImageDraw.Draw(txt_layer)
+                draw_txt.text((300, 50), name, font=font, fill=(160, 21, 36), anchor='mm')
+                rot_txt = txt_layer.rotate(-angle_deg, resample=Image.BICUBIC, expand=True)
+                rw, rh = rot_txt.size
+                pil_img.paste(rot_txt, (int(538 - rw / 2), int(898 - rh / 2)), rot_txt)
+                composite = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+
+            writer.write(composite)
+
+        cap.release()
+        writer.release()
+
+        with open(temp_out_path, 'rb') as f:
+            video_bytes = f.read()
+
+        response = HttpResponse(video_bytes, content_type='video/mp4')
+        clean_name = re.sub(r'[^A-Za-z0-9_]+', '_', name or 'Attendee').strip('_')
+        response['Content-Disposition'] = f'attachment; filename="TCGC_IMGC26_Attending_Video_{clean_name}.mp4"'
+        return response
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    finally:
+        if os.path.exists(temp_in_path):
+            os.remove(temp_in_path)
+        if os.path.exists(temp_out_path):
+            os.remove(temp_out_path)
+
+
+# ============================================================================
 # PRAISE REPORTS & TESTIMONIES VIEW
 # ============================================================================
 
@@ -1114,7 +1257,7 @@ def testimony_view(request):
     """
     Public Praise Reports & Testimonies Page.
     Allows church members and visitors to share what God has done.
-    Saves directly to PostgreSQL tcgc_db and synchronizes with TCGC_BACKEND dashboard.
+    Saves directly to database and synchronizes with TCGC_BACKEND dashboard.
     """
     import requests
 
@@ -1240,4 +1383,3 @@ def testimony_view(request):
         'category_choices': Testimony.CATEGORY_CHOICES,
         'share_choices': Testimony.SHARE_CHOICES,
     })
-

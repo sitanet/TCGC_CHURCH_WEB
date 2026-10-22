@@ -26,6 +26,11 @@ urlpatterns = [
     path('testimony/', views.testimony_view, name='testimony'),
     path('testimonies/', views.testimony_view, name='testimonies'),
 
+    # NEW: "I Will Be Attending" Video & Picture DP Maker Routes
+    path('imgc/attending/', views.attending_dp_view, name='attending_dp'),
+    path('attending/', views.attending_dp_view, name='attending_dp_short'),
+    path('api/generate-attending-video/', views.api_generate_attending_video, name='api_generate_attending_video'),
+
     # Media & Pages
     path('watch-live/', views.video_streaming, name='video_streaming'),
     path('tcgc/watchlive_mobile/', views.video_streaming, name='watchlive_mobile'),
