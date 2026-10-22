@@ -1431,7 +1431,60 @@
       }, 'image/jpeg', 0.95);
     });
 
-    // 1-Click Download Video DP (Direct Composited Recording + Web Audio Mix)
+    // WhatsApp-Compliant Video Downloader (H.264 + AAC + FastStart)
+    async function downloadWhatsAppCompliantVideo(blob, name) {
+      exportProgressBox.style.display = 'block';
+      exportProgressBar.style.width = '75%';
+      exportPercent.textContent = '75%';
+      exportStatusLabel.textContent = 'Optimizing for WhatsApp & Status (H.264 + AAC)...';
+
+      try {
+        const formData = new FormData();
+        formData.append('video', blob, 'video.webm');
+        formData.append('name', name);
+        formData.append('is_composited', 'true');
+
+        const resp = await fetch('/api/generate-attending-video/', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (resp.ok) {
+          const finalBlob = await resp.blob();
+          exportProgressBar.style.width = '100%';
+          exportPercent.textContent = '100%';
+          exportStatusLabel.textContent = 'WhatsApp-Ready Video Exported! Saving...';
+
+          const filename = `TCGC_IMGC26_Attending_Video_${name}.mp4`;
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(finalBlob);
+          link.download = filename;
+          link.click();
+
+          setTimeout(() => {
+            exportProgressBox.style.display = 'none';
+          }, 2500);
+          return true;
+        }
+      } catch (err) {
+        console.warn('Server transcode failed, falling back to direct download:', err);
+      }
+
+      // Fallback to direct client download if server is unreachable
+      const extension = (directVideoExtension && directVideoExtension.includes('mp4')) ? 'mp4' : 'webm';
+      const filename = `TCGC_IMGC26_Attending_Video_${name}.${extension}`;
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+
+      setTimeout(() => {
+        exportProgressBox.style.display = 'none';
+      }, 2500);
+      return false;
+    }
+
+    // 1-Click Download Video DP (WhatsApp H.264 + AAC Standard)
     const btnDownloadVideo = document.getElementById('btnDownloadVideo');
     const exportProgressBox = document.getElementById('exportProgressBox');
     const exportProgressBar = document.getElementById('exportProgressBar');
@@ -1451,26 +1504,21 @@
 
       const name = (attendeeNameInput.value.trim() || 'Attendee').replace(/[^a-zA-Z0-9_-]/g, '_');
 
-      // If recorded live from camera, download instantly with 100% audio and zero lag!
+      // 1. If already recorded live from camera, optimize directly with server (100% WhatsApp audio & video)
       if (directCompositedVideoBlob) {
-        const filename = `TCGC_IMGC26_Attending_Video_${name}.${directVideoExtension}`;
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(directCompositedVideoBlob);
-        link.download = filename;
-        link.click();
+        await downloadWhatsAppCompliantVideo(directCompositedVideoBlob, name);
         return;
       }
 
+      // 2. Fallback for uploaded video or adjusted transformations:
       exportProgressBox.style.display = 'block';
       exportProgressBar.style.width = '0%';
       exportPercent.textContent = '0%';
       exportStatusLabel.textContent = 'Rendering Video DP (With Audio)...';
 
-      // 1. Capture stream at 25 fps (smoother encoding, zero mobile dropped frames)
       const fps = 25;
       const canvasStream = canvas.captureStream(fps);
 
-      // 2. Mix in audio using Web Audio API + captureStream fallback
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') {
@@ -1541,23 +1589,9 @@
         userVideoEl.loop = true;
         userVideoEl.onended = null;
 
-        exportProgressBar.style.width = '100%';
-        exportPercent.textContent = '100%';
-        exportStatusLabel.textContent = 'Export Complete! Saving...';
-
-        recorder.onstop = () => {
-          const extension = (recorder.mimeType && recorder.mimeType.includes('mp4')) ? 'mp4' : 'webm';
+        recorder.onstop = async () => {
           const blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
-          const filename = `TCGC_IMGC26_Attending_Video_${name}.${extension}`;
-
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = filename;
-          link.click();
-
-          setTimeout(() => {
-            exportProgressBox.style.display = 'none';
-          }, 2500);
+          await downloadWhatsAppCompliantVideo(blob, name);
         };
 
         try {
@@ -1569,7 +1603,7 @@
 
       const progressInterval = setInterval(() => {
         elapsed += 0.25;
-        const pct = Math.min(Math.round((elapsed / targetDuration) * 100), 98);
+        const pct = Math.min(Math.round((elapsed / targetDuration) * 60), 60);
         exportProgressBar.style.width = `${pct}%`;
         exportPercent.textContent = `${pct}%`;
       }, 250);

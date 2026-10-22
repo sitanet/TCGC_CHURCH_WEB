@@ -11,7 +11,8 @@ import xml.etree.ElementTree as ET
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from .models import ConferenceRegistration, IMGCFeedingConfig, OnlineGiving, NewsletterSubscriber, Testimony
 
@@ -1122,10 +1123,12 @@ def attending_dp_view(request):
     return render(request, 'attending_dp.html', context)
 
 
+@csrf_exempt
 def api_generate_attending_video(request):
     """
-    Server-side fallback: composites an uploaded user video with the official attending overlay
-    and name using OpenCV and PIL, streaming back a 1080x1440 MP4.
+    Server-side converter and compositor:
+    Ensures 100% WhatsApp, iOS, and Android compatibility by encoding into
+    standard H.264 video (yuv420p) + AAC stereo audio + MP4 faststart atom.
     """
     if request.method != 'POST':
         return JsonResponse({'error': 'POST method required'}, status=405)
@@ -1134,12 +1137,59 @@ def api_generate_attending_video(request):
     if not video_file:
         return JsonResponse({'error': 'No video file uploaded'}, status=400)
 
+    import os
+    import re
     import tempfile
+    import subprocess
+    from django.conf import settings
+
+    name = request.POST.get('name', '').strip().upper()
+    is_composited = request.POST.get('is_composited', 'false').lower() in ('true', '1')
+
+    # Save uploaded video to temp file
+    with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as temp_in:
+        for chunk in video_file.chunks():
+            temp_in.write(chunk)
+        temp_in_path = temp_in.name
+
+    # 1. Fast Path: If client already rendered composite, transcode directly to WhatsApp standard (H.264 + AAC + faststart)
+    if is_composited:
+        fast_out_path = tempfile.mktemp(suffix='.mp4')
+        try:
+            cmd = [
+                'ffmpeg', '-y',
+                '-i', temp_in_path,
+                '-c:v', 'libx264',
+                '-preset', 'ultrafast',
+                '-crf', '23',
+                '-pix_fmt', 'yuv420p',
+                '-c:a', 'aac',
+                '-b:a', '128k',
+                '-ar', '44100',
+                '-movflags', '+faststart',
+                fast_out_path
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=30)
+            if res.returncode == 0 and os.path.exists(fast_out_path) and os.path.getsize(fast_out_path) > 1000:
+                with open(fast_out_path, 'rb') as f:
+                    video_bytes = f.read()
+                os.remove(fast_out_path)
+                os.remove(temp_in_path)
+
+                clean_name = re.sub(r'[^A-Za-z0-9_]+', '_', name or 'Attendee').strip('_')
+                response = HttpResponse(video_bytes, content_type='video/mp4')
+                response['Content-Disposition'] = f'attachment; filename="TCGC_IMGC26_Attending_Video_{clean_name}.mp4"'
+                return response
+        except Exception as e:
+            logger.warning(f"[ATTENDING_VIDEO_FAST_CONVERT_FAIL] {e}")
+            if os.path.exists(fast_out_path):
+                os.remove(fast_out_path)
+
+    # 2. Fallback Path: Raw user video composition using OpenCV and PIL
     import cv2
     import numpy as np
     from PIL import Image, ImageDraw, ImageFont
 
-    name = request.POST.get('name', '').strip().upper()
     try:
         scale_val = float(request.POST.get('scale', 1.0))
     except Exception:
@@ -1153,12 +1203,6 @@ def api_generate_attending_video(request):
     except Exception:
         pan_y = 0
     mirror = request.POST.get('mirror', 'false').lower() in ('true', '1')
-
-    # Save uploaded video to temp file
-    with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as temp_in:
-        for chunk in video_file.chunks():
-            temp_in.write(chunk)
-        temp_in_path = temp_in.name
 
     temp_out_path = tempfile.mktemp(suffix='.mp4')
 
@@ -1202,14 +1246,12 @@ def api_generate_attending_video(request):
             nw, nh = int(uf_w * final_scale), int(uf_h * final_scale)
             scaled = cv2.resize(frame, (nw, nh))
 
-            # Crop scaled frame to (win_w, win_h) around center + pan
             cx = (nw - win_w) // 2 - pan_x
             cy = (nh - win_h) // 2 - pan_y
             cx = max(0, min(cx, nw - win_w))
             cy = max(0, min(cy, nh - win_h))
             cropped = scaled[cy:cy+win_h, cx:cx+win_w]
 
-            # Place cropped into a canvas and rotate by 4.288 degrees to match stamp
             M_rot = cv2.getRotationMatrix2D((win_w / 2, win_h / 2), -angle_deg, 1.0)
             M_rot[0, 2] += (win_cx - win_w / 2)
             M_rot[1, 2] += (win_cy - win_h / 2)
@@ -1232,26 +1274,32 @@ def api_generate_attending_video(request):
         cap.release()
         writer.release()
 
-        # If ffmpeg is available on system, multiplex original audio track from uploaded file
+        # Multiplex audio and convert to WhatsApp-standard H.264 + AAC + faststart MP4
         final_video_path = temp_out_path
         audio_out_path = tempfile.mktemp(suffix='.mp4')
         try:
-            import subprocess
             cmd = [
                 'ffmpeg', '-y',
                 '-i', temp_out_path,
                 '-i', temp_in_path,
-                '-c:v', 'copy',
+                '-c:v', 'libx264',
+                '-preset', 'ultrafast',
+                '-crf', '23',
+                '-pix_fmt', 'yuv420p',
                 '-c:a', 'aac',
+                '-b:a', '128k',
+                '-ar', '44100',
                 '-map', '0:v:0',
                 '-map', '1:a:0?',
                 '-shortest',
+                '-movflags', '+faststart',
                 audio_out_path
             ]
-            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=25)
+            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=35)
             if res.returncode == 0 and os.path.exists(audio_out_path) and os.path.getsize(audio_out_path) > 1000:
                 final_video_path = audio_out_path
-        except Exception:
+        except Exception as e:
+            logger.warning(f"[ATTENDING_VIDEO_FFMPEG_FAIL] {e}")
             final_video_path = temp_out_path
 
         with open(final_video_path, 'rb') as f:
@@ -1260,8 +1308,8 @@ def api_generate_attending_video(request):
         if os.path.exists(audio_out_path):
             os.remove(audio_out_path)
 
-        response = HttpResponse(video_bytes, content_type='video/mp4')
         clean_name = re.sub(r'[^A-Za-z0-9_]+', '_', name or 'Attendee').strip('_')
+        response = HttpResponse(video_bytes, content_type='video/mp4')
         response['Content-Disposition'] = f'attachment; filename="TCGC_IMGC26_Attending_Video_{clean_name}.mp4"'
         return response
 
