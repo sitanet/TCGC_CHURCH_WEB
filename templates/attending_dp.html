@@ -938,6 +938,27 @@
             </div>
           </div>
         </div>
+
+        <!-- 5. Next Step: Invite Friends & Family Card -->
+        <div class="control-card tcgc-invite-next-step-card" id="inviteFriendsCard" style="border: 1.5px solid rgba(212, 175, 55, 0.45); background: linear-gradient(135deg, rgba(188, 17, 19, 0.22) 0%, rgba(212, 175, 55, 0.16) 100%); margin-top: 18px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">💌</span>
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; color: var(--gold); text-transform: uppercase;">Next Step: Invite Loved Ones</span>
+            </div>
+            <span style="background: rgba(212, 175, 55, 0.25); color: #FFF; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">Final Step</span>
+          </div>
+
+          <h4 style="font-family: 'Cinzel', serif; font-size: 19px; color: #FFF; margin: 0 0 8px; font-weight: 700;">
+            Now Invite Friends &amp; Family to IMGC '26
+          </h4>
+          <p style="font-size: 13.5px; color: #E2D3D6; line-height: 1.55; margin: 0 0 16px;">
+            Now that your "I Will Be Attending" DP is ready, invite friends, colleagues, and family to join you at the conference! Generate custom personalized invitation flyers with your name to share on WhatsApp and social media.
+          </p>
+          <a id="btnProceedToInvite" href="{% url 'imgc_invite' %}{% if initial_name %}?from={{ initial_name|urlencode }}{% endif %}" class="btn-action btn-gold" style="font-size: 15px; padding: 15px 20px; box-shadow: 0 8px 24px rgba(212, 175, 55, 0.45);">
+            <i class="fa-solid fa-envelope-open-text"></i> Proceed to Inviting Page &rarr;
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -1428,6 +1449,9 @@
         link.href = URL.createObjectURL(blob);
         link.download = filename;
         link.click();
+        setTimeout(() => {
+          showVideoExportedSuccessModal(name);
+        }, 1200);
       }, 'image/jpeg', 0.95);
     });
 
@@ -1463,7 +1487,8 @@
 
           setTimeout(() => {
             exportProgressBox.style.display = 'none';
-          }, 2500);
+            showVideoExportedSuccessModal(name);
+          }, 1800);
           return true;
         }
       } catch (err) {
@@ -1480,7 +1505,8 @@
 
       setTimeout(() => {
         exportProgressBox.style.display = 'none';
-      }, 2500);
+        showVideoExportedSuccessModal(name);
+      }, 1800);
       return false;
     }
 
@@ -1626,6 +1652,89 @@
       );
       window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
     });
+  
+    // Display Celebratory Success Modal with Link to Inviting Page
+    function showVideoExportedSuccessModal(name) {
+      const cleanName = (name || '').replace(/[^a-zA-Z0-9 _-]/g, ' ').trim();
+      const inviteUrl = '{% url "imgc_invite" %}' + (cleanName ? '?from=' + encodeURIComponent(cleanName) : '');
+
+      // Update button on page
+      const proceedBtn = document.getElementById('btnProceedToInvite');
+      if (proceedBtn) {
+        proceedBtn.href = inviteUrl;
+      }
+
+      // Highlight the next step card
+      const inviteCard = document.getElementById('inviteFriendsCard');
+      if (inviteCard) {
+        inviteCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inviteCard.style.boxShadow = '0 0 30px rgba(212, 175, 55, 0.8)';
+        inviteCard.style.borderColor = '#FFF';
+        setTimeout(() => {
+          inviteCard.style.boxShadow = '';
+          inviteCard.style.borderColor = 'rgba(212, 175, 55, 0.45)';
+        }, 3500);
+      }
+
+      // Check if modal already open
+      if (document.getElementById('videoExportModal')) return;
+
+      const modalEl = document.createElement('div');
+      modalEl.id = 'videoExportModal';
+      modalEl.style.cssText = `
+        position: fixed; inset: 0; z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px);
+        padding: 20px; animation: tcgcFadeIn 0.3s ease;
+      `;
+
+      modalEl.innerHTML = `
+        <div style="
+          background: linear-gradient(135deg, #1C0508 0%, #2A080D 100%);
+          border: 2px solid #D4AF37; border-radius: 24px;
+          max-width: 460px; width: 100%; padding: 32px 24px; text-align: center;
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); position: relative;
+        ">
+          <div style="font-size: 48px; line-height: 1; margin-bottom: 12px;">🎉</div>
+          <h3 style="font-family: 'Cinzel', serif; font-size: 23px; color: #FFF; margin: 0 0 8px; font-weight: 700;">
+            Video DP Saved Successfully!
+          </h3>
+          <p style="color: #E2D3D6; font-size: 14px; line-height: 1.5; margin: 0 0 20px;">
+            Your official <strong>"I Will Be Attending"</strong> video has been downloaded and is ready for your WhatsApp Status &amp; social media!
+          </p>
+          <div style="background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 14px; padding: 14px; margin-bottom: 22px;">
+            <div style="font-size: 12px; font-weight: 700; color: #D4AF37; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">
+              Final Step: Invite Loved Ones
+            </div>
+            <div style="font-size: 13.5px; color: #FFF; line-height: 1.4;">
+              Generate custom personalized invitation flyers with your name to invite friends and family!
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="${inviteUrl}" class="btn-action btn-gold" style="font-size: 15px; padding: 14px 20px; text-decoration: none;">
+              <i class="fa-solid fa-envelope-open-text"></i> Proceed to Inviting Page &rarr;
+            </a>
+            <button type="button" id="btnCloseExportModal" style="
+              background: transparent; border: 1px solid rgba(255, 255, 255, 0.2);
+              color: rgba(255, 255, 255, 0.7); padding: 10px; border-radius: 12px;
+              cursor: pointer; font-size: 13px;
+            ">
+              Stay on this page
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modalEl);
+
+      document.getElementById('btnCloseExportModal').onclick = () => {
+        modalEl.remove();
+      };
+      modalEl.onclick = (e) => {
+        if (e.target === modalEl) modalEl.remove();
+      };
+    }
+
   </script>
 </body>
 </html>

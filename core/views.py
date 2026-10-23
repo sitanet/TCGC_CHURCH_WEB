@@ -1116,7 +1116,7 @@ def attending_dp_view(request):
         'initial_name': name,
         'canonical_url': request.build_absolute_uri('/imgc/attending/'),
         'share_url': request.build_absolute_uri('/imgc/attending/'),
-        'conference_theme': "A Call to Worship: Becoming God's House",
+        'conference_theme': "The Rise of True Worshippers (Building God's House and place of rest)",
         'conference_dates': "23rd – 29th November, 2026",
         'venue': "The CityGate Church, Ibadan",
     }
