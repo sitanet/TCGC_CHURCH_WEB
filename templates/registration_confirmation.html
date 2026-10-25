@@ -174,12 +174,18 @@
                             {% endif %}
                         </td>
                     </tr>
-                    {% if reg.designation == 'church_worker' and reg.amount_paid and reg.amount_paid > 0 %}
+                    {% if reg.amount_paid and reg.amount_paid > 0 %}
                     <tr class="tcgc-confirm-row-highlight">
                         <td>Total Amount to Pay</td>
                         <td>
                             <strong class="tcgc-confirm-amount">&#8358;{{ reg.amount_paid|floatformat:2 }}</strong>
-                            <span class="tcgc-confirm-days-sub">({{ reg.feeding_days|default:'All 5 Days' }})</span>
+                            <span class="tcgc-confirm-days-sub">
+                                {% if reg.attendance_mode == 'camping' %}
+                                    (Camping Stay &amp; Feeding &bull; All 5 Days)
+                                {% else %}
+                                    ({{ reg.feeding_days|default:'All 5 Days' }})
+                                {% endif %}
+                            </span>
                         </td>
                     </tr>
                     {% if feeding_config.account_number %}

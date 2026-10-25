@@ -134,12 +134,13 @@ def _send_imgc_confirmation_email_sync(registration_id):
             clean_phone_alt = CAMPING_DISPATCH_PHONE_ALT.replace('+', '').replace(' ', '').replace('-', '')
             if registration.attendance_mode == 'camping':
                 desk_name = "Camping & Accommodation Desk"
-                dispatch_desc = "To finalize your Camp Accommodation and Feeding Allocation, please send your registration code to either of the camp desks via WhatsApp."
+                fee_line = f" Expected Camp Fee: ₦{registration.amount_paid:,.2f} (5 Days Camping Stay & Feeding)." if (registration.amount_paid and registration.amount_paid > 0) else ""
+                dispatch_desc = f"To finalize your Camp Accommodation and Feeding Allocation,{fee_line} please send your registration code to either of the camp desks via WhatsApp."
                 wa_msg = (
                     f"Hello TCGC Protocol & Registration Team, my name is {registration.first_name} {registration.surname}. "
                     f"I have registered for Image & Glory Conference 2026 (IMGC 2026) as a CAMPER. "
                     f"My Registration Code is: {registration.registration_code}. "
-                    f"Feeding Plan: {registration.get_feeding_subscription_display()}. "
+                    f"Feeding Plan: {registration.get_feeding_subscription_display()}.{fee_line} "
                     f"Phone: {registration.phone_number}. Please verify my accommodation and feeding reservation."
                 )
                 encoded_msg = urllib.parse.quote(wa_msg)
@@ -171,7 +172,7 @@ def _send_imgc_confirmation_email_sync(registration_id):
                 desk_name = "Meal & Feeding Ticket Desk"
                 plan_summary = registration.get_feeding_summary()
                 fee_line = ""
-                if registration.designation == 'church_worker' and registration.amount_paid and registration.amount_paid > 0:
+                if registration.amount_paid and registration.amount_paid > 0:
                     fee_line = f" Expected Meal Fee: ₦{registration.amount_paid:,.2f} ({registration.feeding_days or 'All 5 Days'})."
                 dispatch_desc = f"To confirm your {plan_summary},{fee_line} please send your registration code to either of our registration & meal desks via WhatsApp."
                 wa_msg = (
@@ -208,7 +209,7 @@ def _send_imgc_confirmation_email_sync(registration_id):
 
         worker_fee_email_row = ""
         worker_fee_text_row = ""
-        if registration.designation == 'church_worker' and registration.amount_paid and registration.amount_paid > 0:
+        if registration.amount_paid and registration.amount_paid > 0:
             worker_fee_text_row = f"\nTotal Amount to Pay: ₦{registration.amount_paid:,.2f} ({registration.feeding_days or 'All 5 Days'})\n"
             worker_fee_email_row = f"""
             <tr style="background-color: #F0FDF4;">
@@ -657,7 +658,9 @@ def registration(request):
 
         # Compute dynamic feeding fee for TCGC Service Team (`church_worker` + `lunch_only`)
         calculated_amount = Decimal('0.00')
-        if designation == 'church_worker' and feeding_subscription == 'lunch_only':
+        if attendance_mode == 'camping':
+            calculated_amount = Decimal('13000.00')
+        elif designation == 'church_worker' and feeding_subscription == 'lunch_only':
             if not feeding_days or feeding_days.strip().lower() in ('all', 'all days', 'all 5 days', 'all_days'):
                 days_count = 5
             else:
@@ -808,12 +811,15 @@ def registration_confirmation(request, registration_code):
         clean_phone = reg.dispatch_phone_target.replace('+', '').replace(' ', '').replace('-', '')
         clean_phone_alt = CAMPING_DISPATCH_PHONE_ALT.replace('+', '').replace(' ', '').replace('-', '')
         if reg.attendance_mode == 'camping':
+            fee_note = f"\n💳 Total Camping Fee: *₦{reg.amount_paid:,.2f}* (5 Days Stay & Feeding)" if (reg.amount_paid and reg.amount_paid > 0) else ""
+            if reg.amount_paid and reg.amount_paid > 0 and feeding_config.account_number:
+                fee_note += f"\n🏦 Transfer Account: {feeding_config.bank_name} - {feeding_config.account_number} ({feeding_config.account_name})"
             msg_text = (
                 f"Hello TCGC Protocol & Registration Team,\n\n"
                 f"My name is {reg.first_name} {reg.surname}.\n"
                 f"I have registered for Image & Glory Conference 2026 (IMGC 2026) as a CAMPER.\n\n"
                 f"📋 Registration Code: *{reg.registration_code}*\n"
-                f"🍽️ Feeding Plan: *{reg.get_feeding_summary()}*\n"
+                f"🍽️ Feeding Plan: *{reg.get_feeding_summary()}*{fee_note}\n"
                 f"📞 Phone: {reg.phone_number}\n"
                 f"📍 Location: {reg.city}, {reg.country}\n\n"
                 f"Please verify my accommodation and feeding reservation. Thank you!"
@@ -824,7 +830,7 @@ def registration_confirmation(request, registration_code):
         else:
             plan_summary = reg.get_feeding_summary()
             fee_note = ""
-            if reg.designation == 'church_worker' and reg.amount_paid and reg.amount_paid > 0:
+            if reg.amount_paid and reg.amount_paid > 0:
                 fee_note = f"\n💳 Amount to Pay: *₦{reg.amount_paid:,.2f}* ({reg.feeding_days or 'All 5 Days'})"
                 if feeding_config.account_number:
                     fee_note += f"\n🏦 Transfer Account: {feeding_config.bank_name} - {feeding_config.account_number} ({feeding_config.account_name})"
