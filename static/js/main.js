@@ -103,6 +103,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (onlineNoneInput) onlineNoneInput.disabled = true;
 
         if (mode === 'camping') {
+            // Camping selected: strictly mutually exclusive with Service Team lunch plan
+            if (designationSelect && designationSelect.value === 'church_worker') {
+                designationSelect.value = ''; // Deselect Service Team so only Camping is active
+            }
+            if (workerFeedingSection) {
+                workerFeedingSection.style.display = 'none';
+            }
+            const workerLunchYes = document.getElementById('workerLunchYes');
+            const workerLunchNo = document.getElementById('workerLunchNo');
+            if (workerLunchYes) workerLunchYes.checked = false;
+            if (workerLunchNo) workerLunchNo.checked = true;
+
+            if (nonCampingFullLabel) nonCampingFullLabel.style.display = 'block';
+
             if (campingBox) campingBox.style.display = 'block';
             campingInputs.forEach((i) => (i.disabled = false));
             const hasChecked = Array.from(campingInputs).some((i) => i.checked);
@@ -112,6 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             handleLunchSelection(false);
         } else if (mode === 'non_camping') {
+            // Non-camping: disable and uncheck all camping options
+            campingInputs.forEach((i) => {
+                i.checked = false;
+                i.disabled = true;
+            });
+
             if (nonCampingBox) nonCampingBox.style.display = 'block';
             nonCampingInputs.forEach((i) => (i.disabled = false));
             const hasChecked = Array.from(nonCampingInputs).some((i) => i.checked);
@@ -122,6 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const lunchRadio = document.getElementById('feedNonCampingLunch');
             handleLunchSelection(lunchRadio ? lunchRadio.checked : false);
         } else if (mode === 'online') {
+            if (workerFeedingSection) {
+                workerFeedingSection.style.display = 'none';
+            }
             if (onlineBox) onlineBox.style.display = 'block';
             if (onlineNoneInput) onlineNoneInput.disabled = false;
             handleLunchSelection(false);
@@ -303,14 +326,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (value === 'church_worker') {
+            // Service Team selected: strictly mutually exclusive with Camping! Automatically switch to Physical Day (Non-Camping)
+            selectAttendanceMode('non_camping');
+
             if (workerFeedingSection) {
                 workerFeedingSection.style.display = 'block';
-                const currentMode = modeInput ? modeInput.value : 'camping';
-                if (currentMode !== 'camping') {
-                    selectAttendanceMode('non_camping');
-                } else {
-                    selectAttendanceMode('non_camping');
-                }
+                const workerLunchYes = document.getElementById('workerLunchYes');
+                if (workerLunchYes) workerLunchYes.checked = true;
+                const innerContainer = document.getElementById('workerDaysInnerContainer');
+                if (innerContainer) innerContainer.style.display = 'block';
+
                 const lunchRadio = document.getElementById('feedNonCampingLunch');
                 if (lunchRadio) {
                     lunchRadio.checked = true;
