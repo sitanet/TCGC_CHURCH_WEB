@@ -805,10 +805,16 @@ def registration_confirmation(request, registration_code):
     feeding_config = IMGCFeedingConfig.get_config()
     reg = get_object_or_404(ConferenceRegistration, registration_code=registration_code)
 
+    # Ensure camping fee (₦13,000.00 for 5 days) is explicitly populated if zero or unset
+    if reg.attendance_mode == 'camping' and (not reg.amount_paid or reg.amount_paid <= 0):
+        reg.amount_paid = Decimal('13000.00')
+        reg.save(update_fields=['amount_paid'])
+
     whatsapp_url = None
     whatsapp_url_alt = None
-    if reg.requires_code_dispatch and reg.dispatch_phone_target:
-        clean_phone = reg.dispatch_phone_target.replace('+', '').replace(' ', '').replace('-', '')
+    target_phone = reg.dispatch_phone_target or CAMPING_DISPATCH_PHONE
+    if reg.requires_code_dispatch or reg.attendance_mode == 'camping' or (reg.amount_paid and reg.amount_paid > 0):
+        clean_phone = target_phone.replace('+', '').replace(' ', '').replace('-', '')
         clean_phone_alt = CAMPING_DISPATCH_PHONE_ALT.replace('+', '').replace(' ', '').replace('-', '')
         if reg.attendance_mode == 'camping':
             fee_note = f"\n💳 Total Camping Fee: *₦{reg.amount_paid:,.2f}* (5 Days Stay & Feeding)" if (reg.amount_paid and reg.amount_paid > 0) else ""

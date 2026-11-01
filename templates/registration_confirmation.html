@@ -76,6 +76,160 @@
             </div>
         </div>
 
+        <!-- TOP OFFICIAL PAYMENT ACCOUNT & ACCREDITATION CARD -->
+        {% if reg.amount_paid and reg.amount_paid > 0 or reg.attendance_mode == 'camping' or feeding_config.account_number %}
+        <div class="tcgc-top-payment-card" id="topPaymentAccountCard" style="background: #FFFFFF; border: 2.5px solid #D4AF37; border-radius: 18px; padding: 28px 24px; margin: 0 0 32px 0; box-shadow: 0 12px 36px rgba(188, 17, 19, 0.08), 0 4px 16px rgba(212, 175, 55, 0.18);">
+            
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; border-bottom: 1.5px solid #F0E6D2; padding-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #BC1113 0%, #78101E 100%); display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 20px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(188, 17, 19, 0.3);">
+                        💳
+                    </div>
+                    <div>
+                        <h3 style="font-family: 'Cinzel', serif; font-size: 22px; color: #78101E; margin: 0; font-weight: 700; line-height: 1.2;">
+                            Official Payment Account
+                        </h3>
+                        <p style="margin: 3px 0 0; color: #555555; font-size: 14px; font-weight: 500;">
+                            {% if reg.amount_paid and reg.amount_paid > 0 or reg.attendance_mode == 'camping' %}
+                                Conference Accommodation &amp; Feeding Fee
+                            {% else %}
+                                Conference Giving &amp; Support Account
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(212, 175, 55, 0.15); border: 1.5px solid #D4AF37; padding: 6px 16px; border-radius: 999px;">
+                    <span style="font-size: 12.5px; font-weight: 800; letter-spacing: 0.8px; color: #8B1214; text-transform: uppercase;">
+                        {% if reg.amount_paid and reg.amount_paid > 0 or reg.attendance_mode == 'camping' %}
+                            Action Required &bull; Payment
+                        {% else %}
+                            Official Account
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            {% if reg.amount_paid and reg.amount_paid > 0 or reg.attendance_mode == 'camping' %}
+            <!-- Total Amount Due Callout -->
+            <div style="background: linear-gradient(135deg, #FFF9EB 0%, #FFF4D9 100%); border-left: 5px solid #D4AF37; border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
+                <div>
+                    <span style="font-size: 12px; font-weight: 700; color: #78101E; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 4px;">TOTAL AMOUNT TO PAY:</span>
+                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: #A01524; line-height: 1.1;">
+                        &#8358;{{ reg.amount_paid|default:13000|floatformat:2 }}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="display: inline-block; background: #BC1113; color: #FFFFFF; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 6px; margin-bottom: 4px;">
+                        {% if reg.attendance_mode == 'camping' %}
+                            Full 5-Day Stay
+                        {% else %}
+                            {{ reg.feeding_days|default:'All 5 Days' }}
+                        {% endif %}
+                    </span>
+                    <div style="font-size: 13.5px; color: #444444; font-weight: 600;">
+                        {% if reg.attendance_mode == 'camping' %}
+                            Hostel Accommodation + Hot Lunch &amp; Dinner Included
+                        {% else %}
+                            {{ reg.get_feeding_summary }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Account Details Box -->
+            {% if feeding_config.account_number %}
+            <div style="background: #FDFBF4; border: 1.5px solid #E6D5AC; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; align-items: center;">
+                    <!-- Bank Name -->
+                    <div>
+                        <span style="font-size: 11.5px; font-weight: 700; color: #666666; text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px;">Bank Name</span>
+                        <div style="font-size: 18px; font-weight: 800; color: #1C0508;">
+                            {{ feeding_config.bank_name|default:'The CityGate Church' }}
+                        </div>
+                    </div>
+
+                    <!-- Account Number with Copy Button -->
+                    <div>
+                        <span style="font-size: 11.5px; font-weight: 700; color: #666666; text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px;">Account Number</span>
+                        <div style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1.5px solid #D4AF37; border-radius: 8px; padding: 6px 12px;">
+                            <span id="topAccountNumber" style="font-family: monospace, Courier; font-size: 21px; font-weight: 800; color: #BC1113; letter-spacing: 1px;">
+                                {{ feeding_config.account_number }}
+                            </span>
+                            <button type="button" onclick="copyPaymentText('{{ feeding_config.account_number }}', this, 'Copied! ✓')" style="background: #8B1214; color: #FFFFFF; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Account Name -->
+                    <div>
+                        <span style="font-size: 11.5px; font-weight: 700; color: #666666; text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px;">Account Name</span>
+                        <div style="font-size: 16.5px; font-weight: 700; color: #1C0508;">
+                            {{ feeding_config.account_name|default:'The CityGate Church' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- If account number is in configuration mode -->
+            <div style="background: #FDFBF4; border: 1.5px solid #E6D5AC; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                <p style="font-size: 15px; color: #2C2C2C; margin: 0 0 10px; font-weight: 600;">
+                    To complete your payment for <strong>&#8358;{{ reg.amount_paid|default:13000|floatformat:2 }}</strong>, please click either of our official WhatsApp desks below to receive payment account details and submit your proof of transfer.
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Narration / Transfer Description Alert -->
+            <div style="background: #FFF3CD; border: 1.5px solid #FFEEBA; border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 22px;">⚠️</span>
+                    <div>
+                        <span style="font-size: 14px; color: #856404; font-weight: 600;">
+                            Payment Narration / Remark: 
+                            <strong style="color: #721c24; font-size: 15.5px; font-family: monospace;">{{ reg.registration_code }}</strong>
+                        </span>
+                        <div style="font-size: 12.5px; font-weight: 500; color: #664d03; margin-top: 2px;">
+                            Please enter your Registration Code in the bank transfer remarks for instant accreditation verification.
+                        </div>
+                    </div>
+                </div>
+                <button type="button" onclick="copyPaymentText('{{ reg.registration_code }}', this, 'Code Copied! ✓')" style="background: #856404; color: #FFFFFF; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                    <span>Copy Code</span>
+                </button>
+            </div>
+
+            {% if feeding_config.payment_notes %}
+            <p style="font-size: 13.5px; color: #666666; margin: 0 0 20px; font-style: italic; line-height: 1.5;">
+                {{ feeding_config.payment_notes }}
+            </p>
+            {% endif %}
+
+            <!-- Direct WhatsApp Receipt Dispatch Action -->
+            <div style="text-align: center; border-top: 1.5px solid #F0E6D2; padding-top: 20px;">
+                <p style="font-size: 14.5px; color: #333333; margin: 0 0 14px; font-weight: 600;">
+                    After completing your transfer, send your receipt / confirmation to either desk:
+                </p>
+                <div class="tcgc-whatsapp-btn-group" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    {% if whatsapp_url %}
+                    <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-primary" style="background: #25D366; color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);">
+                        <span>Send Payment Receipt to Desk 1 (+234 706 521 3082)</span>
+                        <span class="tcgc-arrow-long">&#8594;</span>
+                    </a>
+                    {% endif %}
+                    {% if whatsapp_url_alt %}
+                    <a href="{{ whatsapp_url_alt }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-secondary" style="background: #128C7E; color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(18, 140, 126, 0.35);">
+                        <span>Send Payment Receipt to Desk 2 (+234 703 205 5268)</span>
+                        <span class="tcgc-arrow-long">&#8594;</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+        {% endif %}
+
         <!-- Primary Next Step: "I Will Be Attending" Form & Video DP Card -->
         <div class="tcgc-attending-callout-card" style="background: linear-gradient(135deg, #1C0508 0%, #2E0B11 50%, #150306 100%); border: 2px solid #D4AF37; border-radius: 20px; padding: 34px 24px; margin: 28px 0; text-align: center; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);">
             <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(212, 175, 55, 0.2); border: 1.5px solid #D4AF37; padding: 6px 18px; border-radius: 999px; margin-bottom: 14px;">
@@ -174,7 +328,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    {% if reg.amount_paid and reg.amount_paid > 0 %}
+                    {% if reg.amount_paid and reg.amount_paid > 0 or reg.attendance_mode == 'camping' %}
                     <tr class="tcgc-confirm-row-highlight">
                         <td>Total Amount to Pay</td>
                         <td>
@@ -226,4 +380,52 @@
         </div>
     </div>
 </section>
+
+<script>
+function copyPaymentText(text, btnElement, successMsg) {
+    if (!text) return;
+    function showCopied() {
+        if (!btnElement) return;
+        var origHtml = btnElement.getAttribute('data-original-html') || btnElement.innerHTML;
+        if (!btnElement.getAttribute('data-original-html')) {
+            btnElement.setAttribute('data-original-html', origHtml);
+        }
+        btnElement.innerHTML = '<span>' + (successMsg || 'Copied! ✓') + '</span>';
+        var origBg = btnElement.style.background;
+        btnElement.style.background = '#28a745';
+        btnElement.style.color = '#ffffff';
+        setTimeout(function() {
+            btnElement.innerHTML = origHtml;
+            btnElement.style.background = origBg;
+            btnElement.style.color = '';
+        }, 2500);
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showCopied).catch(function() {
+            fallbackPaymentCopy(text, showCopied);
+        });
+    } else {
+        fallbackPaymentCopy(text, showCopied);
+    }
+}
+
+function fallbackPaymentCopy(text, callback) {
+    var textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        if (callback) callback();
+    } catch (e) {
+        console.error('Copy fallback failed', e);
+    }
+    document.body.removeChild(textArea);
+}
+</script>
 {% endblock %}
