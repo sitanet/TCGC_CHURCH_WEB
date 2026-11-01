@@ -212,15 +212,15 @@
                     After completing your transfer, send your receipt / confirmation to either desk:
                 </p>
                 <div class="tcgc-whatsapp-btn-group" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    {% if whatsapp_url %}
-                    <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-primary" style="background: #25D366; color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);">
-                        <span>Send Payment Receipt to Desk 1 (+234 706 521 3082)</span>
+                    {% if whatsapp_url_camp or whatsapp_url %}
+                    <a href="{{ whatsapp_url_camp|default:whatsapp_url }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-primary" style="background: #25D366; color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);">
+                        <span>🏕️ Send Payment Receipt to Camp Coordinator (07065213082)</span>
                         <span class="tcgc-arrow-long">&#8594;</span>
                     </a>
                     {% endif %}
-                    {% if whatsapp_url_alt %}
-                    <a href="{{ whatsapp_url_alt }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-secondary" style="background: #128C7E; color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(18, 140, 126, 0.35);">
-                        <span>Send Payment Receipt to Desk 2 (+234 703 205 5268)</span>
+                    {% if whatsapp_url_kitchen or whatsapp_url_alt %}
+                    <a href="{{ whatsapp_url_kitchen|default:whatsapp_url_alt }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-secondary" style="background: #128C7E; color: #FFFFFF; border: none; box-shadow: 0 4px 14px rgba(18, 140, 126, 0.35);">
+                        <span>🍽️ Send Payment Receipt to Kitchen Coordinator (07032055268)</span>
                         <span class="tcgc-arrow-long">&#8594;</span>
                     </a>
                     {% endif %}
@@ -263,22 +263,22 @@
         <!-- Mandatory WhatsApp Dispatch Notice if Camping or Meal Subscribed -->
         {% if reg.requires_code_dispatch and whatsapp_url %}
         <div class="tcgc-whatsapp-dispatch-card">
-            <h3 class="tcgc-whatsapp-dispatch-title">Important Next Step — WhatsApp Verification</h3>
+            <h3 class="tcgc-whatsapp-dispatch-title">Important Next Step — Coordinator Verification</h3>
             <p class="tcgc-whatsapp-dispatch-desc">
                 {% if reg.attendance_mode == 'camping' %}
-                    To finalize your <strong>Camp Accommodation &amp; Feeding Allocation</strong>, please click below to send your Registration Code (<strong>{{ reg.registration_code }}</strong>) to either of the <strong>Camping &amp; Accommodation Desks</strong>.
+                    To finalize your <strong>Camp Accommodation &amp; Feeding Allocation</strong>, please click below to send your Registration Code (<strong>{{ reg.registration_code }}</strong>) to our <strong>Camp Coordinator</strong> and <strong>Kitchen Coordinator</strong>.
                 {% else %}
-                    To confirm your <strong>{{ reg.get_feeding_summary }}</strong>, please click below to send your Registration Code (<strong>{{ reg.registration_code }}</strong>) to either of the <strong>Registration &amp; Meal Desks</strong>.
+                    To confirm your <strong>{{ reg.get_feeding_summary }}</strong>, please click below to send your Registration Code (<strong>{{ reg.registration_code }}</strong>) to our <strong>Kitchen Coordinator</strong> or <strong>Camp Coordinator</strong>.
                 {% endif %}
             </p>
             <div class="tcgc-whatsapp-btn-group">
-                <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-primary">
-                    <span>Send Code to Desk 1 (+234 706 521 3082)</span>
+                <a href="{{ whatsapp_url_camp|default:whatsapp_url }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-primary">
+                    <span>🏕️ Camp Coordinator: 07065213082 (+234 706 521 3082)</span>
                     <span class="tcgc-arrow-long">&#8594;</span>
                 </a>
-                {% if whatsapp_url_alt %}
-                <a href="{{ whatsapp_url_alt }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-secondary">
-                    <span>Send Code to Desk 2 (+234 703 205 5268)</span>
+                {% if whatsapp_url_kitchen or whatsapp_url_alt %}
+                <a href="{{ whatsapp_url_kitchen|default:whatsapp_url_alt }}" target="_blank" rel="noopener" class="tcgc-btn-whatsapp-secondary">
+                    <span>🍽️ Kitchen Coordinator: 07032055268 (+234 703 205 5268)</span>
                     <span class="tcgc-arrow-long">&#8594;</span>
                 </a>
                 {% endif %}

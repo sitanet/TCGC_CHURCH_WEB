@@ -49,9 +49,12 @@ _YOUTUBE_LIVE_CACHE = {
 # ============================================================================
 # Image & Glory Conference (IMGC) Registration Constants & Helpers
 # ============================================================================
-CAMPING_DISPATCH_PHONE = "+2347065213082"       # Primary Camp & Accommodation Desk (+234 706 521 3082)
-CAMPING_DISPATCH_PHONE_ALT = "+2347032055268"   # Secondary Camp Desk (+234 703 205 5268)
-LUNCH_DISPATCH_PHONE = "+2347065213082"         # Dedicated WhatsApp contact for Day Attendee Lunch Meal Ticket Desk
+CAMP_COORDINATOR_PHONE = "+2347065213082"       # Camp Coordinator (+234 706 521 3082 / 07065213082)
+KITCHEN_COORDINATOR_PHONE = "+2347032055268"   # Kitchen Coordinator (+234 703 205 5268 / 07032055268)
+
+CAMPING_DISPATCH_PHONE = CAMP_COORDINATOR_PHONE
+CAMPING_DISPATCH_PHONE_ALT = KITCHEN_COORDINATOR_PHONE
+LUNCH_DISPATCH_PHONE = KITCHEN_COORDINATOR_PHONE
 
 
 def _generate_imgc_code(attendance_mode, feeding_subscription):
@@ -149,8 +152,8 @@ def _send_imgc_confirmation_email_sync(registration_id):
 
                 action_text = (
                     f"\nIMPORTANT NEXT STEP:\n{dispatch_desc}\nSend your code ({registration.registration_code}) to:\n"
-                    f"• Camp Desk 1: {registration.dispatch_phone_target} ({wa_link})\n"
-                    f"• Camp Desk 2: {CAMPING_DISPATCH_PHONE_ALT} ({wa_link_alt})\n"
+                    f"• Camp Coordinator: {CAMP_COORDINATOR_PHONE} ({wa_link})\n"
+                    f"• Kitchen Coordinator: {KITCHEN_COORDINATOR_PHONE} ({wa_link_alt})\n"
                 )
                 action_html = f"""
                 <div style="background-color: #F0FDF4; border: 1px solid #86EFAC; border-radius: 8px; padding: 18px 20px; margin: 24px 0; text-align: center;">
@@ -158,12 +161,12 @@ def _send_imgc_confirmation_email_sync(registration_id):
                     <p style="color: #166534; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">{dispatch_desc}</p>
                     <div style="margin-bottom: 10px;">
                         <a href="{wa_link}" target="_blank" style="background-color: #25D366; color: #000000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 24px; display: inline-block;">
-                            Send Code to Desk 1 (+234 706 521 3082)
+                            Camp Coordinator (07065213082)
                         </a>
                     </div>
                     <div>
                         <a href="{wa_link_alt}" target="_blank" style="background-color: #128C7E; color: #FFFFFF; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 24px; display: inline-block;">
-                            Send Code to Desk 2 (+234 703 205 5268)
+                            Kitchen Coordinator (07032055268)
                         </a>
                     </div>
                 </div>
@@ -196,12 +199,12 @@ def _send_imgc_confirmation_email_sync(registration_id):
                     <p style="color: #166534; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">{dispatch_desc}</p>
                     <div style="margin-bottom: 10px;">
                         <a href="{wa_link}" target="_blank" style="background-color: #25D366; color: #000000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 24px; display: inline-block;">
-                            Send Code to Desk 1 (+234 706 521 3082)
+                            Camp Coordinator (07065213082)
                         </a>
                     </div>
                     <div>
                         <a href="{wa_link_alt}" target="_blank" style="background-color: #128C7E; color: #FFFFFF; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 24px; display: inline-block;">
-                            Send Code to Desk 2 (+234 703 205 5268)
+                            Kitchen Coordinator (07032055268)
                         </a>
                     </div>
                 </div>
@@ -812,27 +815,42 @@ def registration_confirmation(request, registration_code):
 
     whatsapp_url = None
     whatsapp_url_alt = None
-    target_phone = reg.dispatch_phone_target or CAMPING_DISPATCH_PHONE
+    whatsapp_url_camp = None
+    whatsapp_url_kitchen = None
+
+    clean_camp_phone = CAMP_COORDINATOR_PHONE.replace('+', '').replace(' ', '').replace('-', '')
+    clean_kitchen_phone = KITCHEN_COORDINATOR_PHONE.replace('+', '').replace(' ', '').replace('-', '')
+
     if reg.requires_code_dispatch or reg.attendance_mode == 'camping' or (reg.amount_paid and reg.amount_paid > 0):
-        clean_phone = target_phone.replace('+', '').replace(' ', '').replace('-', '')
-        clean_phone_alt = CAMPING_DISPATCH_PHONE_ALT.replace('+', '').replace(' ', '').replace('-', '')
         if reg.attendance_mode == 'camping':
             fee_note = f"\n💳 Total Camping Fee: *₦{reg.amount_paid:,.2f}* (5 Days Stay & Feeding)" if (reg.amount_paid and reg.amount_paid > 0) else ""
             if reg.amount_paid and reg.amount_paid > 0 and feeding_config.account_number:
                 fee_note += f"\n🏦 Transfer Account: {feeding_config.bank_name} - {feeding_config.account_number} ({feeding_config.account_name})"
-            msg_text = (
-                f"Hello TCGC Protocol & Registration Team,\n\n"
+            
+            # Camp Coordinator (07065213082) Message
+            msg_camp = (
+                f"Hello TCGC Camp Coordinator,\n\n"
                 f"My name is {reg.first_name} {reg.surname}.\n"
                 f"I have registered for Image & Glory Conference 2026 (IMGC 2026) as a CAMPER.\n\n"
                 f"📋 Registration Code: *{reg.registration_code}*\n"
                 f"🍽️ Feeding Plan: *{reg.get_feeding_summary()}*{fee_note}\n"
                 f"📞 Phone: {reg.phone_number}\n"
                 f"📍 Location: {reg.city}, {reg.country}\n\n"
-                f"Please verify my accommodation and feeding reservation. Thank you!"
+                f"Please verify my camp accommodation reservation and payment. Thank you!"
             )
-            encoded_msg = urllib.parse.quote(msg_text)
-            whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_msg}"
-            whatsapp_url_alt = f"https://wa.me/{clean_phone_alt}?text={encoded_msg}"
+            whatsapp_url_camp = f"https://wa.me/{clean_camp_phone}?text={urllib.parse.quote(msg_camp)}"
+
+            # Kitchen Coordinator (07032055268) Message
+            msg_kitchen = (
+                f"Hello TCGC Kitchen Coordinator,\n\n"
+                f"My name is {reg.first_name} {reg.surname}.\n"
+                f"I have registered for Image & Glory Conference 2026 (IMGC 2026) as a CAMPER.\n\n"
+                f"📋 Registration Code: *{reg.registration_code}*\n"
+                f"🍽️ Feeding Plan: *{reg.get_feeding_summary()}*{fee_note}\n"
+                f"📞 Phone: {reg.phone_number}\n\n"
+                f"Please verify my conference feeding allocation and payment. Thank you!"
+            )
+            whatsapp_url_kitchen = f"https://wa.me/{clean_kitchen_phone}?text={urllib.parse.quote(msg_kitchen)}"
         else:
             plan_summary = reg.get_feeding_summary()
             fee_note = ""
@@ -840,18 +858,33 @@ def registration_confirmation(request, registration_code):
                 fee_note = f"\n💳 Amount to Pay: *₦{reg.amount_paid:,.2f}* ({reg.feeding_days or 'All 5 Days'})"
                 if feeding_config.account_number:
                     fee_note += f"\n🏦 Transfer Account: {feeding_config.bank_name} - {feeding_config.account_number} ({feeding_config.account_name})"
-            msg_text = (
-                f"Hello TCGC Protocol & Registration Team,\n\n"
+            
+            # Kitchen Coordinator (07032055268) Message
+            msg_kitchen = (
+                f"Hello TCGC Kitchen Coordinator,\n\n"
                 f"My name is {reg.first_name} {reg.surname}.\n"
                 f"I have registered for Image & Glory Conference 2026 (IMGC 2026) (TCGC Service Team / Day Attendee).\n\n"
                 f"📋 Registration Code: *{reg.registration_code}*\n"
                 f"🍽️ Meal Plan: *{plan_summary}*{fee_note}\n"
                 f"📞 Phone: {reg.phone_number}\n\n"
-                f"Please verify my meal ticket subscription. Thank you!"
+                f"Please verify my meal ticket subscription and payment. Thank you!"
             )
-            encoded_msg = urllib.parse.quote(msg_text)
-            whatsapp_url = f"https://wa.me/{clean_phone}?text={encoded_msg}"
-            whatsapp_url_alt = f"https://wa.me/{clean_phone_alt}?text={encoded_msg}"
+            whatsapp_url_kitchen = f"https://wa.me/{clean_kitchen_phone}?text={urllib.parse.quote(msg_kitchen)}"
+
+            # Camp Coordinator (07065213082) Message
+            msg_camp = (
+                f"Hello TCGC Camp Coordinator,\n\n"
+                f"My name is {reg.first_name} {reg.surname}.\n"
+                f"I have registered for Image & Glory Conference 2026 (IMGC 2026) (TCGC Service Team / Day Attendee).\n\n"
+                f"📋 Registration Code: *{reg.registration_code}*\n"
+                f"🍽️ Meal Plan: *{plan_summary}*{fee_note}\n"
+                f"📞 Phone: {reg.phone_number}\n\n"
+                f"Please verify my registration and attendance details. Thank you!"
+            )
+            whatsapp_url_camp = f"https://wa.me/{clean_camp_phone}?text={urllib.parse.quote(msg_camp)}"
+
+        whatsapp_url = whatsapp_url_camp
+        whatsapp_url_alt = whatsapp_url_kitchen
 
     return render(request, 'registration_confirmation.html', {
         'active_page': 'events',
@@ -859,8 +892,12 @@ def registration_confirmation(request, registration_code):
         'feeding_config': feeding_config,
         'whatsapp_url': whatsapp_url,
         'whatsapp_url_alt': whatsapp_url_alt,
-        'camp_phone_1': CAMPING_DISPATCH_PHONE,
-        'camp_phone_2': CAMPING_DISPATCH_PHONE_ALT,
+        'whatsapp_url_camp': whatsapp_url_camp,
+        'whatsapp_url_kitchen': whatsapp_url_kitchen,
+        'camp_coordinator_phone': CAMP_COORDINATOR_PHONE,
+        'kitchen_coordinator_phone': KITCHEN_COORDINATOR_PHONE,
+        'camp_phone_1': CAMP_COORDINATOR_PHONE,
+        'camp_phone_2': KITCHEN_COORDINATOR_PHONE,
     })
 
 
