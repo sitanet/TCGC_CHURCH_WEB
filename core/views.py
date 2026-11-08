@@ -1047,9 +1047,11 @@ def video_streaming(request):
         request.GET.get('app') == '1'
         or request.GET.get('webview') == '1'
         or 'watchlive_mobile' in request.path
+        or request.path.startswith('/app/')
     )
     youtube_live_info = get_youtube_live_info()
-    return render(request, 'video_streaming.html', {
+    template_name = 'video_streaming_mobile.html' if is_app else 'video_streaming.html'
+    return render(request, template_name, {
         'active_page': 'media',
         'is_app': is_app,
         'youtube_live_info': youtube_live_info,
@@ -1063,6 +1065,7 @@ def audio_streaming(request):
         or request.GET.get('webview') == '1'
         or 'listenlive_mobile' in request.path
         or 'watchlive_mobile' in request.path
+        or request.path.startswith('/app/')
     )
     mixlr_info = get_mixlr_live_info()
     yt_info = get_youtube_live_info()
@@ -1072,11 +1075,13 @@ def audio_streaming(request):
             or yt_info.get('thumbnail')
             or '/static/images/current_broadcast_thumb.jpg'
         )
-    return render(request, 'audio_streaming.html', {
+    template_name = 'audio_streaming_mobile.html' if is_app else 'audio_streaming.html'
+    return render(request, template_name, {
         'active_page': 'media',
         'is_app': is_app,
         'mixlr_info': mixlr_info,
         'mixlr_json': json.dumps(mixlr_info),
+        'youtube_live_info': yt_info,
     })
 
 
