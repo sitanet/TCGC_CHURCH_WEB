@@ -6,9 +6,7 @@
 {% block body_class %}{% if is_app %}tcgc-webview-body{% endif %}{% endblock %}
 
 {% block footer %}
-{% if not is_app %}
-{{ block.super }}
-{% endif %}
+{# Clean full-bleed player without footer or store badges #}
 {% endblock %}
 
 {% block content %}
@@ -29,6 +27,10 @@
         --radio-glass-border: rgba(245, 200, 76, 0.22);
     }
 
+    .tcgc-header, .tcgc-footer {
+        display: none !important;
+    }
+
     {% if is_app %}
     html, body {
         background-color: var(--radio-bg-bot) !important;
@@ -37,9 +39,6 @@
         overflow-x: hidden;
         -webkit-tap-highlight-color: transparent;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-    .tcgc-header, .tcgc-footer {
-        display: none !important;
     }
     .radio-top-bar,
     .radio-mode-switcher {
@@ -638,23 +637,7 @@
         100% { transform: scale(1.28); opacity: 0; }
     }
 
-    /* --------------------------------------------------------------------------
-       9. BOTTOM SILK GOLD WAVE ACCENT
-       -------------------------------------------------------------------------- */
-    .radio-bottom-wave-wrap {
-        width: 100%;
-        margin-top: auto;
-        padding-top: 10px;
-        pointer-events: none;
-        overflow: hidden;
-    }
 
-    .radio-bottom-wave-img {
-        width: 100%;
-        height: auto;
-        display: block;
-        transform: scale(1.05);
-    }
 
     /* --------------------------------------------------------------------------
        10. SLIDE-UP DRAWER (Mixlr Chat & Studio)
@@ -971,10 +954,7 @@
             </button>
         </div>
 
-        <!-- 11. BOTTOM SILK GOLD WAVE ACCENT -->
-        <div class="radio-bottom-wave-wrap">
-            <img src="{% static 'images/live_bottom_wave.png' %}" alt="" class="radio-bottom-wave-img">
-        </div>
+
     </div>
 </main>
 
