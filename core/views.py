@@ -47,6 +47,108 @@ _YOUTUBE_LIVE_CACHE = {
 }
 
 # ============================================================================
+# Citygate Radio Mixlr Live Broadcast Integration
+# ============================================================================
+TCGC_MIXLR_CHANNEL_SLUG = 'dcitygatechurch'
+TCGC_MIXLR_USER_ID = 4288116
+TCGC_MIXLR_EMBED_URL = 'https://dcitygatechurch.mixlr.com/embed'
+TCGC_MIXLR_CHANNEL_URL = 'https://dcitygatechurch.mixlr.com'
+
+_DEFAULT_MIXLR_DATA = {
+    'channel_name': 'Citygate Radio',
+    'username': 'dcitygatechurch',
+    'is_live': True,
+    'title': 'The Supernatural Hub || TSH || 08-11-26',
+    'listener_count': 1,
+    'heart_count': 0,
+    'started_at': None,
+    'seconds_since_start': 0,
+    'embed_url': TCGC_MIXLR_EMBED_URL,
+    'channel_url': TCGC_MIXLR_CHANNEL_URL,
+}
+
+_MIXLR_LIVE_CACHE = {
+    'timestamp': 0,
+    'refreshing': False,
+    'data': dict(_DEFAULT_MIXLR_DATA),
+}
+
+
+def _refresh_mixlr_cache_sync():
+    """Fetches real-time status from Mixlr API."""
+    global _MIXLR_LIVE_CACHE
+    try:
+        req = urllib.request.Request(
+            f'https://api.mixlr.com/users/{TCGC_MIXLR_CHANNEL_SLUG}',
+            headers={'User-Agent': 'Mozilla/5.0'}
+        )
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            is_live = bool(data.get('is_live'))
+            title = _DEFAULT_MIXLR_DATA['title']
+            listener_count = 1
+            heart_count = 0
+            started_at = None
+            seconds_since_start = 0
+
+            bcast_ids = data.get('broadcast_ids') or []
+            if bcast_ids:
+                b_url = f'https://api.mixlr.com/broadcasts/{bcast_ids[0]}'
+                req_b = urllib.request.Request(b_url, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req_b, timeout=3) as resp_b:
+                    b_data = json.loads(resp_b.read().decode('utf-8'))
+                    if b_data.get('title'):
+                        title = b_data['title']
+                    listener_count = b_data.get('listener_count', 1) or 1
+                    heart_count = b_data.get('heart_count', 0) or 0
+                    started_at = b_data.get('started_at')
+                    seconds_since_start = b_data.get('seconds_since_start', 0)
+
+            _MIXLR_LIVE_CACHE['data'] = {
+                'channel_name': 'Citygate Radio',
+                'username': 'dcitygatechurch',
+                'is_live': is_live,
+                'title': title,
+                'listener_count': listener_count,
+                'heart_count': heart_count,
+                'started_at': started_at,
+                'seconds_since_start': seconds_since_start,
+                'embed_url': TCGC_MIXLR_EMBED_URL,
+                'channel_url': TCGC_MIXLR_CHANNEL_URL,
+            }
+            _MIXLR_LIVE_CACHE['timestamp'] = _time.time()
+    except Exception as e:
+        logger.warning(f"Mixlr cache refresh error: {e}")
+    finally:
+        _MIXLR_LIVE_CACHE['refreshing'] = False
+
+
+def get_mixlr_live_info(force_refresh=False):
+    """
+    Returns cached Citygate Radio Mixlr info immediately (0ms blocking).
+    Triggers background refresh if older than 60 seconds.
+    """
+    global _MIXLR_LIVE_CACHE
+    now = _time.time()
+
+    if force_refresh:
+        _refresh_mixlr_cache_sync()
+        return _MIXLR_LIVE_CACHE['data']
+
+    if (now - _MIXLR_LIVE_CACHE.get('timestamp', 0) > 60) and not _MIXLR_LIVE_CACHE.get('refreshing'):
+        _MIXLR_LIVE_CACHE['refreshing'] = True
+        threading.Thread(target=_refresh_mixlr_cache_sync, daemon=True).start()
+
+    return _MIXLR_LIVE_CACHE['data']
+
+
+def api_live_audio(request):
+    """JSON API endpoint returning real-time Citygate Radio Mixlr broadcast info."""
+    force = request.GET.get('force') in ['1', 'true']
+    info = get_mixlr_live_info(force_refresh=force)
+    return JsonResponse(info)
+
+# ============================================================================
 # Image & Glory Conference (IMGC) Registration Constants & Helpers
 # ============================================================================
 CAMP_COORDINATOR_PHONE = "+2347065213082"       # Camp Coordinator (+234 706 521 3082 / 07065213082)
@@ -902,16 +1004,34 @@ def registration_confirmation(request, registration_code):
 
 
 def video_streaming(request):
+    is_app = (
+        request.GET.get('app') == '1'
+        or request.GET.get('webview') == '1'
+        or 'watchlive_mobile' in request.path
+    )
     youtube_live_info = get_youtube_live_info()
     return render(request, 'video_streaming.html', {
         'active_page': 'media',
+        'is_app': is_app,
         'youtube_live_info': youtube_live_info,
         'youtube_live_json': json.dumps(youtube_live_info),
     })
 
 
 def audio_streaming(request):
-    return render(request, 'audio_streaming.html', {'active_page': 'media'})
+    is_app = (
+        request.GET.get('app') == '1'
+        or request.GET.get('webview') == '1'
+        or 'listenlive_mobile' in request.path
+        or 'watchlive_mobile' in request.path
+    )
+    mixlr_info = get_mixlr_live_info()
+    return render(request, 'audio_streaming.html', {
+        'active_page': 'media',
+        'is_app': is_app,
+        'mixlr_info': mixlr_info,
+        'mixlr_json': json.dumps(mixlr_info),
+    })
 
 
 def ministries(request):

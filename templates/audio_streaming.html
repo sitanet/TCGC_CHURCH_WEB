@@ -1,84 +1,1323 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Listen Live — The CityGate Church{% endblock %}
+{% block title %}Citygate Radio — Live Broadcast (Mixlr){% endblock %}
+
+{% block body_class %}{% if is_app %}tcgc-webview-body{% endif %}{% endblock %}
+
+{% block footer %}
+{% if not is_app %}
+{{ block.super }}
+{% endif %}
+{% endblock %}
 
 {% block content %}
-<!-- LIGHT NAVBAR (Node 138:598) -->
-<header class="tcgc-header tcgc-header-light">
-    <div class="tcgc-header-container">
-        <!-- Prototype Link: 138:600 -> 1:2 (Home) -->
-        <a href="{% url 'home' %}" class="tcgc-logo-link">
-            <img src="{% static 'images/logo_dark.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
-        </a>
-        <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="tcgc-nav">
-            <ul class="tcgc-nav-list">
-                <li><a href="{% url 'ministries' %}" class="tcgc-nav-link">About Us</a></li>
-                <li><a href="{% url 'audio_streaming' %}" class="tcgc-nav-link tcgc-nav-link-active">Resources/Media</a></li>
-                <li><a href="{% url 'registration' %}" class="tcgc-nav-link">Events</a></li>
-                <li><a href="{% url 'testimony' %}" class="tcgc-nav-link">Testimony</a></li>
-                <li><a href="{% url 'ministries' %}#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
-            </ul>
-            <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
-        </nav>
-        <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
-    </div>
-</header>
+<style>
+    /* ==========================================================================
+       CITYGATE RADIO — LUXURY FLUTTER WEBVIEW STREAM PLAYER (Node 138:534)
+       Exact Match to Reference Design: Deep Midnight Navy & Radiant Gold
+       ========================================================================== */
+    :root {
+        --radio-bg-top: #071534;
+        --radio-bg-mid: #0b1e4a;
+        --radio-bg-bot: #04091a;
+        --radio-gold-light: #fff5c0;
+        --radio-gold-primary: #f5c84c;
+        --radio-gold-deep: #b8861b;
+        --radio-gold-glow: rgba(245, 200, 76, 0.45);
+        --radio-glass-bg: rgba(13, 27, 60, 0.65);
+        --radio-glass-border: rgba(245, 200, 76, 0.22);
+    }
 
-<!-- LISTEN LIVE SECTION (Node 138:534) -->
-<main class="tcgc-stream-page tcgc-audio-page">
-    <div class="tcgc-container">
-        <h1 class="tcgc-stream-heading">LISTEN LIVE!!</h1>
+    {% if is_app %}
+    html, body {
+        background-color: var(--radio-bg-bot) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    .tcgc-header, .tcgc-footer {
+        display: none !important;
+    }
+    .radio-top-bar,
+    .radio-mode-switcher {
+        display: none !important;
+    }
+    .radio-mobile-container {
+        padding-top: 6px !important;
+    }
+    {% endif %}
 
-        <!-- Audio Broadcast Player Card (Node 138:633, 571x737) -->
-        <div class="tcgc-audio-card-wrap">
-            <div class="tcgc-audio-card" id="audio-player-widget">
-                <img src="{% static 'images/audio_player_card.png' %}" alt="dcitygatechurch Live Audio Broadcast" class="tcgc-audio-card-img">
+    .radio-page-shell {
+        min-height: 100vh;
+        background: radial-gradient(circle at 50% 12%, #10265c 0%, #081636 45%, #030818 100%);
+        background-attachment: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        position: relative;
+        overflow: hidden;
+        color: #ffffff;
+        padding: 0;
+    }
 
-                <!-- Interactive Controls Overlay positioned over the exact card controls -->
-                <button type="button" class="tcgc-audio-hotspot tcgc-hotspot-like" id="audio-like-btn" title="Like Broadcast" aria-label="Like Broadcast">
-                    <span class="tcgc-like-badge" id="audio-like-count"></span>
+    /* Ambient cyber dot grid texture */
+    .radio-page-shell::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(245, 200, 76, 0.08) 1.2px, transparent 1.2px);
+        background-size: 24px 24px;
+        pointer-events: none;
+        opacity: 0.6;
+        z-index: 1;
+    }
+
+    /* Top golden silk ribbon curve */
+    .radio-top-ribbon-glow {
+        position: absolute;
+        top: -60px;
+        right: -80px;
+        width: 380px;
+        height: 240px;
+        background: radial-gradient(ellipse at center, rgba(245, 200, 76, 0.28) 0%, rgba(201, 147, 32, 0.12) 45%, transparent 70%);
+        border-radius: 50%;
+        transform: rotate(-15deg);
+        filter: blur(25px);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .radio-mobile-container {
+        width: 100%;
+        max-width: 480px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 2;
+        padding: 14px 18px 24px;
+        box-sizing: border-box;
+    }
+
+    /* --------------------------------------------------------------------------
+       1. TOP APP BAR
+       -------------------------------------------------------------------------- */
+    .radio-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0 10px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .radio-bar-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: 0.2px;
+        text-align: center;
+        flex: 1;
+    }
+
+    .radio-bar-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .radio-icon-btn {
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        cursor: pointer;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: transform 0.15s ease, background 0.15s ease;
+        text-decoration: none;
+    }
+    .radio-icon-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.06);
+    }
+    .radio-icon-btn:active {
+        transform: scale(0.94);
+    }
+
+    /* --------------------------------------------------------------------------
+       2. SEGMENTED MODE SWITCHER (Audio vs Video)
+       -------------------------------------------------------------------------- */
+    .radio-mode-switcher {
+        display: flex;
+        background: rgba(10, 22, 52, 0.85);
+        border: 1.2px solid rgba(245, 200, 76, 0.25);
+        border-radius: 999px;
+        padding: 4px;
+        margin: 6px 0 18px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        position: relative;
+        z-index: 5;
+    }
+
+    .radio-tab {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 14.5px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        cursor: pointer;
+    }
+
+    .radio-tab.active {
+        background: linear-gradient(135deg, #fce588 0%, #f5c84c 45%, #c89218 100%);
+        color: #0b1122;
+        box-shadow: 0 4px 14px rgba(245, 200, 76, 0.45);
+    }
+
+    .radio-tab:not(.active) {
+        background: transparent;
+        color: #cbd5e1;
+    }
+    .radio-tab:not(.active):hover {
+        color: #ffffff;
+    }
+
+    .radio-tab-icon {
+        font-size: 16px;
+    }
+
+    /* --------------------------------------------------------------------------
+       3. BROADCASTER PROFILE SECTION
+       -------------------------------------------------------------------------- */
+    .radio-broadcaster-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .radio-broadcaster-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .radio-avatar-wrap {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 2.2px solid var(--radio-gold-primary);
+        box-shadow: 0 0 18px rgba(245, 200, 76, 0.38);
+        padding: 2px;
+        background: linear-gradient(135deg, #10265c, #071534);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .radio-avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .radio-broadcaster-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .radio-channel-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: 0.2px;
+        line-height: 1.2;
+    }
+
+    .radio-follow-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        border: none;
+        color: #e2e8f0;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 2px 0;
+        transition: color 0.2s ease;
+    }
+    .radio-follow-btn.is-following {
+        color: var(--radio-gold-primary);
+    }
+    .radio-follow-btn:hover {
+        color: #ffffff;
+    }
+
+    .radio-broadcaster-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .radio-glass-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(14, 28, 64, 0.7);
+        border: 1.2px solid rgba(245, 200, 76, 0.22);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .radio-glass-btn:hover {
+        background: rgba(24, 44, 96, 0.85);
+        border-color: var(--radio-gold-primary);
+        transform: scale(1.05);
+    }
+
+    /* --------------------------------------------------------------------------
+       4. MAIN PROGRAM BANNER / ARTWORK CARD
+       -------------------------------------------------------------------------- */
+    .radio-artwork-container {
+        position: relative;
+        margin: 4px 0 16px;
+        width: 100%;
+    }
+
+    .radio-artwork-glow {
+        position: absolute;
+        inset: -4px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, rgba(245, 200, 76, 0.45) 0%, transparent 60%, rgba(200, 146, 24, 0.35) 100%);
+        filter: blur(12px);
+        opacity: 0.75;
+        pointer-events: none;
+    }
+
+    .radio-artwork-card {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 20px;
+        border: 2px solid var(--radio-gold-primary);
+        overflow: hidden;
+        background: #091738;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .radio-artwork-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.4s ease;
+    }
+    .radio-artwork-card:hover .radio-artwork-img {
+        transform: scale(1.02);
+    }
+
+    /* --------------------------------------------------------------------------
+       5. PROGRAM TITLE & METADATA
+       -------------------------------------------------------------------------- */
+    .radio-program-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        text-align: center;
+        margin: 0 0 10px;
+        line-height: 1.35;
+        letter-spacing: 0.3px;
+        word-break: break-word;
+    }
+
+    .radio-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .radio-live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e61e28;
+        color: #ffffff;
+        font-size: 13.5px;
+        font-weight: 700;
+        padding: 4px 14px;
+        border-radius: 999px;
+        box-shadow: 0 0 16px rgba(230, 30, 40, 0.5);
+    }
+
+    .radio-live-dot {
+        width: 8px;
+        height: 8px;
+        background: #ffffff;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulseRadioDot 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulseRadioDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    .radio-meta-sep {
+        color: rgba(255, 255, 255, 0.35);
+        font-size: 16px;
+        font-weight: 300;
+    }
+
+    .radio-listeners-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14.5px;
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    .radio-timer-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: #cbd5e1;
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .radio-timer-clock {
+        font-family: monospace, Courier, sans-serif;
+        font-size: 16.5px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #ffffff;
+    }
+
+    /* --------------------------------------------------------------------------
+       6. INTERACTION PILLS (Like, Chat, Share, Info)
+       -------------------------------------------------------------------------- */
+    .radio-actions-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .radio-action-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(14, 28, 64, 0.7);
+        border: 1.2px solid rgba(245, 200, 76, 0.22);
+        border-radius: 999px;
+        padding: 8px 18px;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .radio-action-pill:hover {
+        background: rgba(22, 44, 96, 0.85);
+        border-color: var(--radio-gold-primary);
+        transform: scale(1.05);
+    }
+    .radio-action-pill:active {
+        transform: scale(0.95);
+    }
+
+    .radio-action-round {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(14, 28, 64, 0.7);
+        border: 1.2px solid rgba(245, 200, 76, 0.22);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .radio-action-round:hover {
+        background: rgba(22, 44, 96, 0.85);
+        border-color: var(--radio-gold-primary);
+        transform: scale(1.08);
+    }
+    .radio-action-round:active {
+        transform: scale(0.92);
+    }
+
+    /* --------------------------------------------------------------------------
+       7. EQUALIZER AUDIO WAVEFORM VISUALIZER
+       -------------------------------------------------------------------------- */
+    .radio-visualizer {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 3.5px;
+        height: 52px;
+        margin: 4px 0 24px;
+        padding: 0 8px;
+    }
+
+    .v-bar {
+        width: 3px;
+        height: 12px;
+        background: linear-gradient(to top, #c89218 0%, #f5c84c 60%, #fff7d0 100%);
+        border-radius: 3px;
+        transition: height 0.15s ease;
+    }
+
+    .v-bar:nth-child(1)  { height: 10px; }
+    .v-bar:nth-child(2)  { height: 16px; }
+    .v-bar:nth-child(3)  { height: 22px; }
+    .v-bar:nth-child(4)  { height: 28px; }
+    .v-bar:nth-child(5)  { height: 35px; }
+    .v-bar:nth-child(6)  { height: 24px; }
+    .v-bar:nth-child(7)  { height: 18px; }
+    .v-bar:nth-child(8)  { height: 26px; }
+    .v-bar:nth-child(9)  { height: 38px; }
+    .v-bar:nth-child(10) { height: 32px; }
+    .v-bar:nth-child(11) { height: 20px; }
+    .v-bar:nth-child(12) { height: 30px; }
+    .v-bar:nth-child(13) { height: 44px; }
+    .v-bar:nth-child(14) { height: 36px; }
+    .v-bar:nth-child(15) { height: 25px; }
+    .v-bar:nth-child(16) { height: 42px; }
+    .v-bar:nth-child(17) { height: 48px; }
+    .v-bar:nth-child(18) { height: 50px; }
+    .v-bar:nth-child(19) { height: 52px; }
+    .v-bar:nth-child(20) { height: 48px; }
+    .v-bar:nth-child(21) { height: 40px; }
+    .v-bar:nth-child(22) { height: 28px; }
+    .v-bar:nth-child(23) { height: 44px; }
+    .v-bar:nth-child(24) { height: 36px; }
+    .v-bar:nth-child(25) { height: 22px; }
+    .v-bar:nth-child(26) { height: 32px; }
+    .v-bar:nth-child(27) { height: 40px; }
+    .v-bar:nth-child(28) { height: 26px; }
+    .v-bar:nth-child(29) { height: 34px; }
+    .v-bar:nth-child(30) { height: 20px; }
+    .v-bar:nth-child(31) { height: 28px; }
+    .v-bar:nth-child(32) { height: 22px; }
+    .v-bar:nth-child(33) { height: 16px; }
+    .v-bar:nth-child(34) { height: 20px; }
+    .v-bar:nth-child(35) { height: 14px; }
+    .v-bar:nth-child(36) { height: 8px; }
+
+    /* When playing, animate waveform bars */
+    .radio-visualizer.is-playing .v-bar {
+        animation: danceWaveform 1.2s infinite ease-in-out alternate;
+    }
+
+    @keyframes danceWaveform {
+        0% { height: 4px; }
+        50% { height: var(--peak-h, 32px); }
+        100% { height: var(--base-h, 10px); }
+    }
+
+    /* Staggered visualizer variations */
+    .v-bar:nth-child(2n) { --peak-h: 46px; --base-h: 8px; animation-duration: 0.9s; }
+    .v-bar:nth-child(3n) { --peak-h: 38px; --base-h: 14px; animation-duration: 1.1s; }
+    .v-bar:nth-child(4n) { --peak-h: 52px; --base-h: 6px; animation-duration: 0.8s; }
+    .v-bar:nth-child(5n) { --peak-h: 28px; --base-h: 12px; animation-duration: 1.3s; }
+    .v-bar:nth-child(7n) { --peak-h: 48px; --base-h: 16px; animation-duration: 1.0s; }
+
+    /* --------------------------------------------------------------------------
+       8. PLAYBACK CONTROLS (Mute, Big Gold Play Button, Equalizer)
+       -------------------------------------------------------------------------- */
+    .radio-controls-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .radio-ctrl-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(14, 28, 64, 0.7);
+        border: 1.2px solid rgba(245, 200, 76, 0.25);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .radio-ctrl-btn:hover {
+        background: rgba(22, 44, 96, 0.85);
+        border-color: var(--radio-gold-primary);
+        transform: scale(1.06);
+    }
+    .radio-ctrl-btn:active {
+        transform: scale(0.94);
+    }
+
+    /* Big Gold Center Button */
+    .radio-main-play-btn {
+        width: 78px;
+        height: 78px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fffceb 0%, #f7d56e 35%, #e5b137 70%, #b8851b 100%);
+        border: 3.5px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 35px var(--radio-gold-glow), 0 8px 24px rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        padding: 0;
+    }
+    .radio-main-play-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 0 45px rgba(245, 200, 76, 0.65), 0 10px 28px rgba(0, 0, 0, 0.6);
+    }
+    .radio-main-play-btn:active {
+        transform: scale(0.95);
+    }
+
+    .radio-play-icon-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #060c1b;
+    }
+
+    /* Ripple pulse ring when playing */
+    .radio-main-play-btn.is-active::after {
+        content: '';
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: 2px solid var(--radio-gold-primary);
+        animation: playRipple 2s infinite ease-out;
+        pointer-events: none;
+    }
+
+    @keyframes playRipple {
+        0% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(1.28); opacity: 0; }
+    }
+
+    /* --------------------------------------------------------------------------
+       9. BOTTOM SILK GOLD WAVE ACCENT
+       -------------------------------------------------------------------------- */
+    .radio-bottom-wave-wrap {
+        width: 100%;
+        margin-top: auto;
+        padding-top: 10px;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .radio-bottom-wave-img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transform: scale(1.05);
+    }
+
+    /* --------------------------------------------------------------------------
+       10. SLIDE-UP DRAWER (Mixlr Chat & Studio)
+       -------------------------------------------------------------------------- */
+    .radio-drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .radio-drawer-backdrop.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .radio-drawer {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #091738;
+        border-top: 2px solid var(--radio-gold-primary);
+        border-radius: 24px 24px 0 0;
+        z-index: 101;
+        transform: translateY(105%);
+        transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+        max-width: 520px;
+        margin: 0 auto;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        max-height: 85vh;
+    }
+    .radio-drawer.is-open {
+        transform: translateY(0);
+    }
+
+    .radio-drawer-header {
+        padding: 12px 20px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 1px solid rgba(245, 200, 76, 0.15);
+    }
+
+    .radio-drawer-handle {
+        width: 44px;
+        height: 5px;
+        background: rgba(245, 200, 76, 0.4);
+        border-radius: 3px;
+        margin-bottom: 10px;
+    }
+
+    .radio-drawer-title-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .radio-drawer-title {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .radio-drawer-close {
+        background: transparent;
+        border: none;
+        color: #cbd5e1;
+        font-size: 26px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0 4px;
+    }
+
+    .radio-drawer-body {
+        padding: 12px;
+        overflow-y: auto;
+    }
+
+    /* Floating Heart Particles */
+    .radio-floating-heart {
+        position: fixed;
+        pointer-events: none;
+        z-index: 99;
+        font-size: 24px;
+        animation: floatHeart 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes floatHeart {
+        0% { opacity: 1; transform: translateY(0) scale(0.6) rotate(0deg); }
+        50% { opacity: 0.9; transform: translateY(-70px) scale(1.2) rotate(-15deg); }
+        100% { opacity: 0; transform: translateY(-160px) scale(1.5) rotate(20deg); }
+    }
+
+    /* Hidden Background Audio Frame */
+    .radio-hidden-stream-holder {
+        position: fixed;
+        width: 1px;
+        height: 1px;
+        opacity: 0.01;
+        pointer-events: none;
+        left: -9999px;
+        top: -9999px;
+    }
+</style>
+
+<main class="radio-page-shell">
+    <div class="radio-top-ribbon-glow"></div>
+
+    <div class="radio-mobile-container">
+        <!-- 1. TOP APP BAR (Back, Live Broadcast, Share, Popout, Refresh) -->
+        <header class="radio-top-bar">
+            <button type="button" class="radio-icon-btn" onclick="window.history.length > 1 ? window.history.back() : window.location.href='/'" aria-label="Go Back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <h1 class="radio-bar-title">Live Broadcast</h1>
+            <div class="radio-bar-actions">
+                <button type="button" class="radio-icon-btn" id="radioShareBtnTop" title="Share Stream">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
                 </button>
-                <button type="button" class="tcgc-audio-hotspot tcgc-hotspot-mute" id="audio-mute-btn" title="Toggle Mute" aria-label="Toggle Mute"></button>
-                <button type="button" class="tcgc-audio-hotspot tcgc-hotspot-play" id="audio-play-btn" title="Play/Pause Live Audio" aria-label="Play/Pause Live Audio">
-                    <span class="tcgc-audio-status-ring" id="audio-status-ring"></span>
+                <a href="https://dcitygatechurch.mixlr.com" target="_blank" rel="noopener" class="radio-icon-btn" title="Open on Mixlr">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
+                <button type="button" class="radio-icon-btn" id="radioRefreshBtn" title="Refresh Stream">
+                    <svg id="refreshIconSvg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 4v6h-6"></path>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
                 </button>
             </div>
-            <p class="tcgc-audio-live-indicator" id="audio-live-status" aria-live="polite"></p>
+        </header>
 
-            <!-- Official dcitygatechurch Mixlr Live Audio Embed (ported from TCGC_BACKEND, revealed when Play is clicked) -->
-            <div class="tcgc-mixlr-embed-box" id="mixlr-live-container" style="display: none;">
-                <iframe
-                    id="mixlrLiveFrame"
-                    src=""
-                    data-src="https://dcitygatechurch.mixlr.com/embed"
-                    width="100%"
-                    height="180"
-                    scrolling="no"
-                    frameborder="no"
-                    marginheight="0"
-                    marginwidth="0"
-                    allow="autoplay"
-                    title="The CityGate Church Live Audio Stream (Mixlr)">
-                </iframe>
-                <div class="tcgc-mixlr-meta">
-                    <a href="https://dcitygatechurch.mixlr.com" target="_blank" rel="noopener">Open dcitygatechurch on Mixlr &#8599;</a>
+        <!-- 2. SEGMENTED MODE SWITCHER (Audio Stream / Watch Video) -->
+        <div class="radio-mode-switcher">
+            <button type="button" class="radio-tab active" aria-selected="true">
+                <span class="radio-tab-icon">🎧</span>
+                <span>Audio Stream</span>
+            </button>
+            <a href="{% url 'video_streaming' %}{% if is_app %}?app=1{% endif %}" class="radio-tab" aria-selected="false">
+                <span class="radio-tab-icon">📺</span>
+                <span>Watch Video</span>
+            </a>
+        </div>
+
+        <!-- 3. BROADCASTER PROFILE ROW (Avatar, Citygate Radio, Follow, Actions) -->
+        <div class="radio-broadcaster-row">
+            <div class="radio-broadcaster-left">
+                <div class="radio-avatar-wrap">
+                    <img src="{% static 'images/citygate_radio_avatar.png' %}" alt="Citygate Radio" class="radio-avatar-img">
                 </div>
+                <div class="radio-broadcaster-info">
+                    <h2 class="radio-channel-name">{{ mixlr_info.channel_name|default:"Citygate Radio" }}</h2>
+                    <button type="button" class="radio-follow-btn" id="radioFollowBtn">
+                        <span class="radio-follow-icon">+👤</span>
+                        <span class="radio-follow-text">Follow</span>
+                    </button>
+                </div>
+            </div>
+            <div class="radio-broadcaster-actions">
+                <button type="button" class="radio-glass-btn radio-theme-btn" id="radioThemeBtn" title="Toggle Ambience Light">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                <button type="button" class="radio-glass-btn radio-more-btn" id="radioMoreBtn" title="Broadcast Details">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
             </div>
         </div>
 
-        <!-- Switch to Video Streaming Button (Node 138:626 -> LINK 138:287) -->
-        <div class="tcgc-stream-switch-wrap">
-            <a href="{% url 'video_streaming' %}" class="tcgc-btn-stream-switch">
-                <span>Watch Live</span>
-                <span class="tcgc-arrow-long">&#8594;</span>
-            </a>
+        <!-- 4. MAIN PROGRAM BANNER / ARTWORK CARD -->
+        <div class="radio-artwork-container">
+            <div class="radio-artwork-glow"></div>
+            <div class="radio-artwork-card">
+                <img src="{% static 'images/supernatural_hub_art.jpg' %}" alt="The Supernatural Hub" class="radio-artwork-img" id="radioArtworkImg">
+            </div>
+        </div>
+
+        <!-- 5. PROGRAM TITLE -->
+        <h3 class="radio-program-title" id="radioProgramTitle">
+            {{ mixlr_info.title|default:"The Supernatural Hub || TSH || 08-11-26" }}
+        </h3>
+
+        <!-- 6. STATUS & LISTENERS -->
+        <div class="radio-meta-row">
+            <div class="radio-live-badge {% if mixlr_info.is_live %}is-live{% endif %}" id="radioLiveBadge">
+                <span class="radio-live-dot"></span>
+                <span class="radio-live-text">Live</span>
+            </div>
+            <span class="radio-meta-sep">|</span>
+            <div class="radio-listeners-badge">
+                <span class="radio-listeners-icon">👥</span>
+                <span id="radioListenerCount">{{ mixlr_info.listener_count|default:1 }}</span>
+                <span id="radioListenerLabel">Listener{% if mixlr_info.listener_count != 1 %}s{% endif %}</span>
+            </div>
+        </div>
+
+        <!-- 7. ELAPSED TIME CLOCK -->
+        <div class="radio-timer-row">
+            <span class="radio-timer-icon">🕒</span>
+            <span class="radio-timer-clock" id="radioElapsedTime">00:00:00</span>
+        </div>
+
+        <!-- 8. INTERACTIVE ACTION PILLS (Like, Chat, Share, Info) -->
+        <div class="radio-actions-row">
+            <button type="button" class="radio-action-pill" id="radioLikeBtn">
+                <span id="heartIcon" style="transition: transform 0.2s;">❤️</span>
+                <span id="radioHeartCount">{{ mixlr_info.heart_count|default:0 }}</span>
+            </button>
+            <button type="button" class="radio-action-round" id="radioChatBtn" title="Open Mixlr Chat &amp; Community">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    <line x1="8" y1="9" x2="16" y2="9"></line>
+                    <line x1="8" y1="13" x2="13" y2="13"></line>
+                </svg>
+            </button>
+            <button type="button" class="radio-action-round" id="radioShareBtn" title="Share Broadcast Link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 14v-2a7 7 0 0 1 12-5.2L20 10"></path>
+                    <path d="M15 5l5 5-5 5"></path>
+                </svg>
+            </button>
+            <button type="button" class="radio-action-round" id="radioInfoBtn" title="Program Details">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- 9. EQUALIZER AUDIO WAVEFORM VISUALIZER -->
+        <div class="radio-visualizer" id="radioVisualizer">
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+        </div>
+
+        <!-- 10. PLAYBACK CONTROLS (Mute, Big Gold Play Button, Equalizer) -->
+        <div class="radio-controls-row">
+            <button type="button" class="radio-ctrl-btn" id="radioMuteBtn" title="Mute / Unmute">
+                <svg id="speakerIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+            </button>
+
+            <!-- Main Gold Play/Stop Button -->
+            <button type="button" class="radio-main-play-btn" id="radioPlayBtn" title="Play / Pause Audio Stream">
+                <div class="radio-play-icon-wrap">
+                    <!-- Play icon (black triangle) -->
+                    <svg id="playIconSvg" width="28" height="28" viewBox="0 0 24 24" fill="#060C1B">
+                        <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                    </svg>
+                    <!-- Stop icon (black square) -->
+                    <svg id="stopIconSvg" width="26" height="26" viewBox="0 0 24 24" fill="#060C1B" style="display: none;">
+                        <rect x="5" y="5" width="14" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                </div>
+            </button>
+
+            <button type="button" class="radio-ctrl-btn" id="radioEqBtn" title="Equalizer Settings">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- 11. BOTTOM SILK GOLD WAVE ACCENT -->
+        <div class="radio-bottom-wave-wrap">
+            <img src="{% static 'images/live_bottom_wave.png' %}" alt="" class="radio-bottom-wave-img">
         </div>
     </div>
 </main>
+
+<!-- Hidden Mixlr Embed Engine -->
+<div class="radio-hidden-stream-holder" id="radioStreamHolder">
+    <iframe
+        id="mixlrLiveFrame"
+        src=""
+        data-src="https://dcitygatechurch.mixlr.com/embed"
+        width="100%"
+        height="180"
+        frameborder="0"
+        scrolling="no"
+        allow="autoplay"
+        title="Mixlr Stream Engine">
+    </iframe>
+</div>
+
+<!-- Slide-up Mixlr Live Chat & Community Drawer -->
+<div class="radio-drawer-backdrop" id="radioDrawerBackdrop"></div>
+<div class="radio-drawer" id="radioDrawer">
+    <div class="radio-drawer-header">
+        <div class="radio-drawer-handle"></div>
+        <div class="radio-drawer-title-row">
+            <span class="radio-drawer-title">Mixlr Community &amp; Live Chat</span>
+            <button type="button" class="radio-drawer-close" id="radioDrawerClose">&times;</button>
+        </div>
+    </div>
+    <div class="radio-drawer-body">
+        <iframe
+            id="mixlrDrawerFrame"
+            src=""
+            data-src="https://dcitygatechurch.mixlr.com/embed"
+            width="100%"
+            height="380"
+            frameborder="0"
+            allow="autoplay"
+            title="Mixlr Live Chat">
+        </iframe>
+        <div style="text-align: center; margin-top: 12px;">
+            <a href="https://dcitygatechurch.mixlr.com" target="_blank" rel="noopener" style="color: var(--radio-gold-primary); font-size: 14px; text-decoration: underline; font-weight: 600;">
+                Open Full Channel on Mixlr.com &rarr;
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Program Details Info Modal -->
+<div class="radio-drawer-backdrop" id="radioInfoBackdrop"></div>
+<div class="radio-drawer" id="radioInfoDrawer" style="max-height: 70vh;">
+    <div class="radio-drawer-header">
+        <div class="radio-drawer-handle"></div>
+        <div class="radio-drawer-title-row">
+            <span class="radio-drawer-title">Broadcast Information</span>
+            <button type="button" class="radio-drawer-close" id="radioInfoClose">&times;</button>
+        </div>
+    </div>
+    <div class="radio-drawer-body" style="padding: 20px; line-height: 1.6; color: #e2e8f0;">
+        <h4 style="color: var(--radio-gold-primary); font-size: 18px; margin: 0 0 8px;">The CityGate Church</h4>
+        <p style="margin: 0 0 14px; font-size: 14.5px;">
+            A place of divine encounter, spiritual growth, and kingdom transformation. Broadcasting live ministry, worship, and apostolic teachings.
+        </p>
+        <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(245, 200, 76, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+            <div style="font-size: 13px; color: var(--radio-gold-primary); font-weight: 700; text-transform: uppercase;">Weekly Broadcast Schedule:</div>
+            <div style="font-size: 14px; margin-top: 4px;">• <strong>Sundays:</strong> 8:00 AM &amp; 10:30 AM (WAT)</div>
+            <div style="font-size: 14px;">• <strong>Wednesdays:</strong> 6:00 PM (WAT)</div>
+        </div>
+        <p style="font-size: 13px; color: #94a3b8; margin: 0;">
+            Follow Citygate Radio to receive instant push alerts whenever a live audio transmission begins.
+        </p>
+    </div>
+</div>
+
+<script>
+    // ==========================================================================
+    // Citygate Radio Interactive Stream Player Engine
+    // ==========================================================================
+    document.addEventListener('DOMContentLoaded', function () {
+        const mixlrInfo = {{ mixlr_json|safe }};
+        let isPlaying = false;
+        let isMuted = false;
+        let elapsedSeconds = mixlrInfo.seconds_since_start || 0;
+        let timerInterval = null;
+
+        const playBtn = document.getElementById('radioPlayBtn');
+        const playIconSvg = document.getElementById('playIconSvg');
+        const stopIconSvg = document.getElementById('stopIconSvg');
+        const visualizer = document.getElementById('radioVisualizer');
+        const streamHolder = document.getElementById('radioStreamHolder');
+        const liveFrame = document.getElementById('mixlrLiveFrame');
+        const muteBtn = document.getElementById('radioMuteBtn');
+        const speakerIcon = document.getElementById('speakerIcon');
+        const elapsedTimeEl = document.getElementById('radioElapsedTime');
+        const followBtn = document.getElementById('radioFollowBtn');
+        const likeBtn = document.getElementById('radioLikeBtn');
+        const heartCountEl = document.getElementById('radioHeartCount');
+        const heartIcon = document.getElementById('heartIcon');
+        const refreshBtn = document.getElementById('radioRefreshBtn');
+        const refreshIcon = document.getElementById('refreshIconSvg');
+        const chatBtn = document.getElementById('radioChatBtn');
+        const drawer = document.getElementById('radioDrawer');
+        const drawerBackdrop = document.getElementById('radioDrawerBackdrop');
+        const drawerClose = document.getElementById('radioDrawerClose');
+        const drawerFrame = document.getElementById('mixlrDrawerFrame');
+        const infoBtn = document.getElementById('radioInfoBtn');
+        const infoDrawer = document.getElementById('radioInfoDrawer');
+        const infoBackdrop = document.getElementById('radioInfoBackdrop');
+        const infoClose = document.getElementById('radioInfoClose');
+        const shareBtn = document.getElementById('radioShareBtn');
+        const shareBtnTop = document.getElementById('radioShareBtnTop');
+
+        // Format Seconds to HH:MM:SS
+        function formatTime(totalSec) {
+            const h = Math.floor(totalSec / 3600).toString().padStart(2, '0');
+            const m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0');
+            const s = (totalSec % 60).toString().padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        // Initialize Elapsed Time
+        if (mixlrInfo.started_at) {
+            const startTime = new Date(mixlrInfo.started_at).getTime();
+            if (!isNaN(startTime)) {
+                elapsedSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
+            }
+        }
+        elapsedTimeEl.textContent = formatTime(elapsedSeconds);
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                elapsedSeconds++;
+                elapsedTimeEl.textContent = formatTime(elapsedSeconds);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        // Always run the timer if stream is currently live
+        if (mixlrInfo.is_live) {
+            startTimer();
+        }
+
+        // Playback Toggle
+        function setPlaybackState(playing) {
+            isPlaying = playing;
+            if (isPlaying) {
+                playBtn.classList.add('is-active');
+                playIconSvg.style.display = 'none';
+                stopIconSvg.style.display = 'block';
+                visualizer.classList.add('is-playing');
+
+                // Load iframe src if not loaded
+                if (!liveFrame.src || liveFrame.src === window.location.href) {
+                    liveFrame.src = liveFrame.getAttribute('data-src') || 'https://dcitygatechurch.mixlr.com/embed';
+                }
+                startTimer();
+            } else {
+                playBtn.classList.remove('is-active');
+                playIconSvg.style.display = 'block';
+                stopIconSvg.style.display = 'none';
+                visualizer.classList.remove('is-playing');
+
+                // Unload or stop stream
+                liveFrame.src = '';
+                if (!mixlrInfo.is_live) {
+                    stopTimer();
+                }
+            }
+        }
+
+        playBtn.addEventListener('click', function () {
+            setPlaybackState(!isPlaying);
+        });
+
+        // Mute / Speaker Toggle
+        muteBtn.addEventListener('click', function () {
+            isMuted = !isMuted;
+            if (isMuted) {
+                speakerIcon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                `;
+                if (liveFrame.contentWindow) {
+                    try { liveFrame.contentWindow.postMessage('mute', '*'); } catch (e) {}
+                }
+            } else {
+                speakerIcon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                `;
+                try { liveFrame.contentWindow.postMessage('unmute', '*'); } catch (e) {}
+            }
+        });
+
+        // Follow Button Toggle & Persistence
+        const isFollowed = localStorage.getItem('tcgc_radio_followed') === 'true';
+        if (isFollowed) {
+            followBtn.classList.add('is-following');
+            followBtn.querySelector('.radio-follow-icon').textContent = '✓';
+            followBtn.querySelector('.radio-follow-text').textContent = 'Following';
+        }
+
+        followBtn.addEventListener('click', function () {
+            const willFollow = !followBtn.classList.contains('is-following');
+            followBtn.classList.toggle('is-following', willFollow);
+            if (willFollow) {
+                followBtn.querySelector('.radio-follow-icon').textContent = '✓';
+                followBtn.querySelector('.radio-follow-text').textContent = 'Following';
+                localStorage.setItem('tcgc_radio_followed', 'true');
+                spawnFloatingHeart(followBtn, '✨');
+            } else {
+                followBtn.querySelector('.radio-follow-icon').textContent = '+👤';
+                followBtn.querySelector('.radio-follow-text').textContent = 'Follow';
+                localStorage.setItem('tcgc_radio_followed', 'false');
+            }
+        });
+
+        // Like Button & Floating Hearts
+        let heartCount = parseInt(heartCountEl.textContent || '0', 10);
+        likeBtn.addEventListener('click', function (e) {
+            heartCount++;
+            heartCountEl.textContent = heartCount;
+            heartIcon.style.transform = 'scale(1.4)';
+            setTimeout(() => { heartIcon.style.transform = 'scale(1)'; }, 200);
+
+            // Spawn floating hearts
+            spawnFloatingHeart(likeBtn, '❤️');
+            setTimeout(() => spawnFloatingHeart(likeBtn, '💖'), 120);
+        });
+
+        function spawnFloatingHeart(originEl, emoji) {
+            const heart = document.createElement('div');
+            heart.className = 'radio-floating-heart';
+            heart.textContent = emoji || '❤️';
+            const rect = originEl.getBoundingClientRect();
+            const randomXOffset = (Math.random() - 0.5) * 40;
+            heart.style.left = `${rect.left + rect.width / 2 + randomXOffset}px`;
+            heart.style.top = `${rect.top}px`;
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 1800);
+        }
+
+        // Live Chat Drawer
+        function openDrawer() {
+            drawer.classList.add('is-open');
+            drawerBackdrop.classList.add('is-open');
+            if (!drawerFrame.src) {
+                drawerFrame.src = drawerFrame.getAttribute('data-src');
+            }
+        }
+        function closeDrawer() {
+            drawer.classList.remove('is-open');
+            drawerBackdrop.classList.remove('is-open');
+        }
+        chatBtn.addEventListener('click', openDrawer);
+        drawerBackdrop.addEventListener('click', closeDrawer);
+        drawerClose.addEventListener('click', closeDrawer);
+
+        // Info Drawer
+        function openInfo() {
+            infoDrawer.classList.add('is-open');
+            infoBackdrop.classList.add('is-open');
+        }
+        function closeInfo() {
+            infoDrawer.classList.remove('is-open');
+            infoBackdrop.classList.remove('is-open');
+        }
+        infoBtn.addEventListener('click', openInfo);
+        document.getElementById('radioMoreBtn').addEventListener('click', openInfo);
+        infoBackdrop.addEventListener('click', closeInfo);
+        infoClose.addEventListener('click', closeInfo);
+
+        // Native Share / Copy Share Link
+        function handleShare() {
+            const shareData = {
+                title: 'Citygate Radio Live Broadcast',
+                text: 'Join us live on Citygate Radio for worship, prophetic prayers, and God\'s Word!',
+                url: window.location.href.split('?')[0],
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(shareData.url).then(() => {
+                    alert('Broadcast link copied to clipboard!');
+                }).catch(() => {
+                    prompt('Copy broadcast link:', shareData.url);
+                });
+            }
+        }
+        shareBtn.addEventListener('click', handleShare);
+        shareBtnTop.addEventListener('click', handleShare);
+
+        // Refresh Stream & Poll Latest Metadata
+        refreshBtn.addEventListener('click', function () {
+            refreshIcon.style.transition = 'transform 0.8s ease';
+            refreshIcon.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                refreshIcon.style.transition = 'none';
+                refreshIcon.style.transform = 'rotate(0deg)';
+            }, 800);
+
+            // Fetch live audio info from API
+            fetch('/api/live-audio/?force=1')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.title) {
+                        document.getElementById('radioProgramTitle').textContent = data.title;
+                    }
+                    if (data.listener_count !== undefined) {
+                        document.getElementById('radioListenerCount').textContent = data.listener_count;
+                        document.getElementById('radioListenerLabel').textContent = data.listener_count === 1 ? 'Listener' : 'Listeners';
+                    }
+                    if (data.heart_count !== undefined && data.heart_count > heartCount) {
+                        heartCount = data.heart_count;
+                        heartCountEl.textContent = heartCount;
+                    }
+                    const badge = document.getElementById('radioLiveBadge');
+                    if (data.is_live) {
+                        badge.classList.add('is-live');
+                    } else {
+                        badge.classList.remove('is-live');
+                    }
+                })
+                .catch(err => console.error('Refresh error:', err));
+        });
+
+        // Periodic metadata polling every 30 seconds
+        setInterval(() => {
+            fetch('/api/live-audio/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.title) {
+                        document.getElementById('radioProgramTitle').textContent = data.title;
+                    }
+                    if (data.listener_count !== undefined) {
+                        document.getElementById('radioListenerCount').textContent = data.listener_count;
+                        document.getElementById('radioListenerLabel').textContent = data.listener_count === 1 ? 'Listener' : 'Listeners';
+                    }
+                })
+                .catch(() => {});
+        }, 30000);
+    });
+</script>
 {% endblock %}
