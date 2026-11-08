@@ -370,22 +370,50 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: #e61e28;
-        color: #ffffff;
+        background: rgba(100, 116, 139, 0.22);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        color: #cbd5e1;
         font-size: 13.5px;
         font-weight: 700;
         padding: 4px 14px;
         border-radius: 999px;
+        transition: all 0.3s ease;
+    }
+
+    .radio-live-badge.is-live {
+        background: #e61e28;
+        border: 1px solid transparent;
+        color: #ffffff;
         box-shadow: 0 0 16px rgba(230, 30, 40, 0.5);
     }
 
     .radio-live-dot {
         width: 8px;
         height: 8px;
-        background: #ffffff;
+        background: #94a3b8;
         border-radius: 50%;
         display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .radio-live-badge.is-live .radio-live-dot {
+        background: #ffffff;
         animation: pulseRadioDot 1.4s infinite ease-in-out;
+    }
+
+    .radio-live-badge.is-off-air .radio-live-dot {
+        background: #64748b;
+        animation: none;
+    }
+
+    .radio-main-play-btn:disabled,
+    .radio-main-play-btn.is-disabled {
+        opacity: 0.42 !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
+        filter: grayscale(85%) !important;
+        box-shadow: none !important;
+        transform: none !important;
     }
 
     @keyframes pulseRadioDot {
@@ -838,9 +866,9 @@
 
         <!-- 6. STATUS & LISTENERS -->
         <div class="radio-meta-row">
-            <div class="radio-live-badge {% if mixlr_info.is_live %}is-live{% endif %}" id="radioLiveBadge">
+            <div class="radio-live-badge {% if mixlr_info.is_live %}is-live{% else %}is-off-air{% endif %}" id="radioLiveBadge">
                 <span class="radio-live-dot"></span>
-                <span class="radio-live-text">Live</span>
+                <span class="radio-live-text" id="radioLiveText">{% if mixlr_info.is_live %}Live{% else %}Off Air{% endif %}</span>
             </div>
             <span class="radio-meta-sep">|</span>
             <div class="radio-listeners-badge">
@@ -907,7 +935,7 @@
             </button>
 
             <!-- Main Gold Play/Stop Button -->
-            <button type="button" class="radio-main-play-btn" id="radioPlayBtn" title="Play / Pause Audio Stream">
+            <button type="button" class="radio-main-play-btn {% if not mixlr_info.is_live %}is-disabled{% endif %}" id="radioPlayBtn" title="{% if mixlr_info.is_live %}Play / Pause Audio Stream{% else %}Broadcast is currently Off Air{% endif %}" {% if not mixlr_info.is_live %}disabled aria-disabled="true"{% endif %}>
                 <div class="radio-play-icon-wrap">
                     <!-- Play icon (black triangle) -->
                     <svg id="playIconSvg" width="28" height="28" viewBox="0 0 24 24" fill="#060C1B">
@@ -1070,13 +1098,76 @@
             }
         }
 
-        // Query Mixlr API to sync with exact live broadcast elapsed time
+        function setOffAirState() {
+            stopAudioPlayback();
+            stopTimer();
+            isPlaying = false;
+            if (visualizer) visualizer.classList.remove('is-playing');
+
+            if (playBtn) {
+                playBtn.disabled = true;
+                playBtn.setAttribute('aria-disabled', 'true');
+                playBtn.classList.add('is-disabled');
+                playBtn.classList.remove('is-active');
+                playBtn.title = 'Broadcast is currently Off Air';
+                if (playIconSvg) playIconSvg.style.display = 'block';
+                if (stopIconSvg) stopIconSvg.style.display = 'none';
+            }
+
+            const liveBadge = document.getElementById('radioLiveBadge');
+            const liveText = document.getElementById('radioLiveText');
+            if (liveBadge) {
+                liveBadge.classList.remove('is-live');
+                liveBadge.classList.add('is-off-air');
+            }
+            if (liveText) {
+                liveText.textContent = 'Off Air';
+            }
+        }
+
+        function setLiveState() {
+            if (playBtn) {
+                playBtn.disabled = false;
+                playBtn.removeAttribute('aria-disabled');
+                playBtn.classList.remove('is-disabled');
+                playBtn.title = 'Play / Pause Audio Stream';
+            }
+            const liveBadge = document.getElementById('radioLiveBadge');
+            const liveText = document.getElementById('radioLiveText');
+            if (liveBadge) {
+                liveBadge.classList.add('is-live');
+                liveBadge.classList.remove('is-off-air');
+            }
+            if (liveText) {
+                liveText.textContent = 'Live';
+            }
+        }
+
+        function pollLiveStatus() {
+            fetch('/api/live-audio/')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.is_live === false) {
+                        setOffAirState();
+                    } else if (d.is_live === true) {
+                        setLiveState();
+                        if (d.seconds_since_start !== undefined && isPlaying) {
+                            elapsedSeconds = d.seconds_since_start;
+                            elapsedTimeEl.textContent = formatTime(elapsedSeconds);
+                        }
+                    }
+                })
+                .catch(() => {});
+        }
+
         function syncMixlrLiveTime() {
             if (mixlrInfo.is_live) {
                 fetch('/api/live-audio/')
                     .then(r => r.json())
                     .then(d => {
-                        if (d.seconds_since_start !== undefined && isPlaying) {
+                        if (d.is_live === false) {
+                            setOffAirState();
+                        } else if (d.seconds_since_start !== undefined && isPlaying) {
                             elapsedSeconds = d.seconds_since_start;
                             elapsedTimeEl.textContent = formatTime(elapsedSeconds);
                         }
@@ -1097,24 +1188,17 @@
         });
 
         audioPlayer.addEventListener('ended', function () {
+            pollLiveStatus();
             setPlaybackState(false);
         });
 
         audioPlayer.addEventListener('error', function (e) {
-            console.warn("Audio player error, attempting stream refresh:", e);
-            fetch('/api/live-audio/?force=1')
-                .then(r => r.json())
-                .then(d => {
-                    if (d.stream_url && d.stream_url !== currentStreamUrl) {
-                        currentStreamUrl = d.stream_url;
-                        if (isPlaying) {
-                            audioPlayer.src = currentStreamUrl;
-                            audioPlayer.play().catch(() => {});
-                        }
-                    }
-                })
-                .catch(() => {});
+            console.warn("Audio player error, checking broadcast status:", e);
+            pollLiveStatus();
         });
+
+        // Periodic check to detect when stream ends or starts (every 25 seconds)
+        setInterval(pollLiveStatus, 25000);
 
         // Playback Toggle Engine
         function startAudioPlayback() {

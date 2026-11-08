@@ -29,7 +29,7 @@ _DEFAULT_YOUTUBE_DATA = {
     'channel_id': TCGC_YOUTUBE_CHANNEL_ID,
     'channel_handle': TCGC_YOUTUBE_HANDLE,
     'channel_url': TCGC_YOUTUBE_CHANNEL_URL,
-    'is_live': True,
+    'is_live': False,
     'video_id': 'PiXjqQR-r3o',
     'video_title': 'IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 08-11-2026',
     'thumbnail_url': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
@@ -146,7 +146,7 @@ def _refresh_mixlr_cache_sync():
             _MIXLR_LIVE_CACHE['data'] = {
                 'channel_name': 'Citygate Radio',
                 'username': 'dcitygatechurch',
-                'is_live': is_live or yt_info.get('is_live', False),
+                'is_live': bool(is_live),
                 'title': title,
                 'thumbnail_url': thumb_url,
                 'stream_url': stream_url,
