@@ -188,19 +188,19 @@
              data-channel-embed-url="{{ youtube_live_info.channel_embed_url }}"
              data-watch-url="{{ youtube_live_info.watch_url }}"
              style="background-image: url('{{ youtube_live_info.thumbnail_url|default:youtube_live_info.thumbnail|default:'/static/images/tsc_youtube_bg.png' }}');">
-            <div class="tcgc-youtube-overlay" id="video-poster-overlay">
+            <div class="tcgc-youtube-overlay" id="video-poster-overlay" style="{% if is_app %}display: none;{% endif %}">
                 <h2 class="tcgc-youtube-heading">WATCH OUR LIVE<br>STREAM</h2>
                 <button type="button" class="tcgc-youtube-play-btn" id="trigger-youtube-embed" aria-label="Play Live Video Stream">
                     <img src="{% static 'images/youtube_icon.svg' %}" alt="Play Live Stream" class="tcgc-youtube-svg">
                 </button>
             </div>
-            <!-- Embedded YouTube Container (revealed when play button is clicked) -->
-            <div class="tcgc-youtube-iframe-wrap" id="youtube-iframe-container" style="display: none;">
+            <!-- Embedded YouTube Container (revealed directly in app mode, or on play click) -->
+            <div class="tcgc-youtube-iframe-wrap" id="youtube-iframe-container" style="{% if is_app %}display: block;{% else %}display: none;{% endif %}">
                 <iframe
                     id="tcgc-yt-iframe"
                     width="100%"
                     height="100%"
-                    src=""
+                    src="{% if is_app %}{{ youtube_live_info.embed_url }}{% endif %}"
                     title="{{ youtube_live_info.video_title|default:'The CityGate Church Live Stream' }}"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -257,6 +257,46 @@
         {% endif %}
     </div>
 </main>
+
+<script>
+    function handleVideoBack() {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = "{% url 'home' %}{% if is_app %}?app=1{% endif %}";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const shareBtn = document.getElementById('videoShareBtnTop');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', async function () {
+                const shareData = {
+                    title: "{{ youtube_live_info.video_title|default:'The CityGate Church Live Broadcast'|escapejs }}",
+                    text: "Watch The CityGate Church Live Broadcast: {{ youtube_live_info.video_title|default:'Live Service'|escapejs }}",
+                    url: "{{ youtube_live_info.watch_url|default:'https://www.youtube.com/@dcitygatechurch/live'|escapejs }}"
+                };
+                if (navigator.share) {
+                    try {
+                        await navigator.share(shareData);
+                    } catch (err) {
+                        // ignore user abort
+                    }
+                } else if (navigator.clipboard) {
+                    try {
+                        await navigator.clipboard.writeText(shareData.url);
+                        alert('Live broadcast link copied to clipboard!');
+                    } catch (e) {
+                        prompt('Copy live broadcast link:', shareData.url);
+                    }
+                } else {
+                    prompt('Copy live broadcast link:', shareData.url);
+                }
+            });
+        }
+    });
+</script>
+
 {% endblock %}
 
 {% block footer %}

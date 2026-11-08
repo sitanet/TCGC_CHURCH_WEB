@@ -29,14 +29,14 @@ _DEFAULT_YOUTUBE_DATA = {
     'channel_id': TCGC_YOUTUBE_CHANNEL_ID,
     'channel_handle': TCGC_YOUTUBE_HANDLE,
     'channel_url': TCGC_YOUTUBE_CHANNEL_URL,
-    'is_live': False,
-    'video_id': '-C8U9kJSEYM',
-    'video_title': 'IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 15-10-2026',
-    'thumbnail_url': 'https://i.ytimg.com/vi/-C8U9kJSEYM/maxresdefault.jpg',
-    'thumbnail': 'https://i.ytimg.com/vi/-C8U9kJSEYM/maxresdefault.jpg',
-    'embed_url': 'https://www.youtube-nocookie.com/embed/-C8U9kJSEYM?autoplay=1&rel=0&enablejsapi=1',
+    'is_live': True,
+    'video_id': 'PiXjqQR-r3o',
+    'video_title': 'IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 08-11-2026',
+    'thumbnail_url': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
+    'thumbnail': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
+    'embed_url': 'https://www.youtube-nocookie.com/embed/PiXjqQR-r3o?autoplay=1&rel=0&enablejsapi=1',
     'channel_embed_url': f'https://www.youtube-nocookie.com/embed/live_stream?channel={TCGC_YOUTUBE_CHANNEL_ID}&autoplay=1&rel=0&enablejsapi=1',
-    'watch_url': 'https://www.youtube.com/watch?v=-C8U9kJSEYM',
+    'watch_url': 'https://www.youtube.com/watch?v=PiXjqQR-r3o',
     'recent_videos': [],
 }
 
@@ -485,12 +485,15 @@ def _refresh_youtube_cache_sync():
         # 1. Check if actively live
         try:
             req = urllib.request.Request(live_url, headers=headers)
-            with urllib.request.urlopen(req, timeout=4) as res:
+            with urllib.request.urlopen(req, timeout=8) as res:
                 html = res.read().decode('utf-8', errors='ignore')
                 can = re.findall(r'<link rel="canonical" href="https://www\.youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})">', html)
                 if can and can[0] != 'otbTOpTpSpY':
                     vid = can[0]
-                    is_live = ('"isLive":true' in html or '"isLiveContent":true' in html or ('"status":"LIVE"' in html and 'LIVE_STREAM_OFFLINE' not in html))
+                    is_live = ('"isLive":true' in html or '"isLiveNow":true' in html or '"isLiveContent":true' in html or ('"status":"LIVE"' in html and 'LIVE_STREAM_OFFLINE' not in html))
+                    meta_title = re.findall(r'<meta name="title" content="([^"]+)">', html)
+                    if meta_title:
+                        title = meta_title[0].replace('&amp;', '&').replace('&#39;', "'").replace('&quot;', '"')
         except Exception as live_err:
             logger.debug(f'YouTube /live check skipped: {live_err}')
 
@@ -499,7 +502,7 @@ def _refresh_youtube_cache_sync():
             try:
                 streams_url = f'{TCGC_YOUTUBE_CHANNEL_URL}/streams'
                 req_streams = urllib.request.Request(streams_url, headers=headers)
-                with urllib.request.urlopen(req_streams, timeout=4) as res_s:
+                with urllib.request.urlopen(req_streams, timeout=8) as res_s:
                     html_s = res_s.read().decode('utf-8', errors='ignore')
                     raw_vids = re.findall(r'"videoId":"([a-zA-Z0-9_-]{11})"', html_s)
                     valid_vids = [v for v in raw_vids if v != 'otbTOpTpSpY']
@@ -545,7 +548,7 @@ def _refresh_youtube_cache_sync():
         try:
             streams_url = f'{TCGC_YOUTUBE_CHANNEL_URL}/streams'
             req_streams = urllib.request.Request(streams_url, headers=headers)
-            with urllib.request.urlopen(req_streams, timeout=4) as res_s:
+            with urllib.request.urlopen(req_streams, timeout=8) as res_s:
                 html_s = res_s.read().decode('utf-8', errors='ignore')
                 raw_vids = re.findall(r'"videoId":"([a-zA-Z0-9_-]{11})"', html_s)
                 seen = set()
