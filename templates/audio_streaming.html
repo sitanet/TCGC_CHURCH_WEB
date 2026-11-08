@@ -816,41 +816,7 @@
             </a>
         </div>
 
-        <!-- 3. BROADCASTER PROFILE ROW (Avatar, Citygate Radio, Follow, Actions) -->
-        <div class="radio-broadcaster-row">
-            <div class="radio-broadcaster-left">
-                <div class="radio-avatar-wrap">
-                    <img src="{% static 'images/citygate_radio_avatar.png' %}" alt="Citygate Radio" class="radio-avatar-img">
-                </div>
-                <div class="radio-broadcaster-info">
-                    <h2 class="radio-channel-name">{{ mixlr_info.channel_name|default:"Citygate Radio" }}</h2>
-                    <button type="button" class="radio-follow-btn" id="radioFollowBtn">
-                        <span class="radio-follow-icon">+👤</span>
-                        <span class="radio-follow-text">Follow</span>
-                    </button>
-                </div>
-            </div>
-            <div class="radio-broadcaster-actions">
-                <button type="button" class="radio-glass-btn radio-theme-btn" id="radioThemeBtn" title="Toggle Ambience Light">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-                <button type="button" class="radio-glass-btn radio-more-btn" id="radioMoreBtn" title="Broadcast Details">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </button>
-            </div>
-        </div>
+
 
         <!-- 4. MAIN PROGRAM BANNER / ARTWORK CARD (Active Broadcast Thumbnail) -->
         <div class="radio-artwork-container">
@@ -1209,28 +1175,34 @@
             }
         });
 
-        // Follow Button Toggle & Persistence
-        const isFollowed = localStorage.getItem('tcgc_radio_followed') === 'true';
-        if (isFollowed) {
-            followBtn.classList.add('is-following');
-            followBtn.querySelector('.radio-follow-icon').textContent = '✓';
-            followBtn.querySelector('.radio-follow-text').textContent = 'Following';
-        }
-
-        followBtn.addEventListener('click', function () {
-            const willFollow = !followBtn.classList.contains('is-following');
-            followBtn.classList.toggle('is-following', willFollow);
-            if (willFollow) {
-                followBtn.querySelector('.radio-follow-icon').textContent = '✓';
-                followBtn.querySelector('.radio-follow-text').textContent = 'Following';
-                localStorage.setItem('tcgc_radio_followed', 'true');
-                spawnFloatingHeart(followBtn, '✨');
-            } else {
-                followBtn.querySelector('.radio-follow-icon').textContent = '+👤';
-                followBtn.querySelector('.radio-follow-text').textContent = 'Follow';
-                localStorage.setItem('tcgc_radio_followed', 'false');
+        // Follow Button Toggle & Persistence (if present)
+        if (followBtn) {
+            const isFollowed = localStorage.getItem('tcgc_radio_followed') === 'true';
+            if (isFollowed) {
+                followBtn.classList.add('is-following');
+                const icon = followBtn.querySelector('.radio-follow-icon');
+                const text = followBtn.querySelector('.radio-follow-text');
+                if (icon) icon.textContent = '✓';
+                if (text) text.textContent = 'Following';
             }
-        });
+
+            followBtn.addEventListener('click', function () {
+                const willFollow = !followBtn.classList.contains('is-following');
+                followBtn.classList.toggle('is-following', willFollow);
+                const icon = followBtn.querySelector('.radio-follow-icon');
+                const text = followBtn.querySelector('.radio-follow-text');
+                if (willFollow) {
+                    if (icon) icon.textContent = '✓';
+                    if (text) text.textContent = 'Following';
+                    localStorage.setItem('tcgc_radio_followed', 'true');
+                    spawnFloatingHeart(followBtn, '✨');
+                } else {
+                    if (icon) icon.textContent = '+👤';
+                    if (text) text.textContent = 'Follow';
+                    localStorage.setItem('tcgc_radio_followed', 'false');
+                }
+            });
+        }
 
         // Like Button & Floating Hearts
         let heartCount = parseInt(heartCountEl.textContent || '0', 10);
@@ -1283,7 +1255,7 @@
             infoBackdrop.classList.remove('is-open');
         }
         infoBtn.addEventListener('click', openInfo);
-        document.getElementById('radioMoreBtn').addEventListener('click', openInfo);
+        document.getElementById('radioMoreBtn')?.addEventListener('click', openInfo);
         infoBackdrop.addEventListener('click', closeInfo);
         infoClose.addEventListener('click', closeInfo);
 
