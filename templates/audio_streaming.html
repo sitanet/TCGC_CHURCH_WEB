@@ -40,12 +40,8 @@
         -webkit-tap-highlight-color: transparent;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
-    .radio-top-bar,
-    .radio-mode-switcher {
-        display: none !important;
-    }
     .radio-mobile-container {
-        padding-top: 6px !important;
+        padding-top: 8px !important;
     }
     {% endif %}
 
@@ -108,25 +104,26 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 4px 0 10px;
+        padding: 6px 0 12px;
         position: relative;
-        z-index: 5;
+        z-index: 10;
+        width: 100%;
     }
 
     .radio-bar-title {
         font-size: 20px;
         font-weight: 700;
         color: #ffffff;
-        margin: 0;
+        margin: 0 0 0 14px;
         letter-spacing: 0.2px;
-        text-align: center;
+        text-align: left;
         flex: 1;
     }
 
     .radio-bar-actions {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
     }
 
     .radio-icon-btn {
@@ -143,26 +140,27 @@
         text-decoration: none;
     }
     .radio-icon-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        transform: scale(1.06);
+        background: rgba(255, 255, 255, 0.12);
+        transform: scale(1.08);
     }
     .radio-icon-btn:active {
-        transform: scale(0.94);
+        transform: scale(0.92);
     }
 
     /* --------------------------------------------------------------------------
        2. SEGMENTED MODE SWITCHER (Audio vs Video)
+       Exact Match to Reference Image: Gold Active Pill & Clean SVG Icons
        -------------------------------------------------------------------------- */
     .radio-mode-switcher {
         display: flex;
-        background: rgba(10, 22, 52, 0.85);
-        border: 1.2px solid rgba(245, 200, 76, 0.25);
+        background: rgba(12, 26, 60, 0.82);
+        border: 1.2px solid rgba(245, 200, 76, 0.28);
         border-radius: 999px;
-        padding: 4px;
+        padding: 3.5px;
         margin: 6px 0 18px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         position: relative;
-        z-index: 5;
+        z-index: 10;
     }
 
     .radio-tab {
@@ -171,7 +169,7 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        padding: 10px 16px;
+        padding: 10px 18px;
         border-radius: 999px;
         font-size: 14.5px;
         font-weight: 700;
@@ -179,24 +177,30 @@
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         border: none;
         cursor: pointer;
+        color: #ffffff !important;
     }
 
     .radio-tab.active {
-        background: linear-gradient(135deg, #fce588 0%, #f5c84c 45%, #c89218 100%);
-        color: #0b1122;
-        box-shadow: 0 4px 14px rgba(245, 200, 76, 0.45);
+        background: linear-gradient(90deg, #f5c84c 0%, #e6a724 55%, #cc8b14 100%);
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(230, 167, 36, 0.45);
     }
 
     .radio-tab:not(.active) {
         background: transparent;
-        color: #cbd5e1;
+        color: #ffffff !important;
+        opacity: 0.9;
     }
     .radio-tab:not(.active):hover {
-        color: #ffffff;
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.08);
     }
 
-    .radio-tab-icon {
-        font-size: 16px;
+    .radio-tab-svg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
     /* --------------------------------------------------------------------------
@@ -756,16 +760,16 @@
     <div class="radio-mobile-container">
         <!-- 1. TOP APP BAR (Back, Live Broadcast, Share, Popout, Refresh) -->
         <header class="radio-top-bar">
-            <button type="button" class="radio-icon-btn" onclick="window.history.length > 1 ? window.history.back() : window.location.href='/'" aria-label="Go Back">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <button type="button" class="radio-icon-btn radio-back-btn" id="radioBackBtn" onclick="handleRadioBack()" aria-label="Go Back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
             <h1 class="radio-bar-title">Live Broadcast</h1>
             <div class="radio-bar-actions">
-                <button type="button" class="radio-icon-btn" id="radioShareBtnTop" title="Share Stream">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button" class="radio-icon-btn" id="radioShareBtnTop" title="Share Broadcast">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="18" cy="5" r="3"></circle>
                         <circle cx="6" cy="12" r="3"></circle>
                         <circle cx="18" cy="19" r="3"></circle>
@@ -773,15 +777,15 @@
                         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                     </svg>
                 </button>
-                <a href="https://dcitygatechurch.mixlr.com" target="_blank" rel="noopener" class="radio-icon-btn" title="Open on Mixlr">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <a href="https://dcitygatechurch.mixlr.com" target="_blank" rel="noopener" class="radio-icon-btn" title="Open Mixlr Channel">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                         <polyline points="15 3 21 3 21 9"></polyline>
                         <line x1="10" y1="14" x2="21" y2="3"></line>
                     </svg>
                 </a>
-                <button type="button" class="radio-icon-btn" id="radioRefreshBtn" title="Refresh Stream">
-                    <svg id="refreshIconSvg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button" class="radio-icon-btn" id="radioRefreshBtn" title="Refresh Live Broadcast">
+                    <svg id="refreshIconSvg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M23 4v6h-6"></path>
                         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                     </svg>
@@ -792,11 +796,22 @@
         <!-- 2. SEGMENTED MODE SWITCHER (Audio Stream / Watch Video) -->
         <div class="radio-mode-switcher">
             <button type="button" class="radio-tab active" aria-selected="true">
-                <span class="radio-tab-icon">🎧</span>
+                <span class="radio-tab-svg">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                    </svg>
+                </span>
                 <span>Audio Stream</span>
             </button>
             <a href="{% url 'video_streaming' %}{% if is_app %}?app=1{% endif %}" class="radio-tab" aria-selected="false">
-                <span class="radio-tab-icon">📺</span>
+                <span class="radio-tab-svg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="15" rx="3" ry="3"></rect>
+                        <polyline points="17 2 12 7 7 2"></polyline>
+                        <polygon points="10 11 15 14.5 10 18 10 11" fill="#FFFFFF"></polygon>
+                    </svg>
+                </span>
                 <span>Watch Video</span>
             </a>
         </div>
@@ -1018,8 +1033,16 @@
 
 <script>
     // ==========================================================================
-    // Citygate Radio Interactive Stream Player Engine
+    // Citygate Radio Navigation & Stream Player Engine
     // ==========================================================================
+    function handleRadioBack() {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = "{% url 'home' %}{% if is_app %}?app=1{% endif %}";
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const mixlrInfo = {{ mixlr_json|safe }};
         let isPlaying = false;
