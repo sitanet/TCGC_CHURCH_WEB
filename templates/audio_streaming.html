@@ -978,20 +978,8 @@
     </div>
 </main>
 
-<!-- Hidden Mixlr Embed Engine -->
-<div class="radio-hidden-stream-holder" id="radioStreamHolder">
-    <iframe
-        id="mixlrLiveFrame"
-        src=""
-        data-src="https://dcitygatechurch.mixlr.com/embed"
-        width="100%"
-        height="180"
-        frameborder="0"
-        scrolling="no"
-        allow="autoplay"
-        title="Mixlr Stream Engine">
-    </iframe>
-</div>
+<!-- Native HTML5 Live Audio Stream Engine (Mixlr Direct Progressive AAC/MP3 Stream) -->
+<audio id="nativeAudioPlayer" preload="none" playsinline></audio>
 
 <!-- Slide-up Mixlr Live Chat & Community Drawer -->
 <div class="radio-drawer-backdrop" id="radioDrawerBackdrop"></div>
@@ -1063,9 +1051,9 @@
         const playIconSvg = document.getElementById('playIconSvg');
         const stopIconSvg = document.getElementById('stopIconSvg');
         const visualizer = document.getElementById('radioVisualizer');
-        const streamHolder = document.getElementById('radioStreamHolder');
-        const liveFrame = document.getElementById('mixlrLiveFrame');
+        const audioPlayer = document.getElementById('nativeAudioPlayer');
         const muteBtn = document.getElementById('radioMuteBtn');
+        let currentStreamUrl = mixlrInfo.stream_url || 'https://listen.mixlr.com/d0f784be72d6e96ef254f2a5b696a9bd';
         const speakerIcon = document.getElementById('speakerIcon');
         const elapsedTimeEl = document.getElementById('radioElapsedTime');
         const followBtn = document.getElementById('radioFollowBtn');
@@ -1123,7 +1111,58 @@
             startTimer();
         }
 
-        // Playback Toggle
+        // Native HTML5 Audio Event Listeners
+        audioPlayer.addEventListener('playing', function () {
+            visualizer.classList.add('is-playing');
+            startTimer();
+        });
+
+        audioPlayer.addEventListener('pause', function () {
+            if (!isPlaying) {
+                visualizer.classList.remove('is-playing');
+            }
+        });
+
+        audioPlayer.addEventListener('error', function (e) {
+            console.warn("Audio player error, attempting stream refresh:", e);
+            fetch('/api/live-audio/?force=1')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.stream_url && d.stream_url !== currentStreamUrl) {
+                        currentStreamUrl = d.stream_url;
+                        if (isPlaying) {
+                            audioPlayer.src = currentStreamUrl;
+                            audioPlayer.play().catch(() => {});
+                        }
+                    }
+                })
+                .catch(() => {});
+        });
+
+        // Playback Toggle Engine
+        function startAudioPlayback() {
+            if (!audioPlayer.src || audioPlayer.src === window.location.href || audioPlayer.src === '') {
+                audioPlayer.src = currentStreamUrl;
+            }
+            audioPlayer.load();
+            const playPromise = audioPlayer.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log("Live stream playing successfully.");
+                }).catch(err => {
+                    console.warn("Direct play failed, retrying with timestamp:", err);
+                    audioPlayer.src = currentStreamUrl + (currentStreamUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+                    audioPlayer.play().catch(e => console.error("Audio playback retry error:", e));
+                });
+            }
+        }
+
+        function stopAudioPlayback() {
+            audioPlayer.pause();
+            audioPlayer.src = '';
+            try { audioPlayer.load(); } catch (e) {}
+        }
+
         function setPlaybackState(playing) {
             isPlaying = playing;
             if (isPlaying) {
@@ -1131,20 +1170,14 @@
                 playIconSvg.style.display = 'none';
                 stopIconSvg.style.display = 'block';
                 visualizer.classList.add('is-playing');
-
-                // Load iframe src if not loaded
-                if (!liveFrame.src || liveFrame.src === window.location.href) {
-                    liveFrame.src = liveFrame.getAttribute('data-src') || 'https://dcitygatechurch.mixlr.com/embed';
-                }
+                startAudioPlayback();
                 startTimer();
             } else {
                 playBtn.classList.remove('is-active');
                 playIconSvg.style.display = 'block';
                 stopIconSvg.style.display = 'none';
                 visualizer.classList.remove('is-playing');
-
-                // Unload or stop stream
-                liveFrame.src = '';
+                stopAudioPlayback();
                 if (!mixlrInfo.is_live) {
                     stopTimer();
                 }
@@ -1158,21 +1191,18 @@
         // Mute / Speaker Toggle
         muteBtn.addEventListener('click', function () {
             isMuted = !isMuted;
+            audioPlayer.muted = isMuted;
             if (isMuted) {
                 speakerIcon.innerHTML = `
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <line x1="23" y1="9" x2="17" y2="15"></line>
                     <line x1="17" y1="9" x2="23" y2="15"></line>
                 `;
-                if (liveFrame.contentWindow) {
-                    try { liveFrame.contentWindow.postMessage('mute', '*'); } catch (e) {}
-                }
             } else {
                 speakerIcon.innerHTML = `
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                 `;
-                try { liveFrame.contentWindow.postMessage('unmute', '*'); } catch (e) {}
             }
         });
 
@@ -1287,6 +1317,13 @@
             fetch('/api/live-audio/?force=1')
                 .then(res => res.json())
                 .then(data => {
+                    if (data.stream_url && data.stream_url !== currentStreamUrl) {
+                        currentStreamUrl = data.stream_url;
+                        if (isPlaying) {
+                            audioPlayer.src = currentStreamUrl;
+                            audioPlayer.play().catch(() => {});
+                        }
+                    }
                     if (data.title) {
                         document.getElementById('radioProgramTitle').textContent = data.title;
                     }
@@ -1317,6 +1354,13 @@
             fetch('/api/live-audio/')
                 .then(res => res.json())
                 .then(data => {
+                    if (data.stream_url && data.stream_url !== currentStreamUrl) {
+                        currentStreamUrl = data.stream_url;
+                        if (isPlaying) {
+                            audioPlayer.src = currentStreamUrl;
+                            audioPlayer.play().catch(() => {});
+                        }
+                    }
                     if (data.title) {
                         document.getElementById('radioProgramTitle').textContent = data.title;
                     }

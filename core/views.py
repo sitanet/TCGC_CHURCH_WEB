@@ -60,6 +60,7 @@ _DEFAULT_MIXLR_DATA = {
     'is_live': True,
     'title': 'IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 08-11-2026',
     'thumbnail_url': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
+    'stream_url': 'https://listen.mixlr.com/d0f784be72d6e96ef254f2a5b696a9bd',
     'listener_count': 1,
     'heart_count': 0,
     'started_at': None,
@@ -76,7 +77,7 @@ _MIXLR_LIVE_CACHE = {
 
 
 def _refresh_mixlr_cache_sync():
-    """Fetches real-time status from Mixlr API."""
+    """Fetches real-time status from Mixlr API and direct AAC/MP3 live audio stream."""
     global _MIXLR_LIVE_CACHE
     try:
         req = urllib.request.Request(
@@ -91,19 +92,41 @@ def _refresh_mixlr_cache_sync():
             heart_count = 0
             started_at = None
             seconds_since_start = 0
+            stream_url = _DEFAULT_MIXLR_DATA.get('stream_url')
 
             bcast_ids = data.get('broadcast_ids') or []
             if bcast_ids:
+                stream_url = f'https://listen.mixlr.com/{bcast_ids[0]}'
                 b_url = f'https://api.mixlr.com/broadcasts/{bcast_ids[0]}'
-                req_b = urllib.request.Request(b_url, headers={'User-Agent': 'Mozilla/5.0'})
-                with urllib.request.urlopen(req_b, timeout=3) as resp_b:
-                    b_data = json.loads(resp_b.read().decode('utf-8'))
-                    if b_data.get('title'):
-                        title = b_data['title']
-                    listener_count = b_data.get('listener_count', 1) or 1
-                    heart_count = b_data.get('heart_count', 0) or 0
-                    started_at = b_data.get('started_at')
-                    seconds_since_start = b_data.get('seconds_since_start', 0)
+                try:
+                    req_b = urllib.request.Request(b_url, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(req_b, timeout=3) as resp_b:
+                        b_data = json.loads(resp_b.read().decode('utf-8'))
+                        if b_data.get('title'):
+                            title = b_data['title']
+                        listener_count = b_data.get('listener_count', 1) or 1
+                        heart_count = b_data.get('heart_count', 0) or 0
+                        started_at = b_data.get('started_at')
+                        seconds_since_start = b_data.get('seconds_since_start', 0)
+                except Exception as b_err:
+                    logger.debug(f"Mixlr broadcast detail fetch error: {b_err}")
+
+            # Also verify via channel_view API if available
+            try:
+                cv_url = f'https://apicdn.mixlr.com/v3/channel_view/{TCGC_MIXLR_CHANNEL_SLUG}'
+                cv_req = urllib.request.Request(cv_url, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(cv_req, timeout=3) as cv_res:
+                    cv_data = json.loads(cv_res.read().decode('utf-8'))
+                    for inc in cv_data.get('included', []):
+                        if inc.get('type') == 'broadcast':
+                            attrs = inc.get('attributes', {})
+                            if attrs.get('progressive_stream_url'):
+                                stream_url = attrs['progressive_stream_url']
+                            if attrs.get('title'):
+                                title = attrs['title']
+                            break
+            except Exception as cv_err:
+                logger.debug(f"Mixlr channel_view fetch error: {cv_err}")
 
             yt_info = get_youtube_live_info()
             thumb_url = (
@@ -121,6 +144,7 @@ def _refresh_mixlr_cache_sync():
                 'is_live': is_live or yt_info.get('is_live', False),
                 'title': title,
                 'thumbnail_url': thumb_url,
+                'stream_url': stream_url,
                 'listener_count': listener_count,
                 'heart_count': heart_count,
                 'started_at': started_at,
