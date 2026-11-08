@@ -1045,19 +1045,14 @@
 
         // Format Seconds to HH:MM:SS
         function formatTime(totalSec) {
-            const h = Math.floor(totalSec / 3600).toString().padStart(2, '0');
-            const m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0');
-            const s = (totalSec % 60).toString().padStart(2, '0');
+            const secNum = Math.max(0, parseInt(totalSec, 10) || 0);
+            const h = Math.floor(secNum / 3600).toString().padStart(2, '0');
+            const m = Math.floor((secNum % 3600) / 60).toString().padStart(2, '0');
+            const s = (secNum % 60).toString().padStart(2, '0');
             return `${h}:${m}:${s}`;
         }
 
-        // Initialize Elapsed Time
-        if (mixlrInfo.started_at) {
-            const startTime = new Date(mixlrInfo.started_at).getTime();
-            if (!isNaN(startTime)) {
-                elapsedSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
-            }
-        }
+        // Display current time, but do NOT run the ticking timer while player is stopped
         elapsedTimeEl.textContent = formatTime(elapsedSeconds);
 
         function startTimer() {
@@ -1075,9 +1070,19 @@
             }
         }
 
-        // Always run the timer if stream is currently live
-        if (mixlrInfo.is_live) {
-            startTimer();
+        // Query Mixlr API to sync with exact live broadcast elapsed time
+        function syncMixlrLiveTime() {
+            if (mixlrInfo.is_live) {
+                fetch('/api/live-audio/')
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.seconds_since_start !== undefined && isPlaying) {
+                            elapsedSeconds = d.seconds_since_start;
+                            elapsedTimeEl.textContent = formatTime(elapsedSeconds);
+                        }
+                    })
+                    .catch(() => {});
+            }
         }
 
         // Native HTML5 Audio Event Listeners
@@ -1087,9 +1092,12 @@
         });
 
         audioPlayer.addEventListener('pause', function () {
-            if (!isPlaying) {
-                visualizer.classList.remove('is-playing');
-            }
+            visualizer.classList.remove('is-playing');
+            stopTimer();
+        });
+
+        audioPlayer.addEventListener('ended', function () {
+            setPlaybackState(false);
         });
 
         audioPlayer.addEventListener('error', function (e) {
@@ -1141,15 +1149,14 @@
                 visualizer.classList.add('is-playing');
                 startAudioPlayback();
                 startTimer();
+                syncMixlrLiveTime();
             } else {
                 playBtn.classList.remove('is-active');
                 playIconSvg.style.display = 'block';
                 stopIconSvg.style.display = 'none';
                 visualizer.classList.remove('is-playing');
                 stopAudioPlayback();
-                if (!mixlrInfo.is_live) {
-                    stopTimer();
-                }
+                stopTimer();
             }
         }
 

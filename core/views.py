@@ -107,9 +107,14 @@ def _refresh_mixlr_cache_sync():
                         listener_count = b_data.get('listener_count', 1) or 1
                         heart_count = b_data.get('heart_count', 0) or 0
                         started_at = b_data.get('started_at')
-                        seconds_since_start = b_data.get('seconds_since_start', 0)
+                        seconds_since_start = int(b_data.get('seconds_since_start', 0) or 0)
+                        if seconds_since_start > 0:
+                            _MIXLR_LIVE_CACHE['start_timestamp'] = _time.time() - seconds_since_start
                 except Exception as b_err:
                     logger.debug(f"Mixlr broadcast detail fetch error: {b_err}")
+            elif not is_live:
+                seconds_since_start = 0
+                _MIXLR_LIVE_CACHE['start_timestamp'] = None
 
             # Also verify via channel_view API if available
             try:
@@ -159,6 +164,16 @@ def _refresh_mixlr_cache_sync():
         _MIXLR_LIVE_CACHE['refreshing'] = False
 
 
+def _get_computed_mixlr_data():
+    data = dict(_MIXLR_LIVE_CACHE.get('data') or _DEFAULT_MIXLR_DATA)
+    start_ts = _MIXLR_LIVE_CACHE.get('start_timestamp')
+    if data.get('is_live') and start_ts:
+        data['seconds_since_start'] = max(0, int(_time.time() - start_ts))
+    elif not data.get('is_live'):
+        data['seconds_since_start'] = 0
+    return data
+
+
 def get_mixlr_live_info(force_refresh=False):
     """
     Returns cached Citygate Radio Mixlr info immediately (0ms blocking).
@@ -169,13 +184,13 @@ def get_mixlr_live_info(force_refresh=False):
 
     if force_refresh:
         _refresh_mixlr_cache_sync()
-        return _MIXLR_LIVE_CACHE['data']
+        return _get_computed_mixlr_data()
 
     if (now - _MIXLR_LIVE_CACHE.get('timestamp', 0) > 60) and not _MIXLR_LIVE_CACHE.get('refreshing'):
         _MIXLR_LIVE_CACHE['refreshing'] = True
         threading.Thread(target=_refresh_mixlr_cache_sync, daemon=True).start()
 
-    return _MIXLR_LIVE_CACHE['data']
+    return _get_computed_mixlr_data()
 
 
 def api_live_audio(request):
