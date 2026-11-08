@@ -854,17 +854,22 @@
             </div>
         </div>
 
-        <!-- 4. MAIN PROGRAM BANNER / ARTWORK CARD -->
+        <!-- 4. MAIN PROGRAM BANNER / ARTWORK CARD (Active Broadcast Thumbnail) -->
         <div class="radio-artwork-container">
             <div class="radio-artwork-glow"></div>
             <div class="radio-artwork-card">
-                <img src="{% static 'images/supernatural_hub_art.jpg' %}" alt="The Supernatural Hub" class="radio-artwork-img" id="radioArtworkImg">
+                <img
+                    src="{{ mixlr_info.thumbnail_url|default:'/static/images/current_broadcast_thumb.jpg' }}"
+                    alt="{{ mixlr_info.title }}"
+                    class="radio-artwork-img"
+                    id="radioArtworkImg"
+                    onerror="this.onerror=null; this.src='{% static 'images/current_broadcast_thumb.jpg' %}';">
             </div>
         </div>
 
         <!-- 5. PROGRAM TITLE -->
         <h3 class="radio-program-title" id="radioProgramTitle">
-            {{ mixlr_info.title|default:"The Supernatural Hub || TSH || 08-11-26" }}
+            {{ mixlr_info.title|default:"IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 08-11-2026" }}
         </h3>
 
         <!-- 6. STATUS & LISTENERS -->
@@ -1285,6 +1290,10 @@
                     if (data.title) {
                         document.getElementById('radioProgramTitle').textContent = data.title;
                     }
+                    if (data.thumbnail_url) {
+                        const artImg = document.getElementById('radioArtworkImg');
+                        if (artImg) artImg.src = data.thumbnail_url;
+                    }
                     if (data.listener_count !== undefined) {
                         document.getElementById('radioListenerCount').textContent = data.listener_count;
                         document.getElementById('radioListenerLabel').textContent = data.listener_count === 1 ? 'Listener' : 'Listeners';
@@ -1310,6 +1319,10 @@
                 .then(data => {
                     if (data.title) {
                         document.getElementById('radioProgramTitle').textContent = data.title;
+                    }
+                    if (data.thumbnail_url) {
+                        const artImg = document.getElementById('radioArtworkImg');
+                        if (artImg) artImg.src = data.thumbnail_url;
                     }
                     if (data.listener_count !== undefined) {
                         document.getElementById('radioListenerCount').textContent = data.listener_count;

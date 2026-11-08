@@ -58,7 +58,8 @@ _DEFAULT_MIXLR_DATA = {
     'channel_name': 'Citygate Radio',
     'username': 'dcitygatechurch',
     'is_live': True,
-    'title': 'The Supernatural Hub || TSH || 08-11-26',
+    'title': 'IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 08-11-2026',
+    'thumbnail_url': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
     'listener_count': 1,
     'heart_count': 0,
     'started_at': None,
@@ -104,11 +105,22 @@ def _refresh_mixlr_cache_sync():
                     started_at = b_data.get('started_at')
                     seconds_since_start = b_data.get('seconds_since_start', 0)
 
+            yt_info = get_youtube_live_info()
+            thumb_url = (
+                yt_info.get('thumbnail_url')
+                or yt_info.get('thumbnail')
+                or '/static/images/current_broadcast_thumb.jpg'
+            )
+            if not title or title == 'The Supernatural Hub || TSH || 08-11-26':
+                if yt_info.get('video_title'):
+                    title = yt_info['video_title']
+
             _MIXLR_LIVE_CACHE['data'] = {
                 'channel_name': 'Citygate Radio',
                 'username': 'dcitygatechurch',
-                'is_live': is_live,
+                'is_live': is_live or yt_info.get('is_live', False),
                 'title': title,
+                'thumbnail_url': thumb_url,
                 'listener_count': listener_count,
                 'heart_count': heart_count,
                 'started_at': started_at,
@@ -1026,6 +1038,13 @@ def audio_streaming(request):
         or 'watchlive_mobile' in request.path
     )
     mixlr_info = get_mixlr_live_info()
+    yt_info = get_youtube_live_info()
+    if not mixlr_info.get('thumbnail_url'):
+        mixlr_info['thumbnail_url'] = (
+            yt_info.get('thumbnail_url')
+            or yt_info.get('thumbnail')
+            or '/static/images/current_broadcast_thumb.jpg'
+        )
     return render(request, 'audio_streaming.html', {
         'active_page': 'media',
         'is_app': is_app,
