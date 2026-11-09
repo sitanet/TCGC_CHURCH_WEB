@@ -25,15 +25,69 @@ TCGC_YOUTUBE_CHANNEL_ID = 'UCCBbW2sdzT1ocV5YeNAhbqw'
 TCGC_YOUTUBE_HANDLE = '@dcitygatechurch'
 TCGC_YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@dcitygatechurch'
 
+_LATEST_SERMON_CACHE = {
+    'timestamp': 0,
+    'data': None,
+}
+
+
+def _fetch_latest_sermon_info():
+    """
+    Fetches the latest published sermon/message from the TCGC backend API.
+    Cached for 10 minutes to maintain lightning-fast response times.
+    """
+    global _LATEST_SERMON_CACHE
+    now = _time.time()
+    if _LATEST_SERMON_CACHE['data'] and (now - _LATEST_SERMON_CACHE['timestamp'] < 600):
+        return _LATEST_SERMON_CACHE['data']
+
+    endpoints = [
+        'http://127.0.0.1:8000/api/messages/?ordering=-date_preached',
+        'http://127.0.0.1:8000/api/messages/',
+        'https://tcgc.thecitygatechurch.org/api/messages/?ordering=-date_preached',
+        'https://tcgc.thecitygatechurch.org/api/messages/',
+    ]
+    headers = {
+        'User-Agent': 'TCGC-Web/1.0',
+        'Accept': 'application/json',
+    }
+    for url in endpoints:
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=4) as res:
+                data = json.loads(res.read().decode('utf-8'))
+                results = data.get('results') if isinstance(data, dict) else (data if isinstance(data, list) else None)
+                if results and len(results) > 0:
+                    latest = results[0]
+                    title = latest.get('title')
+                    speaker = latest.get('speaker')
+                    artwork = latest.get('image_url') or latest.get('image') or latest.get('thumbnail')
+                    full_title = f"{title} — {speaker}" if (speaker and title) else (title or 'The CityGate Church Broadcast')
+                    result = {
+                        'title': full_title,
+                        'short_title': title or 'The CityGate Church Broadcast',
+                        'speaker': speaker or '',
+                        'thumbnail_url': artwork or '/static/images/current_broadcast_thumb.jpg',
+                    }
+                    _LATEST_SERMON_CACHE['data'] = result
+                    _LATEST_SERMON_CACHE['timestamp'] = now
+                    return result
+        except Exception as e:
+            logger.debug(f"Latest sermon fetch error from {url}: {e}")
+            continue
+
+    return _LATEST_SERMON_CACHE.get('data')
+
+
 _DEFAULT_YOUTUBE_DATA = {
     'channel_id': TCGC_YOUTUBE_CHANNEL_ID,
     'channel_handle': TCGC_YOUTUBE_HANDLE,
     'channel_url': TCGC_YOUTUBE_CHANNEL_URL,
     'is_live': False,
     'video_id': 'PiXjqQR-r3o',
-    'video_title': 'IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 08-11-2026',
-    'thumbnail_url': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
-    'thumbnail': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
+    'video_title': 'The CityGate Church Live Broadcast',
+    'thumbnail_url': '/static/images/current_broadcast_thumb.jpg',
+    'thumbnail': '/static/images/current_broadcast_thumb.jpg',
     'embed_url': 'https://www.youtube-nocookie.com/embed/PiXjqQR-r3o?autoplay=1&rel=0&enablejsapi=1',
     'channel_embed_url': f'https://www.youtube-nocookie.com/embed/live_stream?channel={TCGC_YOUTUBE_CHANNEL_ID}&autoplay=1&rel=0&enablejsapi=1',
     'watch_url': 'https://www.youtube.com/watch?v=PiXjqQR-r3o',
@@ -57,9 +111,9 @@ TCGC_MIXLR_CHANNEL_URL = 'https://dcitygatechurch.mixlr.com'
 _DEFAULT_MIXLR_DATA = {
     'channel_name': 'Citygate Radio',
     'username': 'dcitygatechurch',
-    'is_live': True,
-    'title': 'IMAGE & GLORY PRE-CONFERENCE TEACHINGS || IMGPCT || 08-11-2026',
-    'thumbnail_url': 'https://i.ytimg.com/vi/PiXjqQR-r3o/maxresdefault.jpg',
+    'is_live': False,
+    'title': 'The CityGate Church Live Broadcast',
+    'thumbnail_url': '/static/images/current_broadcast_thumb.jpg',
     'stream_url': 'https://listen.mixlr.com/d0f784be72d6e96ef254f2a5b696a9bd',
     'listener_count': 1,
     'heart_count': 0,
@@ -87,7 +141,8 @@ def _refresh_mixlr_cache_sync():
         with urllib.request.urlopen(req, timeout=3) as resp:
             data = json.loads(resp.read().decode('utf-8'))
             is_live = bool(data.get('is_live'))
-            title = _DEFAULT_MIXLR_DATA['title']
+            title = None
+            thumb_url = None
             listener_count = 1
             heart_count = 0
             started_at = None
@@ -122,6 +177,12 @@ def _refresh_mixlr_cache_sync():
                 cv_req = urllib.request.Request(cv_url, headers={'User-Agent': 'Mozilla/5.0'})
                 with urllib.request.urlopen(cv_req, timeout=3) as cv_res:
                     cv_data = json.loads(cv_res.read().decode('utf-8'))
+                    ch_attrs = cv_data.get('data', {}).get('attributes', {})
+                    if ch_attrs.get('artwork_url'):
+                        thumb_url = ch_attrs['artwork_url']
+                    elif ch_attrs.get('media', {}).get('artwork', {}).get('image', {}).get('large'):
+                        thumb_url = ch_attrs['media']['artwork']['image']['large']
+
                     for inc in cv_data.get('included', []):
                         if inc.get('type') == 'broadcast':
                             attrs = inc.get('attributes', {})
@@ -130,18 +191,42 @@ def _refresh_mixlr_cache_sync():
                             if attrs.get('title'):
                                 title = attrs['title']
                             break
+                        elif inc.get('type') == 'event' and not thumb_url:
+                            attrs = inc.get('attributes', {})
+                            if attrs.get('artwork_url'):
+                                thumb_url = attrs['artwork_url']
             except Exception as cv_err:
                 logger.debug(f"Mixlr channel_view fetch error: {cv_err}")
 
             yt_info = get_youtube_live_info()
-            thumb_url = (
-                yt_info.get('thumbnail_url')
-                or yt_info.get('thumbnail')
-                or '/static/images/current_broadcast_thumb.jpg'
-            )
-            if not title or title == 'The Supernatural Hub || TSH || 08-11-26':
-                if yt_info.get('video_title'):
-                    title = yt_info['video_title']
+
+            if is_live:
+                # If YouTube is currently live, synchronize title and thumbnail with live video broadcast
+                if yt_info.get('is_live'):
+                    if yt_info.get('video_title'):
+                        title = yt_info['video_title']
+                    if yt_info.get('thumbnail_url'):
+                        thumb_url = yt_info['thumbnail_url']
+            else:
+                # When off air, dynamically showcase the latest published teaching/sermon title & flyer
+                sermon = _fetch_latest_sermon_info()
+                if sermon:
+                    if sermon.get('title'):
+                        title = sermon['title']
+                    if sermon.get('thumbnail_url'):
+                        thumb_url = sermon['thumbnail_url']
+
+            # Next fallback: latest YouTube broadcast metadata
+            if not title and yt_info.get('video_title'):
+                title = yt_info['video_title']
+            if not thumb_url and yt_info.get('thumbnail_url'):
+                thumb_url = yt_info['thumbnail_url']
+
+            # Final fallbacks
+            if not title:
+                title = 'The CityGate Church Live Broadcast'
+            if not thumb_url:
+                thumb_url = '/static/images/current_broadcast_thumb.jpg'
 
             _MIXLR_LIVE_CACHE['data'] = {
                 'channel_name': 'Citygate Radio',
@@ -1084,12 +1169,20 @@ def audio_streaming(request):
     )
     mixlr_info = get_mixlr_live_info()
     yt_info = get_youtube_live_info()
-    if not mixlr_info.get('thumbnail_url'):
-        mixlr_info['thumbnail_url'] = (
-            yt_info.get('thumbnail_url')
-            or yt_info.get('thumbnail')
-            or '/static/images/current_broadcast_thumb.jpg'
-        )
+    if not mixlr_info.get('thumbnail_url') or mixlr_info.get('thumbnail_url') == '/static/images/current_broadcast_thumb.jpg':
+        sermon = _fetch_latest_sermon_info()
+        if sermon and sermon.get('thumbnail_url'):
+            mixlr_info['thumbnail_url'] = sermon['thumbnail_url']
+        elif yt_info.get('thumbnail_url'):
+            mixlr_info['thumbnail_url'] = yt_info['thumbnail_url']
+        else:
+            mixlr_info['thumbnail_url'] = '/static/images/current_broadcast_thumb.jpg'
+    if not mixlr_info.get('title') or mixlr_info.get('title') == 'The CityGate Church Live Broadcast':
+        sermon = _fetch_latest_sermon_info()
+        if sermon and sermon.get('title'):
+            mixlr_info['title'] = sermon['title']
+        elif yt_info.get('video_title'):
+            mixlr_info['title'] = yt_info['video_title']
     template_name = 'audio_streaming_mobile.html' if is_app else 'audio_streaming.html'
     return render(request, template_name, {
         'active_page': 'media',
