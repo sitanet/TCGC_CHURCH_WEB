@@ -7,10 +7,15 @@ urlpatterns = [
     # Primary IMGC Registration Routes
     path('imgc/', views.registration, name='registration'),
     path('imgc/confirmation/<str:registration_code>/', views.registration_confirmation, name='registration_confirmation'),
+    path('imgc/edit/', views.registration_edit_lookup, name='registration_edit_lookup'),
+    path('imgc/edit/<str:registration_code>/', views.registration_edit, name='registration_edit'),
 
-    # Redirects to /imgc/
+    # Redirects & Aliases
     path('registration/', RedirectView.as_view(pattern_name='registration', permanent=True)),
     path('registration/confirmation/<str:registration_code>/', RedirectView.as_view(pattern_name='registration_confirmation', permanent=True)),
+    path('registration/edit/', RedirectView.as_view(pattern_name='registration_edit_lookup', permanent=False)),
+    path('registration/edit/<str:registration_code>/', RedirectView.as_view(pattern_name='registration_edit', permanent=False)),
+    path('imgc/retrieve/', RedirectView.as_view(pattern_name='registration_edit_lookup', permanent=False)),
     path('imgc/register/', RedirectView.as_view(pattern_name='registration', permanent=True)),
     path('events/imgc/', RedirectView.as_view(pattern_name='registration', permanent=True)),
     # IMGC Personalized Invitation Routes

@@ -47,6 +47,13 @@
 <!-- CONFIRMATION SLIP CARD -->
 <section class="tcgc-reg-card-section" style="margin-top: -220px;">
     <div class="tcgc-reg-card tcgc-confirm-card">
+        {% if request.GET.updated or is_updated %}
+        <div style="background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); border: 2px solid #388E3C; border-radius: 14px; padding: 18px 24px; margin-bottom: 26px; text-align: center; color: #1B5E20; box-shadow: 0 4px 18px rgba(56, 142, 60, 0.2);">
+            <div style="font-size: 19px; font-weight: 800; margin-bottom: 4px;">✓ Registration Updated Successfully!</div>
+            <div style="font-size: 14.5px; color: #2E7D32;">Your IMGC 2026 conference details and preferences have been updated.</div>
+        </div>
+        {% endif %}
+
         <div class="tcgc-confirm-badge-wrap">
             <div class="tcgc-confirm-check-circle">&#10003;</div>
             <h2 class="tcgc-reg-card-heading" style="margin-bottom: 8px;">Registration Confirmed</h2>
@@ -367,6 +374,9 @@
 
         <!-- Action Buttons -->
         <div class="tcgc-confirm-actions" style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 32px;">
+            <a href="{% url 'registration_edit' reg.registration_code %}" class="tcgc-btn-outline-gold tcgc-btn-confirm-action" style="border-color: #50E3C2; color: #50E3C2; background: rgba(80, 227, 194, 0.08);">
+                <span>✏️ Edit Registration Details</span>
+            </a>
             <a href="{% url 'imgc_invite' %}?from={{ reg.first_name|urlencode }}+{{ reg.surname|urlencode }}&phone={{ reg.phone_number|urlencode }}" class="tcgc-btn-complete-reg tcgc-btn-confirm-action" style="background: linear-gradient(135deg, #BC1113 0%, #78101E 100%); border: 1px solid #D4AF37;">
                 <span>Generate Invite Card</span>
                 <span class="tcgc-arrow-long">&#8594;</span>

@@ -457,9 +457,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         dupBanner.innerHTML = `
                             <h4 class="tcgc-dup-alert-title">Already Registered for IMGC 2026!</h4>
                             <p class="tcgc-dup-alert-desc">${data.errors?.duplicate || data.message}</p>
-                            <div class="tcgc-dup-alert-actions">
+                            <div class="tcgc-dup-alert-actions" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
                                 <a href="${data.redirect_url}" class="tcgc-btn-dup-view">
                                     <span>View Existing Registration (${data.existing_code})</span>
+                                    <span class="tcgc-arrow-long">&#8594;</span>
+                                </a>
+                                <a href="/imgc/edit/${data.existing_code}/" class="tcgc-btn-dup-edit" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #F5D36C 0%, #D4AF37 100%); color: #140305; font-weight: 800; font-size: 14px; padding: 11px 22px; border-radius: 999px; text-decoration: none; border: 1.5px solid #FFF; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);">
+                                    <span>✏️ Edit This Registration Form</span>
                                     <span class="tcgc-arrow-long">&#8594;</span>
                                 </a>
                             </div>

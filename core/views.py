@@ -9,6 +9,7 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from decimal import Decimal
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse
@@ -1139,6 +1140,298 @@ def registration_confirmation(request, registration_code):
         'kitchen_coordinator_phone': KITCHEN_COORDINATOR_PHONE,
         'camp_phone_1': CAMP_COORDINATOR_PHONE,
         'camp_phone_2': KITCHEN_COORDINATOR_PHONE,
+        'is_updated': request.GET.get('updated') == '1',
+    })
+
+
+def registration_edit_lookup(request):
+    """
+    Allows IMGC 2026 registrants to retrieve their registration by Phone Number or Email
+    so they can edit and update their details.
+    """
+    error_message = None
+    matches = None
+    identifier = ''
+
+    if request.method in ('POST', 'GET'):
+        identifier = (request.POST.get('identifier') or request.GET.get('identifier') or '').strip()
+        if identifier:
+            clean_digits = ''.join(c for c in identifier if c.isdigit())
+
+            # Match by email (case-insensitive) or exact registration code
+            q_filter = Q(email__iexact=identifier) | Q(registration_code__iexact=identifier)
+            if len(clean_digits) >= 10:
+                last_10 = clean_digits[-10:]
+                q_filter |= Q(phone_number__endswith=last_10)
+            elif clean_digits:
+                q_filter |= Q(phone_number__icontains=clean_digits)
+
+            matches = ConferenceRegistration.objects.filter(q_filter).order_by('-created_at')
+
+            if matches.exists():
+                if matches.count() == 1:
+                    reg = matches.first()
+                    return redirect('registration_edit', registration_code=reg.registration_code)
+                # If multiple matches, stay on page to let user pick which attendee to edit
+            else:
+                error_message = f"No IMGC 2026 registration was found matching '{identifier}'. Please check your phone number or email and try again, or register as a new attendee."
+
+    return render(request, 'registration_lookup.html', {
+        'active_page': 'events',
+        'identifier': identifier,
+        'error_message': error_message,
+        'matches': matches,
+    })
+
+
+def registration_edit(request, registration_code):
+    """
+    Allows a registrant to edit and update their IMGC 2026 registration details.
+    """
+    reg = get_object_or_404(ConferenceRegistration, registration_code=registration_code)
+    feeding_config = IMGCFeedingConfig.get_config()
+    errors = {}
+
+    if request.method == 'POST':
+        surname = request.POST.get('surname', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        phone_country_code = request.POST.get('phone_country_code', '+234').strip() or '+234'
+        raw_phone = request.POST.get('phone_number', '').strip()
+        gender = request.POST.get('gender', '').strip().lower()
+        age_range = request.POST.get('age_range', '').strip()
+        designation = request.POST.get('designation', '').strip()
+        other_designation = request.POST.get('other_designation', '').strip()
+        city = request.POST.get('city', '').strip()
+        state = request.POST.get('state', '').strip()
+        country = request.POST.get('country', 'Nigeria').strip() or 'Nigeria'
+
+        is_first_time_raw = (
+            request.POST.get('is_first_time')
+            or request.POST.get('first_time_attending')
+            or 'no'
+        ).strip().lower()
+        is_first_time = is_first_time_raw in ['yes', 'true', '1']
+
+        raw_mode = request.POST.get('attendance_mode', 'camping').strip()
+        mode_map = {
+            'onsite_camp': 'camping',
+            'camping': 'camping',
+            'physical_day': 'non_camping',
+            'non_camping': 'non_camping',
+            'virtual_streaming': 'online',
+            'online': 'online',
+        }
+        attendance_mode = mode_map.get(raw_mode, raw_mode or 'camping')
+        feeding_subscription = request.POST.get('feeding_subscription', 'none').strip()
+        special_notes = (
+            request.POST.get('special_notes')
+            or request.POST.get('expectation')
+            or ''
+        ).strip()
+
+        # Format phone number
+        if raw_phone:
+            if raw_phone.startswith('+'):
+                phone_number = raw_phone
+            elif raw_phone.startswith('0') and phone_country_code == '+234':
+                phone_number = f"{phone_country_code}{raw_phone[1:]}"
+            else:
+                phone_number = f"{phone_country_code}{raw_phone}"
+        else:
+            phone_number = ''
+
+        # Validation
+        if not surname:
+            errors['surname'] = 'Surname is required'
+        if not first_name:
+            errors['first_name'] = 'First name is required'
+        if not email or '@' not in email:
+            errors['email'] = 'A valid email address is required'
+        if not raw_phone:
+            errors['phone_number'] = 'Phone number is required'
+        if not gender:
+            errors['gender'] = 'Please select your gender'
+        if not age_range:
+            errors['age_range'] = 'Please select your age range'
+        if not designation:
+            errors['designation'] = 'Please select your designation'
+        if not city:
+            errors['city'] = 'City is required'
+        if not country:
+            errors['country'] = 'Country is required'
+        if not attendance_mode:
+            errors['attendance_mode'] = 'Please select your mode of attendance'
+
+        # Check duplicate email & phone against OTHER registrations (exclude self)
+        if not errors.get('email') and email:
+            dup_email = ConferenceRegistration.objects.filter(email__iexact=email).exclude(pk=reg.pk).first()
+            if dup_email:
+                errors['email'] = f"Another attendee is already registered with this email ({dup_email.registration_code})."
+
+        if not errors.get('phone_number') and phone_number:
+            clean_digits = ''.join(c for c in phone_number if c.isdigit())
+            if len(clean_digits) >= 10:
+                last_10 = clean_digits[-10:]
+                dup_phone = ConferenceRegistration.objects.filter(phone_number__endswith=last_10).exclude(pk=reg.pk).first()
+            else:
+                dup_phone = ConferenceRegistration.objects.filter(phone_number__iexact=phone_number).exclude(pk=reg.pk).first()
+            if dup_phone:
+                errors['phone_number'] = f"Another attendee is already registered with this phone number ({dup_phone.registration_code})."
+
+        # Validate feeding subscription
+        if attendance_mode == 'camping':
+            if feeding_subscription not in ['lunch_dinner', 'lunch_only', 'none']:
+                feeding_subscription = 'lunch_dinner'
+        elif attendance_mode == 'non_camping':
+            if feeding_subscription not in ['lunch_dinner', 'lunch_only', 'none']:
+                feeding_subscription = 'none'
+        else:
+            feeding_subscription = 'none'
+
+        feeding_days = request.POST.get('feeding_days', '').strip()
+        if feeding_subscription == 'lunch_only':
+            if not feeding_days or feeding_days.lower() in ('all', 'all days', 'all_days'):
+                feeding_days = 'All Days'
+        elif feeding_subscription == 'lunch_dinner':
+            feeding_days = 'All Days'
+        else:
+            feeding_days = ''
+
+        if errors:
+            first_err_msg = next(iter(errors.values()), 'Please check your input and try again.')
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json':
+                return JsonResponse({
+                    'status': 'error',
+                    'success': False,
+                    'message': first_err_msg,
+                    'errors': errors,
+                }, status=400)
+            return render(request, 'registration_edit.html', {
+                'active_page': 'events',
+                'registration': reg,
+                'errors': errors,
+                'form_data': request.POST,
+                'camping_phone': CAMPING_DISPATCH_PHONE,
+                'lunch_phone': LUNCH_DISPATCH_PHONE,
+                'service_team_daily_cost': feeding_config.service_team_daily_cost,
+            })
+
+        # Recalculate fees
+        calculated_amount = Decimal('0.00')
+        if attendance_mode == 'camping':
+            calculated_amount = Decimal('13000.00')
+        elif designation == 'church_worker' and feeding_subscription == 'lunch_only':
+            if not feeding_days or feeding_days.strip().lower() in ('all', 'all days', 'all 5 days', 'all_days'):
+                days_count = 5
+            else:
+                days_list = [d.strip() for d in feeding_days.split(',') if d.strip()]
+                days_count = len(days_list) if days_list else 5
+            calculated_amount = Decimal(days_count) * feeding_config.service_team_daily_cost
+
+        requires_dispatch = False
+        target_phone = None
+        if attendance_mode == 'camping':
+            requires_dispatch = True
+            target_phone = CAMPING_DISPATCH_PHONE
+        elif feeding_subscription in ['lunch_dinner', 'lunch_only']:
+            requires_dispatch = True
+            target_phone = CAMPING_DISPATCH_PHONE
+
+        # Update record
+        reg.surname = surname
+        reg.first_name = first_name
+        reg.email = email
+        reg.phone_number = phone_number
+        reg.gender = gender
+        reg.age_range = age_range
+        reg.designation = designation
+        reg.other_designation = other_designation
+        reg.city = city
+        reg.state = state
+        reg.country = country
+        reg.is_first_time = is_first_time
+        reg.attendance_mode = attendance_mode
+        reg.feeding_subscription = feeding_subscription
+        reg.feeding_days = feeding_days
+        reg.amount_paid = calculated_amount
+        reg.special_notes = special_notes
+        reg.requires_code_dispatch = requires_dispatch
+        reg.dispatch_phone_target = target_phone
+        reg.save()
+
+        # Forward update to backend if available
+        backend_payload = {
+            'registration_code': reg.registration_code,
+            'surname': surname,
+            'first_name': first_name,
+            'email': email,
+            'phone_country_code': phone_country_code,
+            'phone_number': phone_number,
+            'gender': gender,
+            'age_range': age_range,
+            'designation': designation,
+            'other_designation': other_designation,
+            'city': city,
+            'state': state,
+            'country': country,
+            'is_first_time': 'yes' if is_first_time else 'no',
+            'attendance_mode': attendance_mode,
+            'feeding_subscription': feeding_subscription,
+            'feeding_days': feeding_days,
+            'special_notes': special_notes,
+            'amount_paid': float(calculated_amount),
+        }
+        _forward_registration_to_backend(backend_payload)
+
+        confirmation_url = reverse('registration_confirmation', kwargs={'registration_code': reg.registration_code}) + '?updated=1'
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json':
+            return JsonResponse({
+                'status': 'success',
+                'success': True,
+                'message': 'Registration updated successfully!',
+                'redirect_url': confirmation_url,
+            })
+
+        return redirect(confirmation_url)
+
+    # Initial GET request - populate form_data from existing registration
+    raw_phone_display = reg.phone_number
+    if raw_phone_display.startswith(reg.phone_country_code):
+        raw_phone_display = raw_phone_display[len(reg.phone_country_code):]
+    elif raw_phone_display.startswith('234') and reg.phone_country_code == '+234':
+        raw_phone_display = raw_phone_display[3:]
+
+    form_data = {
+        'surname': reg.surname,
+        'first_name': reg.first_name,
+        'email': reg.email,
+        'phone_country_code': reg.phone_country_code or '+234',
+        'phone_number': raw_phone_display,
+        'gender': reg.gender,
+        'age_range': reg.age_range,
+        'designation': reg.designation,
+        'other_designation': reg.other_designation or '',
+        'city': reg.city,
+        'state': reg.state or '',
+        'country': reg.country or 'Nigeria',
+        'is_first_time': 'yes' if reg.is_first_time else 'no',
+        'attendance_mode': reg.attendance_mode,
+        'feeding_subscription': reg.feeding_subscription,
+        'feeding_days': reg.feeding_days or '',
+        'expectation': reg.special_notes or '',
+        'special_notes': reg.special_notes or '',
+    }
+
+    return render(request, 'registration_edit.html', {
+        'active_page': 'events',
+        'registration': reg,
+        'form_data': form_data,
+        'errors': errors,
+        'camping_phone': CAMPING_DISPATCH_PHONE,
+        'lunch_phone': LUNCH_DISPATCH_PHONE,
+        'service_team_daily_cost': feeding_config.service_team_daily_cost,
     })
 
 

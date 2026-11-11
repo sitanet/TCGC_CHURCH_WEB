@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Retrieve &amp; Edit Registration — Image &amp; Glory Conference 2026{% endblock %}
+
+{% block content %}
+<!-- REGISTRATION HERO SECTION (Animated Background) -->
+<section class="tcgc-reg-hero" style="background-image: url('{% static 'images/reg_hero_bg_anim.webp' %}'), url('{% static 'images/reg_hero_bg.gif' %}');">
+    <div class="tcgc-reg-hero-overlay"></div>
+
+    <!-- Header / Navbar -->
+    <header class="tcgc-header tcgc-header-dark">
+        <div class="tcgc-header-container">
+            <a href="{% url 'home' %}" class="tcgc-logo-link">
+                <img src="{% static 'images/logo_white.png' %}?v=2" alt="The CityGate Church" class="tcgc-header-logo">
+            </a>
+            <button type="button" class="tcgc-mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="tcgc-nav">
+                <ul class="tcgc-nav-list">
+                    <li><a href="{% url 'ministries' %}" class="tcgc-nav-link">About Us</a></li>
+                    <li><a href="{% url 'video_streaming' %}" class="tcgc-nav-link">Resources/Media</a></li>
+                    <li><a href="{% url 'registration' %}" class="tcgc-nav-link tcgc-nav-link-active">Events</a></li>
+                    <li><a href="{% url 'testimony' %}" class="tcgc-nav-link">Testimony</a></li>
+                    <li><a href="{% url 'ministries' %}#ministries-list" class="tcgc-nav-link">Blog/Articles</a></li>
+                </ul>
+                <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-mobile">Contact us</a>
+            </nav>
+            <a href="#contact-footer" class="tcgc-btn-contact tcgc-btn-contact-desktop">Contact us</a>
+        </div>
+    </header>
+
+    <!-- Hero Title & Subtitle -->
+    <div class="tcgc-reg-hero-content">
+        <h1 class="tcgc-reg-hero-title">
+            IMAGE &amp; GLORY<br>
+            CONFERENCE 2026
+        </h1>
+        <p class="tcgc-reg-hero-subtitle">
+            Retrieve and update your conference registration form details.
+        </p>
+    </div>
+</section>
+
+<!-- RETRIEVAL CARD SECTION -->
+<section class="tcgc-reg-card-section" style="margin-top: -200px; padding-bottom: 80px;">
+    <div class="tcgc-reg-card" style="max-width: 820px; margin: 0 auto; padding: 42px 36px;">
+        
+        <!-- Top Navigation Link back to Registration -->
+        <div style="margin-bottom: 24px;">
+            <a href="{% url 'registration' %}" style="display: inline-flex; align-items: center; gap: 8px; color: #7D0A14; text-decoration: none; font-weight: 700; font-size: 14.5px; transition: color 0.2s ease;">
+                <span style="font-size: 18px;">&larr;</span>
+                <span>Back to New Registration</span>
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 32px;">
+            <span style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #7D0A14 0%, #9E101D 100%); color: #FFFFFF; font-size: 12.5px; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase; padding: 6px 18px; border-radius: 999px; box-shadow: 0 4px 12px rgba(125, 10, 20, 0.2); margin-bottom: 12px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Attendee Self-Service Portal
+            </span>
+            <h2 class="tcgc-reg-card-heading" style="margin: 0 0 10px 0; font-size: 30px;">Retrieve &amp; Edit Registration</h2>
+            <p style="color: #5A3525; font-size: 15.5px; line-height: 1.6; max-width: 620px; margin: 0 auto; font-weight: 500;">
+                Enter the <strong>Phone Number</strong> or <strong>Email Address</strong> you provided when registering to access and update your IMGC 2026 form.
+            </p>
+        </div>
+
+        <!-- Error Alert -->
+        {% if error_message %}
+        <div style="background: #FFF5F5; border: 2px solid #E53E3E; border-radius: 14px; padding: 18px 22px; margin-bottom: 28px; box-shadow: 0 6px 18px rgba(229, 62, 62, 0.1);">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="font-size: 22px; line-height: 1;">⚠️</span>
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 6px 0; color: #9B1C1C; font-size: 16px; font-weight: 800;">Registration Not Found</h4>
+                    <p style="margin: 0 0 12px 0; color: #771D1D; font-size: 14.5px; line-height: 1.5;">{{ error_message }}</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                        <a href="{% url 'registration' %}" style="display: inline-flex; align-items: center; gap: 6px; background: #7D0A14; color: #FFFFFF; font-weight: 700; font-size: 13.5px; padding: 8px 16px; border-radius: 999px; text-decoration: none;">
+                            <span>Register as a New Attendee</span>
+                            <span>&rarr;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Multiple Matches Selector -->
+        {% if matches and matches.count > 1 %}
+        <div style="background: #FFFDF9; border: 2px solid #D4AF37; border-radius: 18px; padding: 24px; margin-bottom: 32px; box-shadow: 0 8px 24px rgba(212, 175, 55, 0.15);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="background: #E4C164; color: #1A0306; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.8px;">
+                    Multiple Registrations Found ({{ matches.count }})
+                </span>
+                <h3 style="font-family: var(--font-display, 'Cinzel', serif); font-size: 20px; color: #3B0408; margin: 8px 0 4px 0;">
+                    Select Your Registration to Edit
+                </h3>
+                <p style="color: #666; font-size: 14px; margin: 0;">
+                    We found more than one registration matching your search. Choose the record you wish to update:
+                </p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                {% for match in matches %}
+                <div style="background: #FFFFFF; border: 1.5px solid #EADBBE; border-radius: 14px; padding: 18px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.2s ease, border-color 0.2s ease;">
+                    <div style="min-width: 200px;">
+                        <div style="font-weight: 800; font-size: 17px; color: #1C0508;">
+                            {{ match.first_name }} {{ match.surname }}
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+                            <span style="background: #1C0508; color: #F5D36C; font-family: monospace; font-size: 12.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">
+                                {{ match.registration_code }}
+                            </span>
+                            <span style="background: rgba(125, 10, 20, 0.08); color: #7D0A14; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px;">
+                                {{ match.get_attendance_mode_display }}
+                            </span>
+                        </div>
+                        <div style="font-size: 12.5px; color: #777; margin-top: 4px;">
+                            Registered: {{ match.created_at|date:"M d, Y" }} &bull; {{ match.email }} &bull; {{ match.phone_number }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="{% url 'registration_edit' match.registration_code %}" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #F5D36C 0%, #D4AF37 50%, #AA8010 100%); color: #140305; font-weight: 800; font-size: 14px; padding: 10px 22px; border-radius: 999px; text-decoration: none; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35); transition: transform 0.2s ease;">
+                            <span>✏️ Edit This Form</span>
+                            <span>&rarr;</span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Lookup Form -->
+        <form method="POST" action="{% url 'registration_edit_lookup' %}" style="background: linear-gradient(180deg, #FFFDF9 0%, #FFF8EB 100%); border: 2px solid #E4C164; border-radius: 20px; padding: 32px 28px; box-shadow: 0 8px 24px rgba(125, 10, 20, 0.06);">
+            {% csrf_token %}
+
+            <div class="tcgc-reg-field tcgc-reg-field-full" style="margin-bottom: 22px;">
+                <label for="reg_identifier" style="display: block; font-weight: 700; font-size: 15px; color: #1C0508; margin-bottom: 8px;">
+                    Enter Your Phone Number or Email Address<span style="color: #E53E3E;">*</span>
+                </label>
+                <div style="position: relative;">
+                    <input type="text"
+                           id="reg_identifier"
+                           name="identifier"
+                           value="{{ identifier|default:'' }}"
+                           placeholder="e.g. 08012345678, +2348012345678, or yourname@example.com"
+                           required
+                           autofocus
+                           class="tcgc-reg-input"
+                           style="width: 100%; height: 52px; font-size: 16px; padding: 12px 18px; border-radius: 12px; border: 1.5px solid #D6B254; background: #FFFFFF; color: #140305; font-weight: 500; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;">
+                </div>
+                <small style="display: block; color: #665; font-size: 12.5px; margin-top: 6px;">
+                    Tip: You can enter either standard 11-digit mobile format (<code>08012345678</code>), international format (<code>+234...</code>), your email address, or your Registration Pass Code (e.g. <code>IMGC-CAMP-12345</code>).
+                </small>
+            </div>
+
+            <div style="text-align: center; margin-top: 26px;">
+                <button type="submit" class="tcgc-btn-complete-reg" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 420px; height: 52px; font-size: 16px; font-weight: 800; letter-spacing: 0.5px;">
+                    <span>Retrieve &amp; Edit My Form</span>
+                    <span class="tcgc-arrow-long">&rarr;</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Help & Information Cards Footer -->
+        <div style="margin-top: 40px; padding-top: 28px; border-top: 1px solid #EADBBE; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div style="background: #FFFFFF; border: 1px solid #F0E2C8; border-radius: 12px; padding: 18px 20px;">
+                <h4 style="margin: 0 0 6px 0; color: #7D0A14; font-size: 15px; font-weight: 800;">Need to register a new attendee?</h4>
+                <p style="color: #666; font-size: 13.5px; margin: 0 0 10px 0; line-height: 1.5;">
+                    If you haven't registered for IMGC 2026 yet, you can fill out the official registration form right now.
+                </p>
+                <a href="{% url 'registration' %}" style="color: #7D0A14; font-weight: 700; font-size: 13.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                    <span>Go to Registration Form</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #F0E2C8; border-radius: 12px; padding: 18px 20px;">
+                <h4 style="margin: 0 0 6px 0; color: #7D0A14; font-size: 15px; font-weight: 800;">Already have your Pass Code?</h4>
+                <p style="color: #666; font-size: 13.5px; margin: 0 0 10px 0; line-height: 1.5;">
+                    You can also type your Registration Pass Code (e.g. <code>IMGC-CAMP-...</code>) in the search box above to directly open your form.
+                </p>
+                <a href="{% url 'attending_dp' %}" style="color: #7D0A14; font-weight: 700; font-size: 13.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                    <span>Create "I Will Be Attending" DP</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

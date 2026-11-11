@@ -159,6 +159,10 @@ class ConferenceRegistration(models.Model):
             return self.phone_number[:4]
         return '+234'
 
+    @phone_country_code.setter
+    def phone_country_code(self, val):
+        pass  # Country code is stored directly inside phone_number
+
     def get_feeding_summary(self):
         """Human-readable feeding plan with selected days if applicable."""
         feeding_sub = getattr(self, 'feeding_subscription', 'none')
